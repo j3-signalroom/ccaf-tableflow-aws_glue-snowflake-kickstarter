@@ -1,0 +1,7 @@
+[project]
+name = "ccaf-tableflow-snowflake-kickstarter"
+version = "0.01.00.000"
+description = "Confluent Cloud for Apache Flink (CCAF) Tableflow Snowflake Kickstarter"
+readme = "README.md"
+requires-python = ">=3.11.9"
+dependencies = []
