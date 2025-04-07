@@ -1,0 +1,13 @@
+# Confluent Trifecta: Kafka ✨ Flink ✨ Iceberg
+
+## Introduction
+Data practitioners are entering a golden era—a time defined by groundbreaking possibilities and transformative innovation. In the early days, building data warehouses demanded colossal intellectual and financial investments. We painstakingly engineered and maintained limited conforming dimensions and facts, continuously adapting to meet evolving business needs. Copying data from source to target not only came at a high cost but also stripped away vital context, which had to be painstakingly rebuilt to extract actionable insights.
+
+As we evolved to data lakes, many challenges persisted: maintenance overhead, slow adaptability to surging data demands, and the constant struggle to preserve context. Now, with the burgeoning tide of ML and AI, the stakes have escalated even further. Yet, these very challenges are paving the way for unprecedented opportunities for innovation and efficiency. Today, every obstacle serves as a stepping stone toward a more agile, insightful, and future-ready data landscape.
+
+On March 19, 2025, Confluent proudly announced the general availability of Tableflow for Apache Iceberg, marking a transformative milestone for data warehousing and data lakes. This monumental release redefines data management by seamlessly addressing the complexities of modern data infrastructures. Leveraging the unparalleled power of our fully managed open-source trifecta—Apache Kafka, Apache Flink, and Apache Iceberg—we now deliver a unified solution that adeptly serves both operational and analytics data needs.
+
+Welcome to the forefront of the data revolution, where every challenge is an opportunity and innovation knows no bounds.
+
+## Time for some show-n-tell
+I took the Confluent demonstration instruction Terraformed it!  
