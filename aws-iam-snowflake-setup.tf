@@ -31,10 +31,13 @@ resource "aws_iam_policy" "snowflake_s3_access_policy" {
         "Effect": "Allow",
         "Action": [
           "s3:PutObject",
+          "s3:PutObjectTagging",
           "s3:GetObject",
           "s3:GetObjectVersion",
           "s3:DeleteObject",
-          "s3:DeleteObjectVersion"
+          "s3:DeleteObjectVersion",
+          "s3:AbortMultipartUpload",
+          "s3:ListMultipartUploadParts"
         ],
         "Resource": [          
           "${aws_s3_bucket.iceberg_bucket.arn}/warehouse/*"
@@ -43,8 +46,9 @@ resource "aws_iam_policy" "snowflake_s3_access_policy" {
         {
             "Effect": "Allow",
             "Action": [
-                "s3:ListBucket",
-                "s3:GetBucketLocation"
+                "s3:GetBucketLocation",
+                "s3:ListBucketMultipartUploads",
+                "s3:ListBucket"
             ],
             "Resource": aws_s3_bucket.iceberg_bucket.arn,
             "Condition": {

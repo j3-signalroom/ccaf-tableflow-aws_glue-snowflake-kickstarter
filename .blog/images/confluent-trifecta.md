@@ -10,3 +10,25 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
 
 ## Load down on Tableflow
 
+
+### Storage option should you pick?
+
+Confluent has supports two storage options:
+1. Confluent Storage, in which the Apache Iceberg tables are stored in Confluent Managed Storage.
+2. Non-Confluent Storage (a.k.a, external object store), Amazon S3.
+
+So, the question you should be asking yourself is which one should I choose.  Well to help you, below I provide a pros and cons list:
+
+Confluent Storage|Amazon S3
+-|-
+Not compatible with external data catalogs, like AWS Glue|You can use AWS Glue
+
+Tableflow requires a cloud provider integration to be configured at the environment level of the topic(s) you’re enabling Tableflow on.  Multiple Tableflow-enabled topics can use the same S3 bucket and cloud provider integration. Tableflow supports only S3 Standard Storage Class buckets located in the same region as your Kafka cluster.
+
+To access tables stored in Amazon S3, you must use an environment or resource that is authenticated with an AWS IAM role that has GetObject permissions for the objects stored in the S3 bucket where your table is stored.
+
+**WARNING** Once you have enabled Tableflow on a topic with an Amazon S3 bucket as the storage, you can’t update that Tableflow-enabled topic to use another bucket or to use Confluent Managed Storage.
+
+> _You should start with an empty bucket when you first enable Tableflow. Existing objects in the bucket may cause Tableflow to fail to start or may be lost entirely during initialization. Do not directly modify or delete objects from this bucket. Doing so may lead to table corruption._
+
+
