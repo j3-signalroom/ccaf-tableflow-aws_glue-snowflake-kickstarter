@@ -182,11 +182,19 @@ else
     # Destroy the Terraform configuration
     terraform destroy -var-file=terraform.tfvars
 
+    # Lowercase the Confluent Base Path
+    confluent_base_path=/confluent_resources/${service_account_user}
+    confluent_base_path=$(echo "$confluent_base_path" | tr '[:upper:]' '[:lower:]')
+
+    # Lowercase the Snowflake Base Path
+    snowflake_base_path=/snowflake_resources/${service_account_user}
+    snowflake_base_path=$(echo "$snowflake_base_path" | tr '[:upper:]' '[:lower:]')
+
     # Force the delete of the AWS Secrets
-    aws secretsmanager delete-secret --secret-id '/confluent-cloud-resource/${service-account-user}/schema-registry-cluster/python-client' --force-delete-without-recovery || true
-    aws secretsmanager delete-secret --secret-id '/confluent-cloud-resource/${service-account-user}/kafka-cluster/app-manager/python-client' --force-delete-without-recovery || true
-    aws secretsmanager delete-secret --secret-id '/confluent-cloud-resource/${service-account-user}/kafka-cluster/app-consumer/python-client' --force-delete-without-recovery || true
-    aws secretsmanager delete-secret --secret-id '/confluent-cloud-resource/${service-account-user}/kafka-cluster/app-producer/python-client' --force-delete-without-recovery || true
-    aws secretsmanager delete-secret --secret-id '/snowflake-resource/rsa-private-key-pem-1' --force-delete-without-recovery || true
-    aws secretsmanager delete-secret --secret-id '/snowflake-resource/rsa-private-key-pem-2' --force-delete-without-recovery || true
+    aws secretsmanager delete-secret --secret-id ${confluent_base_path}/schema_registry_cluster/python_client --force-delete-without-recovery || true
+    aws secretsmanager delete-secret --secret-id ${confluent_base_path}/kafka_cluster/app_manager/python_client --force-delete-without-recovery || true
+    aws secretsmanager delete-secret --secret-id ${confluent_base_path}/kafka_cluster/app_consumer/python_client --force-delete-without-recovery || true
+    aws secretsmanager delete-secret --secret-id ${confluent_base_path}/kafka_cluster/app_producer/python_client --force-delete-without-recovery || true
+    aws secretsmanager delete-secret --secret-id ${snowflake_base_path}/rsa-private_key_pem_1 --force-delete-without-recovery || true
+    aws secretsmanager delete-secret --secret-id ${snowflake_base_path}/rsa-private_key_pem_2 --force-delete-without-recovery || true
 fi
