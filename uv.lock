@@ -146,7 +146,7 @@ wheels = [
 ]
 
 [[package]]
-name = "ccaf-tableflow-postgres-snowflake-kickstarter"
+name = "ccaf-tableflow-snowflake-kickstarter"
 version = "0.1.0.0"
 source = { virtual = "." }
 dependencies = [
