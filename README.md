@@ -11,7 +11,7 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
 <!-- toc -->
 + [**1.0 Kickoff**](#10-kickoff)
     - [**1.1 DevOps in Action: Running Terraform Locally**](#11-devops-in-action-running-terraform-locally)
-        + [**1.1.1 Run locall**y](#111-run-locally)
+        + [**1.1.1 Run locally**](#111-run-locally)
     - [**1.2 Visualizing the Terraform Configuration**](#12-visualizing-the-terraform-configuration)
 + [**2.0 Resources**](#20-resources)
 + [**3.0 Important Note(s)**](#30-important-notes)
@@ -30,8 +30,8 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
 
     > You need to have the following installed on your local machine:
     > - [AWS CLI version 2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-    > - [Confluent CLI version 3 or higher](https://docs.confluent.io/confluent-cli/4.0/overview.html)
-    > - [Terraform CLI version 1.9.3 or higher](https://developer.hashicorp.com/terraform/install)
+    > - [Confluent CLI version 4 or higher](https://docs.confluent.io/confluent-cli/4.0/overview.html)
+    > - [Terraform CLI version 1.11.4 or higher](https://developer.hashicorp.com/terraform/install)
 
 2. Clone the repo:
     ```bash
@@ -87,6 +87,8 @@ terraform graph | dot -Tpng > .blog/images/terraform-visualization.png
 ```
 
 ## 2.0 Resources
+
+* [Tableflow in Confluent Cloud](https://docs.confluent.io/cloud/current/topics/tableflow/overview.html#cloud-tableflow)
 
 ## 3.0 Important Note(s)
 * [Known Issue(s)](KNOWNISSUES.md)
