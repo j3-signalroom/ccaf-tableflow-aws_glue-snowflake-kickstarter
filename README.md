@@ -11,17 +11,10 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
 <!-- toc -->
 + [**1.0 Kickoff**](#10-kickoff)
     - [**1.1 DevOps in Action: Running Terraform Locally**](#11-devops-in-action-running-terraform-locally)
-        + [**1.1.1 Run locally](#111-run-locally)
-    - [2.2 DevOps in Action: Running Terraform in the cloud](#22-devops-in-action-running-terraform-in-the-cloud)
-        + [2.2.1 Run from the cloud](#221-run-from-the-cloud)
-    - [2.3 Visualizing the Terraform Configuration](#23-visualizing-the-terraform-configuration)
-+ [3.0 Hands-On Kickoff: Practical Examples for Rapid Learning](#30-hands-on-kickoff-practical-examples-for-rapid-learning)
-    - [3.1 Flink Applications Powered by Java on a locally running Apache Flink Cluster in Docker](#31-flink-applications-powered-by-java-on-a-locally-running-apache-flink-cluster-in-docker)
-    - [3.2 Flink Applications Powered by Python on a locally running Apache Flink Cluster in Docker](#32-flink-applications-powered-by-python-on-a-locally-running-apache-flink-cluster-in-docker)
-    - [3.3 Flink Applications Powered by Python on Confluent Cloud for Apache Flink](#33-flink-applications-powered-by-python-on-confluent-cloud-for-apache-flink)
-+ [4.0 Powering Analytics with Apache Iceberg tables in Snowflake](#40-powering-analytics-with-apache-iceberg-tables-in-snowflake)
-+ [5.0 Resources](#50-resources)
-+ [6.0 Important Note(s)](#60-important-notes)
+        + [**1.1.1 Run locall**y](#111-run-locally)
+    - [**1.2 Visualizing the Terraform Configuration**](#12-visualizing-the-terraform-configuration)
++ [**2.0 Resources**](#20-resources)
++ [**3.0 Important Note(s)**](#30-important-notes)
 <!-- tocstop -->
 
 ## 1.0 Kickoff
