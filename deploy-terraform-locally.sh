@@ -6,7 +6,6 @@
 #                                               --confluent_api_key=<CONFLUENT-API-KEY>
 #                                               --confluent_api_secret=<CONFLUENT-API-SECRET>
 #                                               --snowflake_warehouse=<SNOWFLAKE-WAREHOUSE>
-#                                               --service_account_user=<SERVICE-ACCOUNT-USER>
 #                                               --day_count=<DAY-COUNT>
 #                                               --auto-offset-reset=<earliest | latest>
 #
@@ -22,7 +21,7 @@ case $1 in
     echo
     echo "(Error Message 001)  You did not specify one of the commands: create | delete."
     echo
-    echo "Usage:  Require all four arguments ---> `basename $0` <create | delete> --profile=<SSO-PROFILE-NAME> --confluent-api-key=<CONFLUENT-API-KEY> --confluent-api-secret=<CONFLUENT-API-SECRET> --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> --service-account-user=<SERVICE-ACCOUNT-USER> --day-count=<DAY-COUNT> --auto-offset-reset=<earliest | latest>"
+    echo "Usage:  Require all four arguments ---> `basename $0` <create | delete> --profile=<SSO-PROFILE-NAME> --confluent-api-key=<CONFLUENT-API-KEY> --confluent-api-secret=<CONFLUENT-API-SECRET> --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> --day-count=<DAY-COUNT> --auto-offset-reset=<earliest | latest>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
     ;;
@@ -46,9 +45,6 @@ do
         *"--snowflake-warehouse="*)
             arg_length=22
             snowflake_warehouse=${arg:$arg_length:$(expr ${#arg} - $arg_length)};;
-        *"--service-account-user="*)
-            arg_length=23
-            service_account_user=${arg:$arg_length:$(expr ${#arg} - $arg_length)};;
         *"--day-count="*)
             arg_length=12
             day_count=${arg:$arg_length:$(expr ${#arg} - $arg_length)};;
@@ -67,7 +63,7 @@ then
     echo
     echo "(Error Message 002)  You did not include the proper use of the --profile=<SSO-PROFILE-NAME> argument in the call."
     echo
-    echo "Usage:  Require all four arguments ---> `basename $0 $1` --profile=<SSO-PROFILE-NAME> --confluent-api-key=<CONFLUENT-API-KEY> --confluent-api-secret=<CONFLUENT-API-SECRET> --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> --service-account-user=<SERVICE-ACCOUNT-USER> --day-count=<DAY-COUNT> --auto-offset-reset=<earliest | latest>"
+    echo "Usage:  Require all four arguments ---> `basename $0 $1` --profile=<SSO-PROFILE-NAME> --confluent-api-key=<CONFLUENT-API-KEY> --confluent-api-secret=<CONFLUENT-API-SECRET> --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> --day-count=<DAY-COUNT> --auto-offset-reset=<earliest | latest>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
 fi
@@ -78,7 +74,7 @@ then
     echo
     echo "(Error Message 003)  You did not include the proper use of the --confluent-api-key=<CONFLUENT-API-KEY> argument in the call."
     echo
-    echo "Usage:  Require all four arguments ---> `basename $0 $1` --profile=<SSO-PROFILE-NAME> --confluent-api-key=<CONFLUENT-API-KEY> --confluent-api-secret=<CONFLUENT-API-SECRET> --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> --service-account-user=<SERVICE-ACCOUNT-USER> --day-count=<DAY-COUNT> --auto-offset-reset=<earliest | latest>"
+    echo "Usage:  Require all four arguments ---> `basename $0 $1` --profile=<SSO-PROFILE-NAME> --confluent-api-key=<CONFLUENT-API-KEY> --confluent-api-secret=<CONFLUENT-API-SECRET> --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> --day-count=<DAY-COUNT> --auto-offset-reset=<earliest | latest>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
 fi
@@ -89,7 +85,7 @@ then
     echo
     echo "(Error Message 004)  You did not include the proper use of the --confluent-api-secret=<CONFLUENT-API-SECRET> argument in the call."
     echo
-    echo "Usage:  Require all four arguments ---> `basename $0 $1` --profile=<SSO-PROFILE-NAME> --confluent-api-key=<CONFLUENT-API-KEY> --confluent-api-secret=<CONFLUENT-API-SECRET> --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> --service-account-user=<SERVICE-ACCOUNT-USER> --day-count=<DAY-COUNT> --auto-offset-reset=<earliest | latest>"
+    echo "Usage:  Require all four arguments ---> `basename $0 $1` --profile=<SSO-PROFILE-NAME> --confluent-api-key=<CONFLUENT-API-KEY> --confluent-api-secret=<CONFLUENT-API-SECRET> --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> --day-count=<DAY-COUNT> --auto-offset-reset=<earliest | latest>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
 fi
@@ -100,18 +96,7 @@ then
     echo
     echo "(Error Message 005)  You did not include the proper use of the --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> argument in the call."
     echo
-    echo "Usage:  Require all four arguments ---> `basename $0 $1` --profile=<SSO-PROFILE-NAME> --confluent-api-key=<CONFLUENT-API-KEY> --confluent-api-secret=<CONFLUENT-API-SECRET> --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> --service-account-user=<SERVICE-ACCOUNT-USER> --day-count=<DAY-COUNT> --auto-offset-reset=<earliest | latest>"
-    echo
-    exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
-fi
-
-# Check required --service-account-user argument was supplied
-if [ -z $service_account_user ]
-then
-    echo
-    echo "(Error Message 006)  You did not include the proper use of the --service-account-user=<SERVICE-ACCOUNT-USER> argument in the call."
-    echo
-    echo "Usage:  Require all four arguments ---> `basename $0 $1` --profile=<SSO-PROFILE-NAME> --confluent-api-key=<CONFLUENT-API-KEY> --confluent-api-secret=<CONFLUENT-API-SECRET> --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> --service-account-user=<SERVICE-ACCOUNT-USER> --day-count=<DAY-COUNT> --auto-offset-reset=<earliest | latest>"
+    echo "Usage:  Require all four arguments ---> `basename $0 $1` --profile=<SSO-PROFILE-NAME> --confluent-api-key=<CONFLUENT-API-KEY> --confluent-api-secret=<CONFLUENT-API-SECRET> --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> --day-count=<DAY-COUNT> --auto-offset-reset=<earliest | latest>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
 fi
@@ -120,9 +105,9 @@ fi
 if [ -z $day_count ] && [ create_action = true ]
 then
     echo
-    echo "(Error Message 007)  You did not include the proper use of the --day-count=<DAY-COUNT> argument in the call."
+    echo "(Error Message 006)  You did not include the proper use of the --day-count=<DAY-COUNT> argument in the call."
     echo
-    echo "Usage:  Require all four arguments ---> `basename $0 $1` --profile=<SSO-PROFILE-NAME> --confluent-api-key=<CONFLUENT-API-KEY> --confluent-api-secret=<CONFLUENT-API-SECRET> --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> --service-account-user=<SERVICE-ACCOUNT-USER> --day-count=<DAY-COUNT> --auto-offset-reset=<earliest | latest>"
+    echo "Usage:  Require all four arguments ---> `basename $0 $1` --profile=<SSO-PROFILE-NAME> --confluent-api-key=<CONFLUENT-API-KEY> --confluent-api-secret=<CONFLUENT-API-SECRET> --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> --day-count=<DAY-COUNT> --auto-offset-reset=<earliest | latest>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
 fi
@@ -131,9 +116,9 @@ fi
 if [ $auto_offset_reset_set = false ] && [ create_action = true ]
 then
     echo
-    echo "(Error Message 008)  You did not include the proper use of the --auto-offset-reset=<earliest | latest> argument in the call."
+    echo "(Error Message 007)  You did not include the proper use of the --auto-offset-reset=<earliest | latest> argument in the call."
     echo
-    echo "Usage:  Require all four arguments ---> `basename $0 $1` --profile=<SSO-PROFILE-NAME> --confluent-api-key=<CONFLUENT-API-KEY> --confluent-api-secret=<CONFLUENT-API-SECRET> --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> --service-account-user=<SERVICE-ACCOUNT-USER> --day-count=<DAY-COUNT> --auto-offset-reset=<earliest | latest>"
+    echo "Usage:  Require all four arguments ---> `basename $0 $1` --profile=<SSO-PROFILE-NAME> --confluent-api-key=<CONFLUENT-API-KEY> --confluent-api-secret=<CONFLUENT-API-SECRET> --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> --day-count=<DAY-COUNT> --auto-offset-reset=<earliest | latest>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
 fi
@@ -155,7 +140,6 @@ then
     \nconfluent_api_key=\"${confluent_api_key}\"\
     \nconfluent_api_secret=\"${confluent_api_secret}\"\
     \nsnowflake_warehouse=\"${snowflake_warehouse}\"\
-    \nservice_account_user=\"${service_account_user}\"\
     \nauto_offset_reset=\"${auto_offset_reset}\"\
     \nday_count=${day_count}" > terraform.tfvars
 else
@@ -166,8 +150,7 @@ else
     \naws_session_token=\"${AWS_SESSION_TOKEN}\"\
     \nconfluent_api_key=\"${confluent_api_key}\"\
     \nconfluent_api_secret=\"${confluent_api_secret}\"\
-    \nsnowflake_warehouse=\"${snowflake_warehouse}\"\
-    \nservice_account_user=\"${service_account_user}\"" > terraform.tfvars
+    \nsnowflake_warehouse=\"${snowflake_warehouse}\"" > terraform.tfvars
 fi
 
 # Initialize the Terraform configuration
@@ -182,13 +165,12 @@ else
     # Destroy the Terraform configuration
     terraform destroy -var-file=terraform.tfvars
 
-    # Lowercase the Confluent Base Path
-    confluent_base_path=/confluent_resources/${service_account_user}
-    confluent_base_path=$(echo "$confluent_base_path" | tr '[:upper:]' '[:lower:]')
+    # Confluent Base Path
+    confluent_base_path=/confluent_resources/tableflow_kickstarter
 
-    # Lowercase the Snowflake Base Path
-    snowflake_base_path=/snowflake_resources/${service_account_user}
-    snowflake_base_path=$(echo "$snowflake_base_path" | tr '[:upper:]' '[:lower:]')
+    # Snowflake Base Path
+    snowflake_base_path=/snowflake_resources/tableflow_kickstarter
+
 
     # Force the delete of the AWS Secrets
     aws secretsmanager delete-secret --secret-id ${confluent_base_path}/schema_registry_cluster/python_client --force-delete-without-recovery || true
