@@ -3,7 +3,7 @@ terraform {
       organization = "signalroom"
 
         workspaces {
-            name = "ccaf-tableflow-postgres-snowflake-kickstarter"
+            name = "ccaf-tableflow-snowflake-kickstarter"
         }
   }
 
