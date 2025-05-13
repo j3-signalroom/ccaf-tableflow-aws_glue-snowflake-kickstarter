@@ -58,7 +58,8 @@ resource "aws_secretsmanager_secret_version" "flink_api_key" {
     secret_id     = aws_secretsmanager_secret.flink_api_key.id
     secret_string = jsonencode({"api.key": "${module.flink_api_key_rotation.active_api_key.id}",
                                 "api.key.secret": "${module.flink_api_key_rotation.active_api_key.secret}",
-                                "compute.pool.id": "${confluent_flink_compute_pool.env.id}"})
+                                "compute.pool.id": "${confluent_flink_compute_pool.env.id}",
+                                "principal.id": "${confluent_service_account.flink_sql_statements_runner.id}"})
 }
 
 resource "aws_secretsmanager_secret" "tableflow_api_key" {
