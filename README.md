@@ -1,4 +1,4 @@
-# Confluent Cloud for Apache Flink (CCAF) Tableflow Snowflake Kickstarter
+# Confluent Cloud for Apache Flink (CCAF) Tableflow AWS Glue Snowflake Kickstarter
 
 Data practitioners are entering a golden era—a time defined by groundbreaking possibilities and transformative innovation. In the early days, building data warehouses demanded colossal intellectual and financial investments. We painstakingly engineered and maintained limited conforming dimensions and facts, continuously adapting to meet evolving business needs. Copying data from source to target not only came at a high cost but also stripped away vital context, which had to be painstakingly rebuilt to extract actionable insights.
 
@@ -17,7 +17,8 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
     - [**2.1 Confluent Cloud for Apache Kafka (CCAK)**](#21-confluent-cloud-for-apache-kafka-ccak)
     - [**2.2 Confluent Cloud for Apache Flink (CCAF)**](#22-confluent-cloud-for-apache-flink-ccaf)
     - [**2.3 Tableflow for Apache Iceberg**](#23-tableflow-for-apache-iceberg)
-    - [**2.4 Snowflake**](#24-snowflake)
+    - [**2.4 AWS Glue Data Catalog**](#24-aws-glue-data-catalog)
+    - [**2.5 Snowflake**](#25-snowflake)
 + [**3.0 Important Note(s)**](#30-important-notes)
 <!-- tocstop -->
 
@@ -103,7 +104,10 @@ terraform graph | dot -Tpng > .blog/images/terraform-visualization.png
 * [Tableflow in Confluent Cloud](https://docs.confluent.io/cloud/current/topics/tableflow/overview.html#cloud-tableflow)
 * [Terraforming Snowflake](https://quickstarts.snowflake.com/guide/terraforming_snowflake/index.html?index=..%2F..index&utm_cta=website-workload-cortex-timely-content-copilot-ama#0)
 
-### 2.4 Snowflake
+### 2.4 AWS Glue Data Catalog
+* [Data discovery and cataloging in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/catalog-and-crawler.html)
+
+### 2.5 Snowflake
 * [Snowflake Create Storage Integration](https://docs.snowflake.com/en/sql-reference/sql/create-storage-integration)
 
 ## 3.0 Important Note(s)
