@@ -14,6 +14,9 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
         + [**1.1.1 Run locally**](#111-run-locally)
     - [**1.2 Visualizing the Terraform Configuration**](#12-visualizing-the-terraform-configuration)
 + [**2.0 Resources**](#20-resources)
+    - [**2.1 Confluent Cloud for Apache Flink (CCAF)**](#21-confluent-cloud-for-apache-flink-ccaf)
+    - [**2.2 Tableflow for Apache Iceberg**](#22-tableflow-for-apache-iceberg)
+    - [**2.3 Snowflake**](#23-snowflake)
 + [**3.0 Important Note(s)**](#30-important-notes)
 <!-- tocstop -->
 
@@ -87,11 +90,18 @@ terraform graph | dot -Tpng > .blog/images/terraform-visualization.png
 ```
 
 ## 2.0 Resources
-* [Tableflow in Confluent Cloud](https://docs.confluent.io/cloud/current/topics/tableflow/overview.html#cloud-tableflow)
 * [Shift Left: Unifying Operations and Analytics With Data Products eBook](https://www.confluent.io/resources/ebook/unifying-operations-analytics-with-data-products/?utm_medium=sem&utm_source=google&utm_campaign=ch.sem_br.nonbrand_tp.prs_tgt.dsa_mt.dsa_rgn.namer_lng.eng_dv.all_con.resources&utm_term=&creative=&device=c&placement=&gad_source=1&gad_campaignid=12131734288&gbraid=0AAAAADRv2c3NnjtbB2EmbR4ZfsjGY1Uge&gclid=EAIaIQobChMIm5KUs7GhjQMVQDUIBR0YgAilEAAYASAAEgKu8_D_BwE)
-* [Terraforming Snowflake](https://quickstarts.snowflake.com/guide/terraforming_snowflake/index.html?index=..%2F..index&utm_cta=website-workload-cortex-timely-content-copilot-ama#0)
-* [Snowflake Create Storage Integration](https://docs.snowflake.com/en/sql-reference/sql/create-storage-integration)
+
+
+### 2.1 Confluent Cloud for Apache Flink (CCAF)
 * [Stream Processing with Confluent Cloud for Apache Flink](https://docs.confluent.io/cloud/current/flink/overview.html#stream-processing-with-af-long)
+
+### 2.2 Tableflow for Apache Iceberg
+* [Tableflow in Confluent Cloud](https://docs.confluent.io/cloud/current/topics/tableflow/overview.html#cloud-tableflow)
+* [Terraforming Snowflake](https://quickstarts.snowflake.com/guide/terraforming_snowflake/index.html?index=..%2F..index&utm_cta=website-workload-cortex-timely-content-copilot-ama#0)
+
+### 2.3 Snowflake
+* [Snowflake Create Storage Integration](https://docs.snowflake.com/en/sql-reference/sql/create-storage-integration)
 
 ## 3.0 Important Note(s)
 * [Known Issue(s)](KNOWNISSUES.md)
