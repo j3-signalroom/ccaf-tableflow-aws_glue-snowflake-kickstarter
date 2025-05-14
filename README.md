@@ -10,7 +10,6 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
 <!-- toc -->
 + [**1.0 Kickoff**](#10-kickoff)
     - [**1.1 DevOps in Action: Running Terraform Locally**](#11-devops-in-action-running-terraform-locally)
-        + [**1.1.1 Run locally**](#111-run-locally)
     - [**1.2 Visualizing the Terraform Configuration**](#12-visualizing-the-terraform-configuration)
 + [**2.0 Resources**](#20-resources)
     - [**2.1 Confluent Cloud for Apache Kafka (CCAK)**](#21-confluent-cloud-for-apache-kafka-ccak)
@@ -55,7 +54,8 @@ With these steps, you'll have everything set up to run enterprise-grade data str
 ### 1.1 DevOps in Action: Running Terraform Locally
 Install the [Terraform CLI](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) on your local machine, and make sure you have an [HCP Terraform account](https://app.terraform.io/session) to run the Terraform configuration.  Learn how to set up Terraform Cloud for local use by clicking [here](.blog/setup-terraform-cloud.md).
 
-#### 1.1.1 Run locally
+Then run the following command to set up the Terraform configuration locally. This command will create a Confluent Cloud environment with a Kafka Cluster configured for Tableflow, AWS Secrets Manager, an AWS S3 bucket with a `warehouse` folder, AWS Glue Data Catalog, and Snowflake Database:
+
 ```bash
 deploy-terraform-locally.sh <create | delete> --profile=<SSO_PROFILE_NAME> \
                                               --confluent-api-key=<CONFLUENT_API_KEY> \
