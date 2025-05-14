@@ -1,4 +1,7 @@
 # Confluent Trifecta: Kafka ✨ Flink ✨ Iceberg
+
+**TL;DR:**  _This post summarizes the power of three open-source projects: Apache Kafka, Apache Flink, and Apache Iceberg. It utilizes Terraform to bring this trifecta to life!_
+
 Data practitioners are entering a golden era-a time defined by groundbreaking possibilities and transformative innovation. In the early days, building data warehouses required enormous intellectual and financial investments. We carefully engineered and maintained limited conforming dimensions and facts, continuously adapting to meet evolving business needs. Transferring data from source to target not only incurred high costs but also stripped away vital context, which had to be painstakingly rebuilt to derive actionable insights.
 
 As we evolved to data lakes, many challenges persisted: maintenance overhead, slow adaptability to surging data demands, and the constant struggle to preserve context. With the burgeoning tide of ML and AI, the stakes have escalated even further. Yet, these challenges are paving the way for unprecedented opportunities for innovation and efficiency. Today, every obstacle is a stepping stone toward a more agile, insightful, and future-ready data landscape.
