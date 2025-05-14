@@ -42,12 +42,13 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
     ```
 
 3. Set up your Terraform Cloud environment locally. Here's what you can expect:
-
     - A Confluent Cloud environment featuring a Kafka Cluster, fully equipped with pre-configured example Kafka topics—ready to power your data streaming needs.
+    - AWS Secrets Manager securely stores API Key Secrets for the Kafka Cluster.
+    - Configure the Datagen Source Connector Kafka Topics for Tableflow.
+    - An AWS S3 bucket with a dedicated warehouse folder serves as the landing zone for Apache Iceberg Tables populated by the Datagen Source Connector.
+    - An AWS Glue Data Catalog ensures seamless integration with the S3 bucket and enables efficient data discovery.
+    - A Snowflake Database, where the data from the S3 bucket will be ingested and transformed into a Snowflake Table.
 
-    - AWS Secrets Manager securely storing API Key Secrets for the Kafka Cluster.
-
-    - An AWS S3 bucket with a dedicated `warehouse` folder, serving as the landing zone for Apache Iceberg Tables populated by two Python-based Flink apps, bringing your data streaming architecture to life.
 
 With these steps, you'll have everything set up to run enterprise-grade data streaming applications in no time!
 
