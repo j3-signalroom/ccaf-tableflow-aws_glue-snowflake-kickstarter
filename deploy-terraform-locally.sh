@@ -166,10 +166,10 @@ else
     terraform destroy -var-file=terraform.tfvars
 
     # Confluent Base Path
-    confluent_base_path=/confluent_resources/tableflow_kickstarter
+    confluent_base_path=/confluent_cloud_resource/tableflow_kickstarter
 
     # Snowflake Base Path
-    snowflake_base_path=/snowflake_resources/tableflow_kickstarter
+    snowflake_base_path=/snowflake_resource/tableflow_kickstarter
 
 
     # Force the delete of the AWS Secrets
@@ -177,6 +177,9 @@ else
     aws secretsmanager delete-secret --secret-id ${confluent_base_path}/kafka_cluster/app_manager/python_client --force-delete-without-recovery || true
     aws secretsmanager delete-secret --secret-id ${confluent_base_path}/kafka_cluster/app_consumer/python_client --force-delete-without-recovery || true
     aws secretsmanager delete-secret --secret-id ${confluent_base_path}/kafka_cluster/app_producer/python_client --force-delete-without-recovery || true
-    aws secretsmanager delete-secret --secret-id ${snowflake_base_path}/rsa-private_key_pem_1 --force-delete-without-recovery || true
-    aws secretsmanager delete-secret --secret-id ${snowflake_base_path}/rsa-private_key_pem_2 --force-delete-without-recovery || true
+    aws secretsmanager delete-secret --secret-id ${confluent_base_path}/flink --force-delete-without-recovery || true
+    aws secretsmanager delete-secret --secret-id ${confluent_base_path}/tableflow --force-delete-without-recovery || true
+    aws secretsmanager delete-secret --secret-id ${snowflake_base_path} --force-delete-without-recovery || true
+    aws secretsmanager delete-secret --secret-id ${snowflake_base_path}/rsa_private_key_pem_1 --force-delete-without-recovery || true
+    aws secretsmanager delete-secret --secret-id ${snowflake_base_path}/rsa_private_key_pem_2 --force-delete-without-recovery || true
 fi
