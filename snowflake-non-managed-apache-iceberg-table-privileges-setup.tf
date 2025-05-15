@@ -30,7 +30,7 @@ resource "snowflake_grant_privileges_to_account_role" "warehouse" {
 
 resource "snowflake_user" "user" {
   provider          = snowflake.security_admin
-  name              = upper(var.service_account_user)
+  name              = upper(local.secrets_insert)
   default_warehouse = snowflake_warehouse.apache_flink.name
   default_role      = snowflake_account_role.security_admin_role.name
   default_namespace = "${snowflake_database.apache_flink.name}.${snowflake_schema.apache_flink_schema.name}"

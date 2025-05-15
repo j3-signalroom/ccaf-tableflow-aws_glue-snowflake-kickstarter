@@ -6,7 +6,7 @@ module "snowflake_user_rsa_key_pairs_rotation" {
     aws_region           = var.aws_region
     aws_account_id       = var.aws_account_id
     snowflake_account    = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"]
-    service_account_user = var.service_account_user
+    service_account_user = local.secrets_insert
 
     # Optional Input(s)
     secret_insert             = local.secrets_insert
