@@ -14,8 +14,8 @@ resource "confluent_kafka_cluster" "kafka_cluster" {
 # 'app_manager' service account is required in this configuration to create 'stock_trades' topic and grant ACLs
 # to 'app_producer' and 'app_consumer' service accounts.
 resource "confluent_service_account" "app_manager" {
-  display_name = "app_manager"
-  description  = "Service account to manage Kafka cluster"
+  display_name = "tableflow_app_manager"
+  description  = "Tableflow Kickstarter Service account to manage Kafka cluster"
 }
 
 resource "confluent_role_binding" "app_manager_kafka_cluster_admin" {
@@ -73,8 +73,8 @@ resource "confluent_kafka_topic" "stock_trades" {
 }
 
 resource "confluent_service_account" "app_consumer" {
-  display_name = "app_consumer"
-  description  = "Service account to consume from 'stock_trades' topic of Kafka cluster"
+  display_name = "tableflow_app_consumer"
+  description  = "Tableflow Kickstarter Service account to consume from 'stock_trades' topic of Kafka cluster"
 }
 
 module "app_consumer_kafka_api_key" {
@@ -125,8 +125,8 @@ resource "confluent_kafka_acl" "app_producer_write_on_topic" {
 }
 
 resource "confluent_service_account" "app_producer" {
-  display_name = "app_producer"
-  description  = "Service account to produce to 'stock_trades' topic of Kafka cluster"
+  display_name = "tableflow_app_producer"
+  description  = "Tableflow Kickstarter Service account to produce to 'stock_trades' topic of Kafka cluster"
 }
 
 module "app_producer_kafka_api_key" {
@@ -203,8 +203,8 @@ resource "confluent_kafka_acl" "app-consumer-read-on-group" {
 }
 
 resource "confluent_service_account" "app_connector" {
-  display_name = "app_connector"
-  description  = "Service account of DataGen Source Connector to produce to the 'stock_trades' topic of the Kafka cluster"
+  display_name = "tableflow_app_connector"
+  description  = "Tableflow Kickstarter Service account of DataGen Source Connector to produce to the 'stock_trades' topic of the Kafka cluster"
 }
 
 resource "confluent_kafka_acl" "app_connector_describe_on_cluster" {
