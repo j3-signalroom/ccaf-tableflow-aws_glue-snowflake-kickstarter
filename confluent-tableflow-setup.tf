@@ -5,7 +5,7 @@ resource "confluent_provider_integration" "env" {
   aws {
     customer_role_arn = local.snowflake_aws_role_arn
   }
-  display_name = "aws_integration"
+  display_name = "tableflow_aws_integration"
 }
 
 module "tableflow_api_key" {
@@ -51,9 +51,5 @@ resource "confluent_catalog_integration" "tableflow" {
   credentials {
     key    = module.tableflow_api_key.active_api_key.id
     secret = module.tableflow_api_key.active_api_key.secret
-  }
-
-  lifecycle {
-    prevent_destroy = true
   }
 }
