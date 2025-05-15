@@ -105,8 +105,3 @@ variable "snowflake_warehouse" {
     description = "The Snowflake warehouse."
     type        = string
 }
-
-variable "service_account_user" {
-    description = "The Snowflake service account user who is to be assigned the RSA key pairs for its authentication."
-    type        = string
-}
