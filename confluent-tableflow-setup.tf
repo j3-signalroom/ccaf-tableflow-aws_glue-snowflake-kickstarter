@@ -44,7 +44,7 @@ resource "confluent_catalog_integration" "tableflow" {
   kafka_cluster {
     id = confluent_kafka_cluster.kafka_cluster.id
   }
-  display_name = "tableflow-glue-catalog-sync"
+  display_name = "tableflow_aws_glue_catalog_sync"
   aws_glue {
     provider_integration_id = confluent_provider_integration.env.id
   }
