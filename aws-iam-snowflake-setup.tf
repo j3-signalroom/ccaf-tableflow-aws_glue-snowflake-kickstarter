@@ -1,6 +1,6 @@
 # Snowflake Role and Policy
 resource "aws_iam_role" "snowflake_role" {
-  name = "snowflake_role"
+  name = "tableflow_snowflake_role"
 
   assume_role_policy = jsonencode({
     "Version": "2012-10-17",

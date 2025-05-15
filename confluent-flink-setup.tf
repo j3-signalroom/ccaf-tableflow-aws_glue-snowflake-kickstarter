@@ -1,6 +1,6 @@
 # Service account to perform the task within Confluent Cloud to execute the Flink SQL statements
 resource "confluent_service_account" "flink_sql_statements_runner" {
-  display_name = "flink-sql-statements-runner"
+  display_name = "tableflow_flink_statements_runner"
   description  = "Service account for running Flink SQL Statements in the Kafka cluster"
 }
 
@@ -17,7 +17,7 @@ data "confluent_flink_region" "env" {
 
 # https://docs.confluent.io/cloud/current/flink/get-started/quick-start-cloud-console.html#step-1-create-a-af-compute-pool
 resource "confluent_flink_compute_pool" "env" {
-  display_name = "flink_sql_statement_runner"
+  display_name = "tableflow_flink__statement_runner"
   cloud        = local.cloud
   region       = var.aws_region
   max_cfu      = 10
@@ -64,7 +64,7 @@ module "flink_api_key_rotation" {
 
 # Create the Flink-specific API key that will be used to submit statements.
 resource "confluent_api_key" "flink_sql_statements_runner_api_key" {
-  display_name = "flink-sql-statements-runner-api-key"
+  display_name = "tableflow_flink_statements_runner_api_key"
   description  = "Flink API Key that is owned by 'flink_sql_statements_runner' service account"
   owner {
     id          = confluent_service_account.flink_sql_statements_runner.id
