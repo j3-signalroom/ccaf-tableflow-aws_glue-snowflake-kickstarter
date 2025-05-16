@@ -5,7 +5,7 @@ resource "confluent_provider_integration" "env" {
   aws {
     customer_role_arn = local.snowflake_aws_role_arn
   }
-  display_name = "aws_integration"
+  display_name = "tableflow_aws_integration"
 }
 
 module "tableflow_api_key" {
@@ -44,16 +44,12 @@ resource "confluent_catalog_integration" "tableflow" {
   kafka_cluster {
     id = confluent_kafka_cluster.kafka_cluster.id
   }
-  display_name = "tableflow-glue-catalog-sync"
+  display_name = "tableflow_aws_glue_catalog_sync"
   aws_glue {
     provider_integration_id = confluent_provider_integration.env.id
   }
   credentials {
     key    = module.tableflow_api_key.active_api_key.id
     secret = module.tableflow_api_key.active_api_key.secret
-  }
-
-  lifecycle {
-    prevent_destroy = true
   }
 }
