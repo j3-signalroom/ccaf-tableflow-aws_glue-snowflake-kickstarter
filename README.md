@@ -49,7 +49,7 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
     - An AWS Glue Data Catalog ensures seamless integration with the S3 bucket and enables efficient data discovery.
     - A Snowflake Database, where the data from the S3 bucket will be ingested and transformed into a Snowflake Table.
 
-
+4. This Terraform [module](https://developer.hashicorp.com/terraform/language/modules) offers a robust and automated solution for managing the entire lifecycle of [RSA key pairs](https://github.com/j3-signalroom/j3-techstack-lexicon/blob/main/cryptographic-glossary.md#rsa-key-pair) used to authenticate a Snowflake service account. It leverages the Infrastructure-as-Code (IaC) approach with a specialized AWS Lambda function, known as the [IaC Snowflake User RSA Key Pairs Generator](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_generator-lambda), to automate the generation and rotation of RSA key pairs. The module allows users to define rotation intervals (e.g., every 30 days since the last key generation) to enhance security by regularly renewing cryptographic credentials. Additionally, it integrates seamlessly with AWS Secrets Manager to securely store and manage the generated key pairs, ensuring that the keys remain protected and easily accessible for Snowflake authentication without manual intervention.
 With these steps, you'll have everything set up to run enterprise-grade data streaming applications in no time!
 
 ### 1.1 DevOps in Action: Running Terraform Locally
@@ -103,6 +103,7 @@ terraform graph | dot -Tpng > .blog/images/terraform-visualization.png
 ### 2.3 Tableflow for Apache Iceberg
 * [Tableflow in Confluent Cloud](https://docs.confluent.io/cloud/current/topics/tableflow/overview.html#cloud-tableflow)
 * [Terraforming Snowflake](https://quickstarts.snowflake.com/guide/terraforming_snowflake/index.html?index=..%2F..index&utm_cta=website-workload-cortex-timely-content-copilot-ama#0)
+* [Terraform Provider Confluent Tableflow Examples Configuration](https://github.com/confluentinc/terraform-provider-confluent/tree/master/examples/configurations/tableflow)
 
 ### 2.4 AWS Glue Data Catalog
 * [Data discovery and cataloging in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/catalog-and-crawler.html)

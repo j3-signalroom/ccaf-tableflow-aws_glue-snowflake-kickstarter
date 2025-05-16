@@ -8,6 +8,12 @@ resource "confluent_provider_integration" "env" {
   display_name = "tableflow_aws_integration"
 }
 
+resource "confluent_role_binding" "app-manager-provider-integration-resource-owner" {
+  principal   = "User:${confluent_service_account.app_manager.id}"
+  role_name   = "ResourceOwner"
+  crn_pattern = "${confluent_environment.env.resource_name}/provider-integration=${confluent_provider_integration.env.id}"
+}
+
 module "tableflow_api_key" {
   source = "github.com/j3-signalroom/iac-confluent-api_key_rotation-tf_module"
 
