@@ -1,10 +1,5 @@
 provider "snowflake" {
-  role  = "SYSADMIN"
-
-  # Snowflake Terraform Provider 1.0.0 requires the `organization_name` and 
-  # `account_name` to be set, whereas the previous versions did not require
-  # this.  That is why we are setting these values here.  Plus, `account` as
-  # been deprecated in favor of `account_name`.
+  role              = "SYSADMIN"
   organization_name = "${split("-", jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"])[0]}"
   account_name      = "${split("-", jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"])[1]}"
   user              = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["admin_user"]
@@ -12,22 +7,22 @@ provider "snowflake" {
   private_key       = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["active_rsa_public_key_number"] == 1 ? data.aws_secretsmanager_secret_version.admin_private_key_1.secret_string : data.aws_secretsmanager_secret_version.admin_private_key_2.secret_string
 }
 
-resource "snowflake_warehouse" "apache_flink" {
+resource "snowflake_warehouse" "tableflow" {
   name           = upper(local.secrets_insert)
   warehouse_size = "xsmall"
   auto_suspend   = 60
 }
 
-resource "snowflake_database" "apache_flink" {
+resource "snowflake_database" "tableflow" {
   name = upper(local.secrets_insert)
 }
 
-resource "snowflake_schema" "apache_flink_schema" {
+resource "snowflake_schema" "tableflow_schema" {
   name       = upper(local.secrets_insert)
-  database   = snowflake_database.apache_flink.name
+  database   = snowflake_database.tableflow.name
 
   depends_on = [
-    snowflake_database.apache_flink
+    snowflake_database.tableflow
   ]
 }
 
@@ -40,13 +35,17 @@ resource "snowflake_storage_integration" "aws_s3_integration" {
   storage_aws_role_arn      = local.snowflake_aws_role_arn
   enabled                   = true
   type                      = "EXTERNAL_STAGE"
+
+  depends_on = [ 
+    snowflake_schema.tableflow_schema 
+  ]
 }
 
 resource "snowflake_stage" "stock_trades" {
   name                = upper("stock_trades_stage")
   url                 = "s3://${local.secrets_insert}/warehouse/trades.db/stock_trades/data/"
-  database            = snowflake_database.apache_flink.name
-  schema              = snowflake_schema.apache_flink_schema.name
+  database            = snowflake_database.tableflow.name
+  schema              = snowflake_schema.tableflow_schema.name
   storage_integration = snowflake_storage_integration.aws_s3_integration.name
   provider            = snowflake.account_admin
 
@@ -57,11 +56,11 @@ resource "snowflake_stage" "stock_trades" {
 
 resource "snowflake_external_table" "stock_trades" {
   provider    = snowflake.account_admin
-  database    = snowflake_database.apache_flink.name
-  schema      = snowflake_schema.apache_flink_schema.name
+  database    = snowflake_database.tableflow.name
+  schema      = snowflake_schema.tableflow_schema.name
   name        = upper("stock_trades")
   file_format = "TYPE = 'PARQUET'"
-  location    = "@${snowflake_database.apache_flink.name}.${snowflake_schema.apache_flink_schema.name}.${snowflake_stage.stock_trades.name}"
+  location    = "@${snowflake_database.tableflow.name}.${snowflake_schema.tableflow_schema.name}.${snowflake_stage.stock_trades.name}"
   auto_refresh = true
 
   column {

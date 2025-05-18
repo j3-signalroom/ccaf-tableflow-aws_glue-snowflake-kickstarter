@@ -1,11 +1,6 @@
 provider "snowflake" {
-  alias = "security_admin"
-  role  = "SECURITYADMIN"
-
-  # Snowflake Terraform Provider 1.0.0 requires the `organization_name` and 
-  # `account_name` to be set, whereas the previous versions did not require
-  # this.  That is why we are setting these values here.  Plus, `account` as
-  # been deprecated in favor of `account_name`.
+  alias             = "security_admin"
+  role              = "SECURITYADMIN"
   organization_name = "${split("-", jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"])[0]}"
   account_name      = "${split("-", jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"])[1]}"
   user              = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["admin_user"]
@@ -24,16 +19,16 @@ resource "snowflake_grant_privileges_to_account_role" "warehouse" {
   account_role_name = snowflake_account_role.security_admin_role.name
   on_account_object {
     object_type = "WAREHOUSE"
-    object_name = snowflake_warehouse.apache_flink.name
+    object_name = snowflake_warehouse.tableflow.name
   }
 }
 
 resource "snowflake_user" "user" {
   provider          = snowflake.security_admin
   name              = upper(local.secrets_insert)
-  default_warehouse = snowflake_warehouse.apache_flink.name
+  default_warehouse = snowflake_warehouse.tableflow.name
   default_role      = snowflake_account_role.security_admin_role.name
-  default_namespace = "${snowflake_database.apache_flink.name}.${snowflake_schema.apache_flink_schema.name}"
+  default_namespace = "${snowflake_database.tableflow.name}.${snowflake_schema.tableflow_schema.name}"
 
   # Setting the attributes to `null`, effectively unsets the attribute
   # Refer to this link `https://docs.snowflake.com/en/user-guide/key-pair-auth#configuring-key-pair-rotation`
@@ -59,13 +54,8 @@ resource "snowflake_grant_account_role" "user_security_admin" {
 }
 
 provider "snowflake" {
-  alias = "account_admin"
-  role  = "ACCOUNTADMIN"
-
-  # Snowflake Terraform Provider 1.0.0 requires the `organization_name` and 
-  # `account_name` to be set, whereas the previous versions did not require
-  # this.  That is why we are setting these values here.  Plus, `account` as
-  # been deprecated in favor of `account_name`.
+  alias             = "account_admin"
+  role              = "ACCOUNTADMIN"
   organization_name = "${split("-", jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"])[0]}"
   account_name      = "${split("-", jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"])[1]}"
   user              = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["admin_user"]
@@ -92,7 +82,7 @@ resource "snowflake_grant_privileges_to_account_role" "database" {
   account_role_name = snowflake_account_role.account_admin_role.name
   on_account_object {
     object_type = "DATABASE"
-    object_name = snowflake_database.apache_flink.name
+    object_name = snowflake_database.tableflow.name
   }
 }
 
@@ -101,7 +91,7 @@ resource "snowflake_grant_privileges_to_account_role" "schema" {
   privileges        = ["CREATE FILE FORMAT", "USAGE"]
   account_role_name = snowflake_account_role.account_admin_role.name
   on_schema {
-    schema_name = "${snowflake_database.apache_flink.name}.${snowflake_schema.apache_flink_schema.name}"
+    schema_name = "${snowflake_database.tableflow.name}.${snowflake_schema.tableflow_schema.name}"
   }
 }
 
