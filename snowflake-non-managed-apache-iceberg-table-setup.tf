@@ -17,7 +17,7 @@ resource "snowflake_database" "tableflow" {
   name = upper(local.secrets_insert)
 }
 
-resource "snowflake_schema" "tableflow_schema" {
+resource "snowflake_schema" "tableflow" {
   name       = upper(local.secrets_insert)
   database   = snowflake_database.tableflow.name
 
@@ -37,7 +37,7 @@ resource "snowflake_storage_integration" "aws_s3_integration" {
   type                      = "EXTERNAL_STAGE"
 
   depends_on = [ 
-    snowflake_schema.tableflow_schema 
+    snowflake_schema.tableflow 
   ]
 }
 
@@ -45,7 +45,7 @@ resource "snowflake_stage" "stock_trades" {
   name                = upper("stock_trades_stage")
   url                 = "s3://${local.secrets_insert}/warehouse/trades.db/stock_trades/data/"
   database            = snowflake_database.tableflow.name
-  schema              = snowflake_schema.tableflow_schema.name
+  schema              = snowflake_schema.tableflow.name
   storage_integration = snowflake_storage_integration.aws_s3_integration.name
   provider            = snowflake.account_admin
 
@@ -57,10 +57,10 @@ resource "snowflake_stage" "stock_trades" {
 resource "snowflake_external_table" "stock_trades" {
   provider    = snowflake.account_admin
   database    = snowflake_database.tableflow.name
-  schema      = snowflake_schema.tableflow_schema.name
+  schema      = snowflake_schema.tableflow.name
   name        = upper("stock_trades")
   file_format = "TYPE = 'PARQUET'"
-  location    = "@${snowflake_database.tableflow.name}.${snowflake_schema.tableflow_schema.name}.${snowflake_stage.stock_trades.name}"
+  location    = "@${snowflake_database.tableflow.name}.${snowflake_schema.tableflow.name}.${snowflake_stage.stock_trades.name}"
   auto_refresh = true
 
   column {

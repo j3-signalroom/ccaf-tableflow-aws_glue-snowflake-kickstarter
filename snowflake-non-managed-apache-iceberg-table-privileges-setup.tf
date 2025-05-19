@@ -28,7 +28,7 @@ resource "snowflake_user" "user" {
   name              = upper(local.secrets_insert)
   default_warehouse = snowflake_warehouse.tableflow.name
   default_role      = snowflake_account_role.security_admin_role.name
-  default_namespace = "${snowflake_database.tableflow.name}.${snowflake_schema.tableflow_schema.name}"
+  default_namespace = "${snowflake_database.tableflow.name}.${snowflake_schema.tableflow.name}"
 
   # Setting the attributes to `null`, effectively unsets the attribute
   # Refer to this link `https://docs.snowflake.com/en/user-guide/key-pair-auth#configuring-key-pair-rotation`
@@ -91,7 +91,7 @@ resource "snowflake_grant_privileges_to_account_role" "schema" {
   privileges        = ["CREATE FILE FORMAT", "USAGE"]
   account_role_name = snowflake_account_role.account_admin_role.name
   on_schema {
-    schema_name = "${snowflake_database.tableflow.name}.${snowflake_schema.tableflow_schema.name}"
+    schema_name = "${snowflake_database.tableflow.name}.${snowflake_schema.tableflow.name}"
   }
 }
 
