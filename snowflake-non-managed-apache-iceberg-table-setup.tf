@@ -47,8 +47,7 @@ resource "snowflake_storage_integration" "aws_s3_integration" {
   type                      = "EXTERNAL_STAGE"
 
   depends_on = [
-    module.glue_s3_access_role,
-    module.snowflake_s3_access_role 
+    module.glue_s3_access_role
   ]
 }
 
@@ -61,7 +60,8 @@ resource "snowflake_stage" "stock_trades" {
   provider            = snowflake
 
   depends_on = [ 
-    snowflake_storage_integration.aws_s3_integration 
+    snowflake_storage_integration.aws_s3_integration,
+    module.snowflake_s3_access_role 
   ]
 }
 
