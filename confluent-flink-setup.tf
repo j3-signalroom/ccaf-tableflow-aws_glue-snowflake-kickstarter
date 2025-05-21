@@ -17,7 +17,7 @@ data "confluent_flink_region" "env" {
 
 # https://docs.confluent.io/cloud/current/flink/get-started/quick-start-cloud-console.html#step-1-create-a-af-compute-pool
 resource "confluent_flink_compute_pool" "env" {
-  display_name = "tableflow_flink__statement_runner"
+  display_name = "tableflow_flink_statement_runner"
   cloud        = local.cloud
   region       = var.aws_region
   max_cfu      = 10

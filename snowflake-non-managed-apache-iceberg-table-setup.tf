@@ -5,6 +5,13 @@ provider "snowflake" {
   user              = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["admin_user"]
   authenticator     = "SNOWFLAKE_JWT"
   private_key       = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["active_rsa_public_key_number"] == 1 ? data.aws_secretsmanager_secret_version.admin_private_key_1.secret_string : data.aws_secretsmanager_secret_version.admin_private_key_2.secret_string
+
+  # Enable preview features
+  preview_features_enabled = [
+    "snowflake_file_format_resource",
+    "snowflake_stage_resource",
+    "snowflake_external_table_resource"
+  ]
 }
 
 resource "snowflake_warehouse" "tableflow" {
@@ -47,7 +54,7 @@ resource "snowflake_stage" "stock_trades" {
   database            = snowflake_database.tableflow.name
   schema              = snowflake_schema.tableflow.name
   storage_integration = snowflake_storage_integration.aws_s3_integration.name
-  provider            = snowflake.account_admin
+  provider            = snowflake
 
   depends_on = [ 
     snowflake_storage_integration.aws_s3_integration 
@@ -55,7 +62,7 @@ resource "snowflake_stage" "stock_trades" {
 }
 
 resource "snowflake_external_table" "stock_trades" {
-  provider    = snowflake.account_admin
+  provider    = snowflake
   database    = snowflake_database.tableflow.name
   schema      = snowflake_schema.tableflow.name
   name        = upper("stock_trades")

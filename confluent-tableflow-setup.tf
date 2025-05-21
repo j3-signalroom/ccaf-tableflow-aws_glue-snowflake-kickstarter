@@ -1,4 +1,4 @@
-resource "confluent_provider_integration" "env" {
+resource "confluent_provider_integration" "tableflow" {
   environment {
     id = confluent_environment.env.id
   }
@@ -8,10 +8,10 @@ resource "confluent_provider_integration" "env" {
   display_name = "tableflow_aws_integration"
 }
 
-resource "confluent_role_binding" "app-manager-provider-integration-resource-owner" {
+resource "confluent_role_binding" "app_manager_provider_integration_resource_owner" {
   principal   = "User:${confluent_service_account.app_manager.id}"
   role_name   = "ResourceOwner"
-  crn_pattern = "${confluent_environment.env.resource_name}/provider-integration=${confluent_provider_integration.env.id}"
+  crn_pattern = "${confluent_environment.env.resource_name}/provider-integration=${confluent_provider_integration.tableflow.id}"
 }
 
 module "tableflow_api_key" {
@@ -52,10 +52,23 @@ resource "confluent_catalog_integration" "tableflow" {
   }
   display_name = "tableflow_aws_glue_catalog_sync"
   aws_glue {
-    provider_integration_id = confluent_provider_integration.env.id
+    provider_integration_id = confluent_provider_integration.tableflow.id
   }
   credentials {
     key    = module.tableflow_api_key.active_api_key.id
     secret = module.tableflow_api_key.active_api_key.secret
   }
+
+  depends_on = [ 
+    confluent_role_binding.app_manager_provider_integration_resource_owner,
+    module.s3_access_role
+  ]
+}
+
+module "s3_access_role" {
+  source                           = "./modules/iam_role_module"
+  s3_bucket_name                   = aws_s3_bucket.iceberg_bucket.bucket
+  provider_integration_role_arn    = confluent_provider_integration.tableflow.aws[0].iam_role_arn
+  provider_integration_external_id = confluent_provider_integration.tableflow.aws[0].external_id
+  customer_role_name               = local.snowflake_aws_role_name
 }

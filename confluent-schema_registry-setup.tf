@@ -1,7 +1,7 @@
 # Create the Service Account for the Kafka Cluster API
 resource "confluent_service_account" "schema_registry_cluster_api" {
-    display_name = "${local.secrets_insert}-environment-api"
-    description  = "Environment API Service Account"
+    display_name = "${local.secrets_insert}_schema_registry_cluster_api"
+    description  = "Tableflow Schema Registry Cluster API Service Account"
 }
 
 # Config the environment's schema registry

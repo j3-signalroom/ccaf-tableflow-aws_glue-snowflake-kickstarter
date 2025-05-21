@@ -16,17 +16,25 @@ resource "confluent_kafka_cluster" "kafka_cluster" {
 resource "confluent_service_account" "app_manager" {
   display_name = "tableflow_app_manager"
   description  = "Tableflow Kickstarter Service account to manage Kafka cluster"
+
+  depends_on = [ 
+    confluent_kafka_cluster.kafka_cluster 
+  ]
 }
 
 resource "confluent_role_binding" "app_manager_kafka_cluster_admin" {
   principal   = "User:${confluent_service_account.app_manager.id}"
   role_name   = "CloudClusterAdmin"
   crn_pattern = confluent_kafka_cluster.kafka_cluster.rbac_crn
+
+  depends_on = [ 
+    confluent_service_account.app_manager 
+  ]
 }
 
 # Creates the app_manager Kafka Cluster API Key Pairs, rotate them in accordance to a time schedule,
 # and provide the current acitve API Key Pair to use
-module "app_manager_kafka_api_key" {
+module "kafka_app_manager_api_key" {
   source = "github.com/j3-signalroom/iac-confluent-api_key_rotation-tf_module"
 
   #Required Input(s)
@@ -63,12 +71,13 @@ resource "confluent_kafka_topic" "stock_trades" {
   topic_name    = "stock_trades"
   rest_endpoint = confluent_kafka_cluster.kafka_cluster.rest_endpoint
   credentials {
-    key    = module.app_manager_kafka_api_key.active_api_key.id
-    secret = module.app_manager_kafka_api_key.active_api_key.secret
+    key    = module.kafka_app_manager_api_key.active_api_key.id
+    secret = module.kafka_app_manager_api_key.active_api_key.secret
   }
 
   depends_on = [ 
-    confluent_kafka_cluster.kafka_cluster 
+    confluent_role_binding.app_manager_kafka_cluster_admin,
+    module.kafka_app_manager_api_key 
   ]
 }
 
@@ -77,7 +86,7 @@ resource "confluent_service_account" "app_consumer" {
   description  = "Tableflow Kickstarter Service account to consume from 'stock_trades' topic of Kafka cluster"
 }
 
-module "app_consumer_kafka_api_key" {
+module "kafka_app_consumer_api_key" {
   source = "github.com/j3-signalroom/iac-confluent-api_key_rotation-tf_module"
 
   #Required Input(s)
@@ -119,8 +128,8 @@ resource "confluent_kafka_acl" "app_producer_write_on_topic" {
   permission    = "ALLOW"
   rest_endpoint = confluent_kafka_cluster.kafka_cluster.rest_endpoint
   credentials {
-    key    = module.app_manager_kafka_api_key.active_api_key.id
-    secret = module.app_manager_kafka_api_key.active_api_key.secret
+    key    = module.kafka_app_manager_api_key.active_api_key.id
+    secret = module.kafka_app_manager_api_key.active_api_key.secret
   }
 }
 
@@ -129,7 +138,7 @@ resource "confluent_service_account" "app_producer" {
   description  = "Tableflow Kickstarter Service account to produce to 'stock_trades' topic of Kafka cluster"
 }
 
-module "app_producer_kafka_api_key" {
+module "kafka_app_producer_api_key" {
   source = "github.com/j3-signalroom/iac-confluent-api_key_rotation-tf_module"
 
   #Required Input(s)
@@ -158,10 +167,25 @@ module "app_producer_kafka_api_key" {
   day_count                    = var.day_count
 }
 
-// Note that in order to consume from a topic, the principal of the consumer ('app_consumer' service account)
-// needs to be authorized to perform 'READ' operation on both Topic and Group resources:
-// confluent_kafka_acl.app_consumer_read_on_topic, confluent_kafka_acl.app_consumer_read_on_group.
-// https://docs.confluent.io/platform/current/kafka/authorization.html#using-acls
+
+resource "confluent_kafka_acl" "app_consumer_read_on_group" {
+  kafka_cluster {
+    id = confluent_kafka_cluster.kafka_cluster.id
+  }
+  resource_type = "GROUP"
+  resource_name = "tableflow_kickstarter"
+  pattern_type  = "LITERAL"
+  principal     = "User:${confluent_service_account.app_consumer.id}"
+  host          = "*"
+  operation     = "READ"
+  permission    = "ALLOW"
+  rest_endpoint = confluent_kafka_cluster.kafka_cluster.rest_endpoint
+  credentials {
+    key    = module.kafka_app_manager_api_key.active_api_key.id
+    secret = module.kafka_app_manager_api_key.active_api_key.secret
+  }
+}
+
 resource "confluent_kafka_acl" "app_consumer_read_on_topic" {
   kafka_cluster {
     id = confluent_kafka_cluster.kafka_cluster.id
@@ -175,30 +199,8 @@ resource "confluent_kafka_acl" "app_consumer_read_on_topic" {
   permission    = "ALLOW"
   rest_endpoint = confluent_kafka_cluster.kafka_cluster.rest_endpoint
   credentials {
-    key    = module.app_manager_kafka_api_key.active_api_key.id
-    secret = module.app_manager_kafka_api_key.active_api_key.secret
-  }
-}
-
-resource "confluent_kafka_acl" "app-consumer-read-on-group" {
-  kafka_cluster {
-    id = confluent_kafka_cluster.kafka_cluster.id
-  }
-  resource_type = "GROUP"
-  // The existing values of resource_name, pattern_type attributes are set up to match Confluent CLI's default consumer group ID ("confluent_cli_consumer_<uuid>").
-  // https://docs.confluent.io/confluent-cli/current/command-reference/kafka/topic/confluent_kafka_topic_consume.html
-  // Update the values of resource_name, pattern_type attributes to match your target consumer group ID.
-  // https://docs.confluent.io/platform/current/kafka/authorization.html#prefixed-acls
-  resource_name = "confluent_cli_consumer_"
-  pattern_type  = "PREFIXED"
-  principal     = "User:${confluent_service_account.app_consumer.id}"
-  host          = "*"
-  operation     = "READ"
-  permission    = "ALLOW"
-  rest_endpoint = confluent_kafka_cluster.kafka_cluster.rest_endpoint
-  credentials {
-    key    = module.app_manager_kafka_api_key.active_api_key.id
-    secret = module.app_manager_kafka_api_key.active_api_key.secret
+    key    = module.kafka_app_manager_api_key.active_api_key.id
+    secret = module.kafka_app_manager_api_key.active_api_key.secret
   }
 }
 
@@ -220,8 +222,8 @@ resource "confluent_kafka_acl" "app_connector_describe_on_cluster" {
   permission    = "ALLOW"
   rest_endpoint = confluent_kafka_cluster.kafka_cluster.rest_endpoint
   credentials {
-    key    = module.app_manager_kafka_api_key.active_api_key.id
-    secret = module.app_manager_kafka_api_key.active_api_key.secret
+    key    = module.kafka_app_manager_api_key.active_api_key.id
+    secret = module.kafka_app_manager_api_key.active_api_key.secret
   }
 }
 
@@ -238,8 +240,8 @@ resource "confluent_kafka_acl" "app_connector_write_on_target_topic" {
   permission    = "ALLOW"
   rest_endpoint = confluent_kafka_cluster.kafka_cluster.rest_endpoint
   credentials {
-    key    = module.app_manager_kafka_api_key.active_api_key.id
-    secret = module.app_manager_kafka_api_key.active_api_key.secret
+    key    = module.kafka_app_manager_api_key.active_api_key.id
+    secret = module.kafka_app_manager_api_key.active_api_key.secret
   }
 }
 
@@ -248,20 +250,16 @@ resource "confluent_kafka_acl" "app_connector_create_on_data_preview_topics" {
     id = confluent_kafka_cluster.kafka_cluster.id
   }
   resource_type = "TOPIC"
-  // The existing values of resource_name, pattern_type attributes are set up to match Confluent CLI's default consumer group ID ("confluent_cli_consumer_<uuid>").
-  // https://docs.confluent.io/confluent-cli/current/command-reference/kafka/topic/confluent_kafka_topic_consume.html
-  // Update the values of resource_name, pattern_type attributes to match your target consumer group ID.
-  // https://docs.confluent.io/platform/current/kafka/authorization.html#prefixed-acls
-  resource_name = "confluent_cli_consumer_"
-  pattern_type  = "PREFIXED"
+  resource_name = "tableflow_kickstarter"
+  pattern_type  = "LITERAL"
   principal     = "User:${confluent_service_account.app_connector.id}"
   host          = "*"
   operation     = "CREATE"
   permission    = "ALLOW"
   rest_endpoint = confluent_kafka_cluster.kafka_cluster.rest_endpoint
   credentials {
-    key    = module.app_manager_kafka_api_key.active_api_key.id
-    secret = module.app_manager_kafka_api_key.active_api_key.secret
+    key    = module.kafka_app_manager_api_key.active_api_key.id
+    secret = module.kafka_app_manager_api_key.active_api_key.secret
   }
 }
 
@@ -270,20 +268,16 @@ resource "confluent_kafka_acl" "app_connector_write_on_data_preview_topics" {
     id = confluent_kafka_cluster.kafka_cluster.id
   }
   resource_type = "TOPIC"
-  // The existing values of resource_name, pattern_type attributes are set up to match Confluent CLI's default consumer group ID ("confluent_cli_consumer_<uuid>").
-  // https://docs.confluent.io/confluent-cli/current/command-reference/kafka/topic/confluent_kafka_topic_consume.html
-  // Update the values of resource_name, pattern_type attributes to match your target consumer group ID.
-  // https://docs.confluent.io/platform/current/kafka/authorization.html#prefixed-acls
-  resource_name = "confluent_cli_consumer_"
-  pattern_type  = "PREFIXED"
+  resource_name = "tableflow_kickstarter"
+  pattern_type  = "LITERAL"
   principal     = "User:${confluent_service_account.app_connector.id}"
   host          = "*"
   operation     = "WRITE"
   permission    = "ALLOW"
   rest_endpoint = confluent_kafka_cluster.kafka_cluster.rest_endpoint
   credentials {
-    key    = module.app_manager_kafka_api_key.active_api_key.id
-    secret = module.app_manager_kafka_api_key.active_api_key.secret
+    key    = module.kafka_app_manager_api_key.active_api_key.id
+    secret = module.kafka_app_manager_api_key.active_api_key.secret
   }
 }
 

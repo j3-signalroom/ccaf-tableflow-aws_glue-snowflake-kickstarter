@@ -22,7 +22,7 @@ resource "aws_iam_role" "snowflake_role" {
 }
 
 resource "aws_iam_policy" "snowflake_s3_access_policy" {
-  name = "TableflowSnowflakeS3AccessPolicy"
+  name = "tableflow_snowflake_s3_access_policy"
 
   policy = jsonencode({
     "Version": "2012-10-17",
