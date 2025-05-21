@@ -18,15 +18,19 @@ resource "snowflake_warehouse" "tableflow" {
   name           = upper(local.secrets_insert)
   warehouse_size = "xsmall"
   auto_suspend   = 60
+  provider       = snowflake
+  
 }
 
 resource "snowflake_database" "tableflow" {
-  name = upper(local.secrets_insert)
+  name     = upper(local.secrets_insert)
+  provider = snowflake
 }
 
 resource "snowflake_schema" "tableflow" {
   name       = upper(local.secrets_insert)
   database   = snowflake_database.tableflow.name
+  provider   = snowflake
 
   depends_on = [
     snowflake_database.tableflow
@@ -42,10 +46,6 @@ resource "snowflake_storage_integration" "aws_s3_integration" {
   storage_aws_role_arn      = local.snowflake_aws_role_arn
   enabled                   = true
   type                      = "EXTERNAL_STAGE"
-
-  depends_on = [ 
-    snowflake_schema.tableflow 
-  ]
 }
 
 resource "snowflake_stage" "stock_trades" {
