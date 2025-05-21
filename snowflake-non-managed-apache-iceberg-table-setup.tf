@@ -45,6 +45,10 @@ resource "snowflake_storage_integration" "aws_s3_integration" {
   storage_aws_role_arn      = local.snowflake_aws_role_arn
   enabled                   = true
   type                      = "EXTERNAL_STAGE"
+
+  depends_on = [ 
+    module.snowflake_s3_access_role 
+  ]
 }
 
 resource "snowflake_stage" "stock_trades" {
@@ -109,4 +113,11 @@ resource "snowflake_external_table" "stock_trades" {
     confluent_tableflow_topic.stock_trades,
     snowflake_stage.stock_trades
   ]
+}
+
+module "snowflake_s3_access_role" {
+  source                          = "./snowflake_s3_access_role_tf_module"
+  s3_bucket_arn                   = aws_s3_bucket.iceberg_bucket.arn
+  storage_integration_role_arn    = snowflake_storage_integration.aws_s3_integration.storage_aws_iam_user_arn
+  storage_integration_external_id = snowflake_storage_integration.aws_s3_integration.storage_aws_external_id
 }
