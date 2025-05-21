@@ -18,7 +18,7 @@ resource "aws_iam_role" "glue_role" {
 }
 
 resource "aws_iam_policy" "glue_s3_access_policy" {
-  name = "tableflow_glue_s3-access-policy"
+  name = "tableflow_glue_s3_access_policy"
 
   policy = jsonencode({
     "Version": "2012-10-17",
@@ -31,8 +31,7 @@ resource "aws_iam_policy" "glue_s3_access_policy" {
           "s3:ListBucket"
         ],
         "Resource": [
-          aws_s3_bucket.iceberg_bucket.arn,
-          "${aws_s3_bucket.iceberg_bucket.arn}/*"
+          "${var.s3_bucket_arn}/*"
         ]
       }
     ]

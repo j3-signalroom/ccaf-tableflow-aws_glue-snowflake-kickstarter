@@ -40,7 +40,7 @@ resource "aws_iam_policy" "snowflake_s3_access_policy" {
           "s3:ListMultipartUploadParts"
         ],
         "Resource": [          
-          "${var.s3_bucket_arn}/warehouse/*"
+          "${var.s3_bucket_arn}/*"
         ]
       },
         {

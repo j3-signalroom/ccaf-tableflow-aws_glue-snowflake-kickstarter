@@ -46,7 +46,8 @@ resource "snowflake_storage_integration" "aws_s3_integration" {
   enabled                   = true
   type                      = "EXTERNAL_STAGE"
 
-  depends_on = [ 
+  depends_on = [
+    module.glue_s3_access_role,
     module.snowflake_s3_access_role 
   ]
 }
@@ -113,6 +114,11 @@ resource "snowflake_external_table" "stock_trades" {
     confluent_tableflow_topic.stock_trades,
     snowflake_stage.stock_trades
   ]
+}
+
+module "glue_s3_access_role" {
+  source                          = "./glue_s3_access_role_tf_module"
+  s3_bucket_arn                   = aws_s3_bucket.iceberg_bucket.arn
 }
 
 module "snowflake_s3_access_role" {
