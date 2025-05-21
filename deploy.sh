@@ -2,12 +2,12 @@
 
 #
 # *** Script Syntax ***
-# deploy-terraform-locally.sh <create | delete> --profile=<SSO-PROFILE-NAME>
-#                                               --confluent_api_key=<CONFLUENT-API-KEY>
-#                                               --confluent_api_secret=<CONFLUENT-API-SECRET>
-#                                               --snowflake_warehouse=<SNOWFLAKE-WAREHOUSE>
-#                                               --day_count=<DAY-COUNT>
-#                                               --auto-offset-reset=<earliest | latest>
+# deploy.sh <create | delete> --profile=<SSO-PROFILE-NAME>
+#                             --confluent_api_key=<CONFLUENT-API-KEY>
+#                             --confluent_api_secret=<CONFLUENT-API-SECRET>
+#                             --snowflake_warehouse=<SNOWFLAKE-WAREHOUSE>
+#                             --day_count=<DAY-COUNT>
+#                             --auto-offset-reset=<earliest | latest>
 #
 #
 

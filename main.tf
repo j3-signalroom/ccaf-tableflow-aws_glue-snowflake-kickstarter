@@ -7,22 +7,18 @@ terraform {
         }
   }
 
-  # Using the "pessimistic constraint operators" for all the Providers to ensure
-  # that the provider version is compatible with the configuration.  Meaning
-  # only patch-level updates are allowed but minor-level and major-level 
-  # updates of the Providers are not allowed
   required_providers {
         confluent = {
             source  = "confluentinc/confluent"
-            version = "~> 2.28.0"
+            version = "2.29.0"
         }
         aws = {
             source  = "hashicorp/aws"
-            version = "~> 5.97.0"
+            version = "5.98.0"
         }
         snowflake = {
             source = "snowflakedb/snowflake"
-            version = "~> 2.1.0"
+            version = "2.1.0"
         }
     }
 }

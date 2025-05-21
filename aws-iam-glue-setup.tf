@@ -18,7 +18,7 @@ resource "aws_iam_role" "glue_role" {
 }
 
 resource "aws_iam_policy" "glue_s3_access_policy" {
-  name = "TableflowGlueS3AccessPolicy"
+  name = "tableflow_glue_s3-access-policy"
 
   policy = jsonencode({
     "Version": "2012-10-17",
