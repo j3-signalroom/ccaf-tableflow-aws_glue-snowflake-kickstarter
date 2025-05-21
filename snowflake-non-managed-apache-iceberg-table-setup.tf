@@ -19,7 +19,6 @@ resource "snowflake_warehouse" "tableflow" {
   warehouse_size = "xsmall"
   auto_suspend   = 60
   provider       = snowflake
-  
 }
 
 resource "snowflake_database" "tableflow" {
@@ -106,7 +105,8 @@ resource "snowflake_external_table" "stock_trades" {
     type = "VARCHAR"
   }
 
-  depends_on = [ 
+  depends_on = [
+    confluent_tableflow_topic.stock_trades,
     snowflake_stage.stock_trades
   ]
 }

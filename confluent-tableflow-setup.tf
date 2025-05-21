@@ -61,14 +61,39 @@ resource "confluent_catalog_integration" "tableflow" {
 
   depends_on = [ 
     confluent_role_binding.app_manager_provider_integration_resource_owner,
-    module.s3_access_role
+    module.tableflow_s3_access_role
   ]
 }
 
-module "s3_access_role" {
-  source                           = "./modules/iam_role_module"
+module "tableflow_s3_access_role" {
+  source                           = "./tableflow_s3_access_role_tf_module"
   s3_bucket_name                   = aws_s3_bucket.iceberg_bucket.bucket
   provider_integration_role_arn    = confluent_provider_integration.tableflow.aws[0].iam_role_arn
   provider_integration_external_id = confluent_provider_integration.tableflow.aws[0].external_id
   customer_role_name               = local.snowflake_aws_role_name
+}
+
+resource "confluent_tableflow_topic" "stock_trades" {
+  environment {
+    id = confluent_environment.env.id
+  }
+  kafka_cluster {
+    id = confluent_kafka_cluster.kafka_cluster.id
+  }
+  display_name = confluent_kafka_topic.stock_trades.topic_name
+
+  byob_aws {
+    bucket_name             = aws_s3_bucket.iceberg_bucket.bucket
+    provider_integration_id = confluent_provider_integration.tableflow.id
+  }
+
+  credentials {
+    key    = module.tableflow_api_key.active_api_key.id
+    secret = module.tableflow_api_key.active_api_key.secret
+  }
+
+  depends_on = [
+    module.tableflow_s3_access_role,
+    confluent_connector.source
+  ]
 }
