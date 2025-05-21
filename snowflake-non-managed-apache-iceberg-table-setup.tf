@@ -19,7 +19,6 @@ resource "snowflake_warehouse" "tableflow" {
   warehouse_size = "xsmall"
   auto_suspend   = 60
   provider       = snowflake
-  
 }
 
 resource "snowflake_database" "tableflow" {
@@ -46,6 +45,11 @@ resource "snowflake_storage_integration" "aws_s3_integration" {
   storage_aws_role_arn      = local.snowflake_aws_role_arn
   enabled                   = true
   type                      = "EXTERNAL_STAGE"
+
+  depends_on = [
+    module.glue_s3_access_role,
+    module.snowflake_s3_access_role 
+  ]
 }
 
 resource "snowflake_stage" "stock_trades" {
@@ -106,7 +110,20 @@ resource "snowflake_external_table" "stock_trades" {
     type = "VARCHAR"
   }
 
-  depends_on = [ 
+  depends_on = [
+    confluent_tableflow_topic.stock_trades,
     snowflake_stage.stock_trades
   ]
+}
+
+module "glue_s3_access_role" {
+  source                          = "./glue_s3_access_role_tf_module"
+  s3_bucket_arn                   = aws_s3_bucket.iceberg_bucket.arn
+}
+
+module "snowflake_s3_access_role" {
+  source                          = "./snowflake_s3_access_role_tf_module"
+  s3_bucket_arn                   = aws_s3_bucket.iceberg_bucket.arn
+  storage_integration_role_arn    = snowflake_storage_integration.aws_s3_integration.storage_aws_iam_user_arn
+  storage_integration_external_id = snowflake_storage_integration.aws_s3_integration.storage_aws_external_id
 }

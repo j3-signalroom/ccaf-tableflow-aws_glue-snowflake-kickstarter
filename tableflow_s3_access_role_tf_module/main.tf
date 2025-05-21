@@ -1,5 +1,5 @@
 # https://docs.confluent.io/cloud/current/connectors/provider-integration/index.html
-resource "aws_iam_role" "s3_access_role" {
+resource "aws_iam_role" "tableflow_s3_access_role" {
   name        = var.customer_role_name
   description = "IAM role for accessing S3 with a trust policy for Confluent Tableflow"
 
@@ -62,6 +62,6 @@ resource "aws_iam_policy" "s3_access_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "s3_policy_attachment" {
-  role       = aws_iam_role.s3_access_role.name
+  role       = aws_iam_role.tableflow_s3_access_role.name
   policy_arn = aws_iam_policy.s3_access_policy.arn
 }

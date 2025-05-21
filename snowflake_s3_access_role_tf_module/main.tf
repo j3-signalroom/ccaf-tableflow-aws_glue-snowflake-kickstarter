@@ -9,11 +9,11 @@ resource "aws_iam_role" "snowflake_role" {
         "Effect": "Allow",
         "Action": "sts:AssumeRole",
         "Principal": {
-          "AWS": snowflake_storage_integration.aws_s3_integration.storage_aws_iam_user_arn
+          "AWS": var.storage_integration_role_arn
         }
         "Condition" : {
           "StringEquals" : {
-            "sts:ExternalId" : snowflake_storage_integration.aws_s3_integration.storage_aws_external_id
+            "sts:ExternalId" : var.storage_integration_external_id
           }
         }
       }
@@ -40,7 +40,7 @@ resource "aws_iam_policy" "snowflake_s3_access_policy" {
           "s3:ListMultipartUploadParts"
         ],
         "Resource": [          
-          "${aws_s3_bucket.iceberg_bucket.arn}/warehouse/*"
+          "${var.s3_bucket_arn}/*"
         ]
       },
         {
@@ -50,7 +50,7 @@ resource "aws_iam_policy" "snowflake_s3_access_policy" {
                 "s3:ListBucketMultipartUploads",
                 "s3:ListBucket"
             ],
-            "Resource": aws_s3_bucket.iceberg_bucket.arn,
+            "Resource": var.s3_bucket_arn,
             "Condition": {
                 "StringLike": {
                     "s3:prefix": [
