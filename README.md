@@ -57,13 +57,13 @@ Install the [Terraform CLI](https://developer.hashicorp.com/terraform/tutorials
 Then run the following command to set up the Terraform configuration locally. This command will create a Confluent Cloud environment with a Kafka Cluster configured for Tableflow, AWS Secrets Manager, an AWS S3 bucket with a `warehouse` folder, AWS Glue Data Catalog, and Snowflake Database:
 
 ```bash
-deploy-terraform-locally.sh <create | delete> --profile=<SSO_PROFILE_NAME> \
-                                              --confluent-api-key=<CONFLUENT_API_KEY> \
-                                              --confluent-api-secret=<CONFLUENT_API_SECRET> \
-                                              --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> \
-                                              --day-count=<DAY_COUNT> \
-                                              --auto-offset-reset=<earliest | latest> \
-                                              --number-of-api-keys-to-retain=<NUMBER_OF_API_KEYS_TO_RETAIN>
+deploy.sh <create | delete> --profile=<SSO_PROFILE_NAME> \
+                            --confluent-api-key=<CONFLUENT_API_KEY> \
+                            --confluent-api-secret=<CONFLUENT_API_SECRET> \
+                            --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> \
+                            --day-count=<DAY_COUNT> \
+                            --auto-offset-reset=<earliest | latest> \
+                            --number-of-api-keys-to-retain=<NUMBER_OF_API_KEYS_TO_RETAIN>
 ```
 > Argument placeholder|Replace with
 > -|-
@@ -75,7 +75,7 @@ deploy-terraform-locally.sh <create | delete> --profile=<SSO_PROFILE_NAME> \
 > `<AUTO_OFFSET_RESET>`|Use `earliest`, when you want to read the first event in a Kafka topic.  Otherwise, specify `latest`.
 > `<NUMBER_OF_API_KEYS_TO_RETAIN>`|Specifies the number of API keys to create and retain.
 
-To learn more about this script, click [here](.blog/deploy-terraform-locally-script-explanation.md).
+To learn more about this script, click [here](.blog/deploy-script-explanation.md).
 
 ### 1.2 Visualizing the Terraform Configuration
 Below is the Terraform visualization of the Terraform configuration. It shows the resources and their dependencies, making the infrastructure setup easier to understand.
