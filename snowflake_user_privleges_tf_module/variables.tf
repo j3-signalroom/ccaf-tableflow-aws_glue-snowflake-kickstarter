@@ -97,3 +97,14 @@ variable "aws_log_retention_in_days" {
         error_message = "AWS Log Retention in Days, `aws_log_retention_in_days`, must be 1 up to a maximum value of 900."
     }
 }
+
+variable "active_rsa_public_key_number" {
+    description = "The active RSA public key number."
+    type        = number
+    default     = 1
+    
+    validation {
+        condition     = var.active_rsa_public_key_number >= 1 && var.active_rsa_public_key_number <= 2
+        error_message = "Active RSA public key number, `active_rsa_public_key_number`, must be 1 or 2."
+    }
+}

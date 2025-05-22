@@ -60,10 +60,10 @@ output "account_admin_role_name" {
 
 output "rsa_public_key_1" {
   description = "The first RSA public key."
-  value       = jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_1"]
+  value       = local.rsa_public_key_1
 }
 
 output "rsa_public_key_2" {
   description = "The second RSA public key."
-  value       = jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_2"]
+  value       = local.rsa_public_key_2
 }

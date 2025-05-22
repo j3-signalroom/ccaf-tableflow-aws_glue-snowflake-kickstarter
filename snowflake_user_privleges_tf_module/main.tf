@@ -13,6 +13,24 @@ resource "snowflake_account_role" "security_admin_role" {
   name     = "${upper(var.secrets_insert)}_ROLE"
 }
 
+resource "snowflake_user" "user" {
+  provider          = snowflake.security_admin
+  name              = var.user_name
+  default_warehouse = var.warehouse_name
+  default_role      = snowflake_account_role.security_admin_role.name
+  default_namespace = "${var.database_name}.${var.schema_name}"
+
+  # Setting the attributes to `null`, effectively unsets the attribute
+  # Refer to this link `https://docs.snowflake.com/en/user-guide/key-pair-auth#configuring-key-pair-rotation`
+  # for more information
+  rsa_public_key    = var.active_rsa_public_key_number == 1 ? local.rsa_public_key_1 : null
+  rsa_public_key_2  = var.active_rsa_public_key_number == 2 ? local.rsa_public_key_2 : null
+
+  depends_on = [ 
+    snowflake_account_role.security_admin_role
+  ]
+}
+
 resource "snowflake_grant_privileges_to_account_role" "warehouse" {
   provider          = snowflake.security_admin
   privileges        = ["USAGE"]
@@ -34,7 +52,7 @@ resource "snowflake_grant_privileges_to_account_role" "user" {
     object_name = var.user_name
   }
 
-  depends_on = [ snowflake_account_role.security_admin_role ]
+  depends_on = [ snowflake_user.user ]
 }
 
 resource "snowflake_grant_account_role" "user_security_admin" {
@@ -105,5 +123,5 @@ resource "snowflake_grant_account_role" "user_account_admin" {
   role_name = snowflake_account_role.account_admin_role.name
   user_name = var.user_name
 
-  depends_on = [ snowflake_account_role.account_admin_role ]
+  depends_on = [ snowflake_user.user ]
 }

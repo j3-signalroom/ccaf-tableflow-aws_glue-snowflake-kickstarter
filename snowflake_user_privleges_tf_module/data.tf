@@ -51,3 +51,8 @@ data "aws_secretsmanager_secret" "svc_public_keys" {
 data "aws_secretsmanager_secret_version" "svc_public_keys" {
   secret_id = data.aws_secretsmanager_secret.svc_public_keys.id
 }
+
+locals {
+  rsa_public_key_1 = jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_1"]
+  rsa_public_key_2 = jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_2"]
+}
