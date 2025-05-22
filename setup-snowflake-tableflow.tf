@@ -31,6 +31,8 @@ module "snowflake_user_rsa_key_pairs_rotation" {
     aws_lambda_memory_size    = var.aws_lambda_memory_size
     aws_lambda_timeout        = var.aws_lambda_timeout
     aws_log_retention_in_days = var.aws_log_retention_in_days
+
+    depends_on = [ module.snowflake_s3_access_role ]
 }
 
 module "glue_s3_access_role" {
@@ -130,7 +132,7 @@ resource "snowflake_schema" "tableflow" {
 resource "snowflake_storage_integration" "aws_s3_integration" {
   provider                  = snowflake.account_admin
   name                      = module.snowflake_tableflow_privleges.aws_s3_integration_name
-  storage_allowed_locations = ["s3://${local.secrets_insert}/"]
+  storage_allowed_locations = ["s3://${local.secrets_insert}/10010010/10110010/${data.confluent_organization.signalroom.id}/${confluent_environment.tableflow_kickstarter.id}/${confluent_kafka_cluster.kafka_cluster.id}/"]
   storage_provider          = "S3"
   storage_aws_object_acl    = "bucket-owner-full-control"
   storage_aws_role_arn      = local.snowflake_aws_role_arn
@@ -144,7 +146,7 @@ resource "snowflake_storage_integration" "aws_s3_integration" {
 
 resource "snowflake_stage" "stock_trades" {
   name                = upper("stock_trades_stage")
-  url                 = "s3://${local.secrets_insert}/10010010/10110010/${data.confluent_organization.signalroom.id}/v1/${confluent_environment.tableflow_kickstarter.id}/"
+  url                 = "s3://${local.secrets_insert}/10010010/10110010/${data.confluent_organization.signalroom.id}/${confluent_environment.tableflow_kickstarter.id}/${confluent_kafka_cluster.kafka_cluster.id}/v1/${confluent_tableflow_topic.stock_trades.id}/data/"
   database            = module.snowflake_tableflow_privleges.database_name
   schema              = module.snowflake_tableflow_privleges.schema_name 
   storage_integration = module.snowflake_tableflow_privleges.aws_s3_integration_name
