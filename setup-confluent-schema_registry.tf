@@ -7,7 +7,7 @@ resource "confluent_service_account" "schema_registry_cluster_api" {
 # Config the environment's schema registry
 data "confluent_schema_registry_cluster" "env" {
   environment {
-    id = confluent_environment.env.id
+    id = confluent_environment.tableflow_kickstarter.id
   }
 
   depends_on = [
@@ -34,7 +34,7 @@ module "schema_registry_cluster_api_key_rotation" {
         kind        = data.confluent_schema_registry_cluster.env.kind
 
         environment = {
-            id = confluent_environment.env.id
+            id = confluent_environment.tableflow_kickstarter.id
         }
     }
 

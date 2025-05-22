@@ -6,13 +6,31 @@ module "snowflake_tableflow_privleges" {
   warehouse_name                 = upper(local.secrets_insert)
   database_name                  = upper(local.secrets_insert)
   schema_name                    = upper(local.secrets_insert)
-  aws_s3_integration_name        = "${upper(local.secrets_insert)}_AWS_S3_STORAGE_INTEGRATION"
+  aws_s3_integration_name        = "${upper(local.secrets_insert)}_STORAGE_INTEGRATION"
   aws_region                     = var.aws_region
   aws_account_id                 = var.aws_account_id
   day_count                      = var.day_count
   aws_lambda_memory_size         = var.aws_lambda_memory_size
   aws_lambda_timeout             = var.aws_lambda_timeout
   aws_log_retention_in_days      = var.aws_log_retention_in_days
+}
+
+# Create the Snowflake user RSA keys pairs
+module "snowflake_user_rsa_key_pairs_rotation" {   
+    source  = "github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module"
+
+    # Required Input(s)
+    aws_region           = var.aws_region
+    aws_account_id       = var.aws_account_id
+    snowflake_account    = module.snowflake_tableflow_privleges.provider_snowflake_account
+    service_account_user = local.secrets_insert
+
+    # Optional Input(s)
+    secret_insert             = local.secrets_insert
+    day_count                 = var.day_count
+    aws_lambda_memory_size    = var.aws_lambda_memory_size
+    aws_lambda_timeout        = var.aws_lambda_timeout
+    aws_log_retention_in_days = var.aws_log_retention_in_days
 }
 
 module "glue_s3_access_role" {
@@ -72,14 +90,19 @@ resource "snowflake_user" "user" {
   provider          = snowflake.security_admin
   name              = module.snowflake_tableflow_privleges.user_name
   default_warehouse = module.snowflake_tableflow_privleges.warehouse_name
-  default_role      = snowflake_account_role.security_admin_role.name
+  default_role      = module.snowflake_tableflow_privleges.account_admin_role_name
   default_namespace = "${module.snowflake_tableflow_privleges.database_name}.${module.snowflake_tableflow_privleges.schema_name}"
 
   # Setting the attributes to `null`, effectively unsets the attribute
   # Refer to this link `https://docs.snowflake.com/en/user-guide/key-pair-auth#configuring-key-pair-rotation`
   # for more information
-  rsa_public_key    = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1 ? jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_1"] : null
-  rsa_public_key_2  = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 2 ? jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_2"] : null
+  rsa_public_key    = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1 ? module.snowflake_tableflow_privleges.rsa_public_key_1 : null
+  rsa_public_key_2  = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 2 ? module.snowflake_tableflow_privleges.rsa_public_key_2 : null
+
+  depends_on = [ 
+    module.snowflake_tableflow_privleges,
+    module.snowflake_user_rsa_key_pairs_rotation 
+  ]
 }
 
 resource "snowflake_warehouse" "tableflow" {
@@ -106,8 +129,8 @@ resource "snowflake_schema" "tableflow" {
 
 resource "snowflake_storage_integration" "aws_s3_integration" {
   provider                  = snowflake.account_admin
-  name                      = "AWS_S3_STORAGE_INTEGRATION"
-  storage_allowed_locations = ["s3://${local.secrets_insert}/warehouse/"]
+  name                      = module.snowflake_tableflow_privleges.aws_s3_integration_name
+  storage_allowed_locations = ["s3://${local.secrets_insert}/"]
   storage_provider          = "S3"
   storage_aws_object_acl    = "bucket-owner-full-control"
   storage_aws_role_arn      = local.snowflake_aws_role_arn
@@ -121,7 +144,7 @@ resource "snowflake_storage_integration" "aws_s3_integration" {
 
 resource "snowflake_stage" "stock_trades" {
   name                = upper("stock_trades_stage")
-  url                 = "s3://${local.secrets_insert}/warehouse/trades.db/stock_trades/data/"
+  url                 = "s3://${local.secrets_insert}/10010010/10110010/${data.confluent_organization.signalroom.id}/v1/${confluent_environment.tableflow_kickstarter.id}/"
   database            = module.snowflake_tableflow_privleges.database_name
   schema              = module.snowflake_tableflow_privleges.schema_name 
   storage_integration = module.snowflake_tableflow_privleges.aws_s3_integration_name
