@@ -6,10 +6,10 @@ module "snowflake_user_rsa_key_pairs_rotation" {
     aws_region           = var.aws_region
     aws_account_id       = var.aws_account_id
     snowflake_account    = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"]
-    service_account_user = local.secrets_insert
+    service_account_user = var.secrets_insert
 
     # Optional Input(s)
-    secret_insert             = local.secrets_insert
+    secret_insert             = var.secrets_insert
     day_count                 = var.day_count
     aws_lambda_memory_size    = var.aws_lambda_memory_size
     aws_lambda_timeout        = var.aws_lambda_timeout
@@ -41,7 +41,7 @@ data "aws_secretsmanager_secret_version" "admin_private_key_2" {
 }
 
 data "aws_secretsmanager_secret" "svc_public_keys" {
-  name = local.snowflake_secrets_path_prefix
+  name = var.snowflake_secrets_path_prefix
 
   depends_on = [ 
     module.snowflake_user_rsa_key_pairs_rotation 

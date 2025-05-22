@@ -10,7 +10,7 @@ provider "snowflake" {
 
 resource "snowflake_account_role" "security_admin_role" {
   provider = snowflake.security_admin
-  name     = "${upper(local.secrets_insert)}_ROLE"
+  name     = "${upper(var.secrets_insert)}_ROLE"
 }
 
 resource "snowflake_grant_privileges_to_account_role" "warehouse" {
@@ -19,22 +19,8 @@ resource "snowflake_grant_privileges_to_account_role" "warehouse" {
   account_role_name = snowflake_account_role.security_admin_role.name
   on_account_object {
     object_type = "WAREHOUSE"
-    object_name = snowflake_warehouse.tableflow.name
+    object_name = var.warehouse_name
   }
-}
-
-resource "snowflake_user" "user" {
-  provider          = snowflake.security_admin
-  name              = upper(local.secrets_insert)
-  default_warehouse = snowflake_warehouse.tableflow.name
-  default_role      = snowflake_account_role.security_admin_role.name
-  default_namespace = "${snowflake_database.tableflow.name}.${snowflake_schema.tableflow.name}"
-
-  # Setting the attributes to `null`, effectively unsets the attribute
-  # Refer to this link `https://docs.snowflake.com/en/user-guide/key-pair-auth#configuring-key-pair-rotation`
-  # for more information
-  rsa_public_key    = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1 ? jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_1"] : null
-  rsa_public_key_2  = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 2 ? jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_2"] : null
 }
 
 resource "snowflake_grant_privileges_to_account_role" "user" {
@@ -79,7 +65,7 @@ resource "snowflake_grant_privileges_to_account_role" "database" {
   account_role_name = snowflake_account_role.account_admin_role.name
   on_account_object {
     object_type = "DATABASE"
-    object_name = snowflake_database.tableflow.name
+    object_name = var.database_name
   }
 }
 
@@ -88,7 +74,7 @@ resource "snowflake_grant_privileges_to_account_role" "schema" {
   privileges        = ["CREATE FILE FORMAT", "USAGE"]
   account_role_name = snowflake_account_role.account_admin_role.name
   on_schema {
-    schema_name = "${snowflake_database.tableflow.name}.${snowflake_schema.tableflow.name}"
+    schema_name = "${var.database_name}.${svar.schema_name}"
   }
 }
 
@@ -98,7 +84,7 @@ resource "snowflake_grant_privileges_to_account_role" "integration_grant" {
   account_role_name = snowflake_account_role.account_admin_role.name
   on_account_object {
     object_type = "INTEGRATION"
-    object_name = snowflake_storage_integration.aws_s3_integration.name
+    object_name = var.aws_s3_integration_name
   }
 }
 
