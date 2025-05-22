@@ -7,7 +7,7 @@ resource "confluent_service_account" "flink_sql_statements_runner" {
 resource "confluent_role_binding" "flink_sql_statements_runner_env_admin" {
   principal   = "User:${confluent_service_account.flink_sql_statements_runner.id}"
   role_name   = "EnvironmentAdmin"
-  crn_pattern = confluent_environment.env.resource_name
+  crn_pattern = confluent_environment.tableflow_kickstarter.resource_name
 }
 
 data "confluent_flink_region" "env" {
@@ -22,7 +22,7 @@ resource "confluent_flink_compute_pool" "env" {
   region       = var.aws_region
   max_cfu      = 10
   environment {
-    id = confluent_environment.env.id
+    id = confluent_environment.tableflow_kickstarter.id
   }
   depends_on = [
     confluent_role_binding.flink_sql_statements_runner_env_admin,
@@ -49,7 +49,7 @@ module "flink_api_key_rotation" {
         kind        = data.confluent_flink_region.env.kind
 
         environment = {
-            id = confluent_environment.env.id
+            id = confluent_environment.tableflow_kickstarter.id
         }
     }
 
@@ -77,12 +77,12 @@ resource "confluent_api_key" "flink_sql_statements_runner_api_key" {
     kind        = data.confluent_flink_region.env.kind
     
     environment {
-      id = confluent_environment.env.id
+      id = confluent_environment.tableflow_kickstarter.id
     }
   }
 
   depends_on = [
-    confluent_environment.env,
+    confluent_environment.tableflow_kickstarter,
     confluent_service_account.flink_sql_statements_runner
   ]
 }

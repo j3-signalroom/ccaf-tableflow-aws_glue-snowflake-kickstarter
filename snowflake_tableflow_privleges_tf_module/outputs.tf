@@ -24,15 +24,6 @@ output "aws_s3_integration_name" {
   value        = var.aws_s3_integration_name
 }
 
-output "security_admin_provider" {
-  description = "The Snowflake provider for the security admin role."
-  value       = provider.snowflake.security_admin
-}
-output "account_admin_provider" {
-  description = "The Snowflake provider for the account admin role."
-  value       = provider.snowflake.account_admin
-}
-
 output "provider_organization_name" {
   description = "The name of the organization."
   value       = "${split("-", jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"])[0]}"
@@ -43,6 +34,11 @@ output "provider_account_name" {
   value       = "${split("-", jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"])[1]}"
 }
 
+output "provider_snowflake_account" {
+  description = "The Snowflake account identifier."
+  value       = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"]
+}
+
 output "provider_user_name" {
   description = "The name of the user."
   value       = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["admin_user"]
@@ -51,4 +47,23 @@ output "provider_user_name" {
 output "provider_private_key" {
   description = "The private key for the user."
   value       = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["active_rsa_public_key_number"] == 1 ? data.aws_secretsmanager_secret_version.admin_private_key_1.secret_string : data.aws_secretsmanager_secret_version.admin_private_key_2.secret_string
+}
+
+output "security_admin_role_name" {
+  description = "The name of the security admin role."
+  value       = snowflake_account_role.security_admin_role.name
+}
+output "account_admin_role_name" {
+  description = "The name of the account admin role."
+  value       = snowflake_account_role.account_admin_role.name
+}
+
+output "rsa_public_key_1" {
+  description = "The first RSA public key."
+  value       = jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_1"]
+}
+
+output "rsa_public_key_2" {
+  description = "The second RSA public key."
+  value       = jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_2"]
 }

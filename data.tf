@@ -1,4 +1,3 @@
-
 locals {
   cloud                         = "AWS"
   secrets_insert                = "tableflow_kickstarter"
@@ -9,4 +8,4 @@ locals {
 }
 
 # Reference the Confluent Cloud
-data "confluent_organization" "env" {}
+data "confluent_organization" "signalroom" {}

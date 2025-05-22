@@ -21,6 +21,8 @@ resource "snowflake_grant_privileges_to_account_role" "warehouse" {
     object_type = "WAREHOUSE"
     object_name = var.warehouse_name
   }
+
+  depends_on = [ snowflake_account_role.security_admin_role ]
 }
 
 resource "snowflake_grant_privileges_to_account_role" "user" {
@@ -29,14 +31,18 @@ resource "snowflake_grant_privileges_to_account_role" "user" {
   account_role_name = snowflake_account_role.security_admin_role.name  
   on_account_object {
     object_type = "USER"
-    object_name = snowflake_user.user.name
+    object_name = var.user_name
   }
+
+  depends_on = [ snowflake_account_role.security_admin_role ]
 }
 
 resource "snowflake_grant_account_role" "user_security_admin" {
   provider  = snowflake.security_admin
   role_name = snowflake_account_role.security_admin_role.name
-  user_name = snowflake_user.user.name
+  user_name = var.user_name
+
+  depends_on = [ snowflake_account_role.security_admin_role ]
 }
 
 provider "snowflake" {
@@ -56,7 +62,7 @@ provider "snowflake" {
 
 resource "snowflake_account_role" "account_admin_role" {
   provider = snowflake.account_admin
-  name     = "${upper(local.secrets_insert)}_ACCOUNT_ADMIN_ROLE"
+  name     = "${upper(var.secrets_insert)}_ADMIN_ROLE"
 }
 
 resource "snowflake_grant_privileges_to_account_role" "database" {
@@ -67,6 +73,8 @@ resource "snowflake_grant_privileges_to_account_role" "database" {
     object_type = "DATABASE"
     object_name = var.database_name
   }
+
+  depends_on = [ snowflake_account_role.account_admin_role ]
 }
 
 resource "snowflake_grant_privileges_to_account_role" "schema" {
@@ -74,8 +82,10 @@ resource "snowflake_grant_privileges_to_account_role" "schema" {
   privileges        = ["CREATE FILE FORMAT", "USAGE"]
   account_role_name = snowflake_account_role.account_admin_role.name
   on_schema {
-    schema_name = "${var.database_name}.${svar.schema_name}"
+    schema_name = "${var.database_name}.${var.schema_name}"
   }
+
+  depends_on = [ snowflake_account_role.account_admin_role ]
 }
 
 resource "snowflake_grant_privileges_to_account_role" "integration_grant" {
@@ -86,10 +96,14 @@ resource "snowflake_grant_privileges_to_account_role" "integration_grant" {
     object_type = "INTEGRATION"
     object_name = var.aws_s3_integration_name
   }
+
+  depends_on = [ snowflake_account_role.account_admin_role ]
 }
 
 resource "snowflake_grant_account_role" "user_account_admin" {
   provider  = snowflake.account_admin
   role_name = snowflake_account_role.account_admin_role.name
-  user_name = snowflake_user.user.name
+  user_name = var.user_name
+
+  depends_on = [ snowflake_account_role.account_admin_role ]
 }

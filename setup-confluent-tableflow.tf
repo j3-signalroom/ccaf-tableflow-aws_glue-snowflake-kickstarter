@@ -1,6 +1,6 @@
 resource "confluent_provider_integration" "tableflow" {
   environment {
-    id = confluent_environment.env.id
+    id = confluent_environment.tableflow_kickstarter.id
   }
   aws {
     customer_role_arn = local.snowflake_aws_role_arn
@@ -11,7 +11,7 @@ resource "confluent_provider_integration" "tableflow" {
 resource "confluent_role_binding" "app_manager_provider_integration_resource_owner" {
   principal   = "User:${confluent_service_account.app_manager.id}"
   role_name   = "ResourceOwner"
-  crn_pattern = "${confluent_environment.env.resource_name}/provider-integration=${confluent_provider_integration.tableflow.id}"
+  crn_pattern = "${confluent_environment.tableflow_kickstarter.resource_name}/provider-integration=${confluent_provider_integration.tableflow.id}"
 }
 
 module "tableflow_api_key" {
@@ -30,7 +30,7 @@ module "tableflow_api_key" {
     kind        = "Tableflow"
 
     environment = {
-      id = confluent_environment.env.id
+      id = confluent_environment.tableflow_kickstarter.id
     }
   }
 
@@ -45,7 +45,7 @@ module "tableflow_api_key" {
 
 resource "confluent_catalog_integration" "tableflow" {
   environment {
-    id = confluent_environment.env.id
+    id = confluent_environment.tableflow_kickstarter.id
   }
   kafka_cluster {
     id = confluent_kafka_cluster.kafka_cluster.id
@@ -75,7 +75,7 @@ module "tableflow_s3_access_role" {
 
 resource "confluent_tableflow_topic" "stock_trades" {
   environment {
-    id = confluent_environment.env.id
+    id = confluent_environment.tableflow_kickstarter.id
   }
   kafka_cluster {
     id = confluent_kafka_cluster.kafka_cluster.id

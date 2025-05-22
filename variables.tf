@@ -58,17 +58,6 @@ variable "number_of_api_keys_to_retain" {
     }
 }
 
-variable "auto_offset_reset" {
-    description = "Specifies the behavior of the consumer when there is no committed position (which occurs when the group is first initialized) or when an offset is out of range. You can choose either to reset the position to the 'earliest' offset or the 'latest' offset (the default)."
-    type        = string
-    default     = "latest"
-    
-    validation {
-        condition     = contains(["earliest", "latest"], var.auto_offset_reset)
-        error_message = "The auto_offset_reset must be either 'earliest' or 'latest'."
-    }
-}
-
 variable "aws_lambda_memory_size" {
     description = "AWS Lambda allocates CPU power in proportion to the amount of memory configured. Memory is the amount of memory available to your Lambda function at runtime. You can increase or decrease the memory and CPU power allocated to your function using the Memory setting. You can configure memory between 128 MB and 10,240 MB in 1-MB increments. At 1,769 MB, a function has the equivalent of one vCPU (one vCPU-second of credits per second)."
     type = number

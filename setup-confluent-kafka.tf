@@ -7,7 +7,7 @@ resource "confluent_kafka_cluster" "kafka_cluster" {
   basic {}
 
   environment {
-    id = confluent_environment.env.id
+    id = confluent_environment.tableflow_kickstarter.id
   }
 }
 
@@ -50,7 +50,7 @@ module "kafka_app_manager_api_key" {
     kind        = confluent_kafka_cluster.kafka_cluster.kind
 
     environment = {
-      id = confluent_environment.env.id
+      id = confluent_environment.tableflow_kickstarter.id
     }
   }
 
@@ -102,7 +102,7 @@ module "kafka_app_consumer_api_key" {
     kind        = confluent_kafka_cluster.kafka_cluster.kind
 
     environment = {
-      id = confluent_environment.env.id
+      id = confluent_environment.tableflow_kickstarter.id
     }
   }
 
@@ -154,7 +154,7 @@ module "kafka_app_producer_api_key" {
     kind        = confluent_kafka_cluster.kafka_cluster.kind
 
     environment = {
-      id = confluent_environment.env.id
+      id = confluent_environment.tableflow_kickstarter.id
     }
   }
 
@@ -283,7 +283,7 @@ resource "confluent_kafka_acl" "app_connector_write_on_data_preview_topics" {
 
 resource "confluent_connector" "source" {
   environment {
-    id = confluent_environment.env.id
+    id = confluent_environment.tableflow_kickstarter.id
   }
   kafka_cluster {
     id = confluent_kafka_cluster.kafka_cluster.id
