@@ -61,10 +61,10 @@ resource "snowflake_account_role" "security_admin_role" {
 
 resource "snowflake_user" "user" {
   provider          = snowflake.security_admin
-  name              = upper(local.secrets_insert)
-  default_warehouse = upper(local.secrets_insert)
+  name              = local.user_name
+  default_warehouse = local.warehouse_name
   default_role      = snowflake_account_role.security_admin_role.name
-  default_namespace = "${upper(local.secrets_insert)}.${upper(local.secrets_insert)}"
+  default_namespace = "${local.database_name}.${local.schema_name}"
 
   # Setting the attributes to `null`, effectively unsets the attribute
   # Refer to this link `https://docs.snowflake.com/en/user-guide/key-pair-auth#configuring-key-pair-rotation`
@@ -228,8 +228,7 @@ resource "snowflake_grant_privileges_to_account_role" "integration_grant" {
 resource "snowflake_grant_account_role" "user_account_admin" {
   provider  = snowflake.account_admin
   role_name = snowflake_account_role.account_admin_role.name
-  user_name = upper(local.secrets_insert)
-
+  user_name = snowflake_user.user.name
   depends_on = [ 
     snowflake_user.user,
     snowflake_account_role.account_admin_role 
