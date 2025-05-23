@@ -1,18 +1,19 @@
-module "snowflake_user_privileges" {
-  source                         = "./snowflake_user_privileges_tf_module"
-  snowflake_secrets_path_prefix  = local.snowflake_secrets_path_prefix
-  secrets_insert                 = local.secrets_insert
-  user_name                      = upper(local.secrets_insert)
-  warehouse_name                 = upper(local.secrets_insert)
-  database_name                  = upper(local.secrets_insert)
-  schema_name                    = upper(local.secrets_insert)
-  aws_s3_integration_name        = "${upper(local.secrets_insert)}_STORAGE_INTEGRATION"
-  aws_region                     = var.aws_region
-  aws_account_id                 = var.aws_account_id
-  day_count                      = var.day_count
-  aws_lambda_memory_size         = var.aws_lambda_memory_size
-  aws_lambda_timeout             = var.aws_lambda_timeout
-  aws_log_retention_in_days      = var.aws_log_retention_in_days
+# Create the Snowflake user RSA keys pairs
+module "snowflake_user_rsa_key_pairs_rotation" {   
+    source  = "github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module"
+
+    # Required Input(s)
+    aws_region                = var.aws_region
+    aws_account_id            = var.aws_account_id
+    snowflake_account         = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"]
+    service_account_user      = local.secrets_insert
+
+    # Optional Input(s)
+    secret_insert             = local.secrets_insert
+    day_count                 = var.day_count
+    aws_lambda_memory_size    = var.aws_lambda_memory_size
+    aws_lambda_timeout        = var.aws_lambda_timeout
+    aws_log_retention_in_days = var.aws_log_retention_in_days
 }
 
 module "glue_s3_access_role" {
@@ -29,11 +30,11 @@ module "snowflake_s3_access_role" {
 
 provider "snowflake" {
   role              = "SYSADMIN"
-  organization_name = module.snowflake_user_privileges.provider_organization_name
-  account_name      = module.snowflake_user_privileges.provider_account_name
-  user              = module.snowflake_user_privileges.provider_user_name
-  authenticator     = module.snowflake_user_privileges.provider_authenticator
-  private_key       = module.snowflake_user_privileges.provider_private_key
+  organization_name = local.organization_name
+  account_name      = local.account_name
+  user              = local.admin_user
+  authenticator     = local.authenticator
+  private_key       = local.active_private_key
 
   # Enable preview features
   preview_features_enabled = [
@@ -46,21 +47,44 @@ provider "snowflake" {
 provider "snowflake" {
   alias             = "security_admin"
   role              = "SECURITYADMIN"
-  organization_name = module.snowflake_user_privileges.provider_organization_name
-  account_name      = module.snowflake_user_privileges.provider_account_name
-  user              = module.snowflake_user_privileges.provider_user_name
-  authenticator     = module.snowflake_user_privileges.provider_authenticator
-  private_key       = module.snowflake_user_privileges.provider_private_key
+  organization_name = local.organization_name
+  account_name      = local.account_name
+  user              = local.admin_user
+  authenticator     = local.authenticator
+  private_key       = local.active_private_key
+}
+
+resource "snowflake_account_role" "security_admin_role" {
+  provider = snowflake.security_admin
+  name     = "${upper(local.secrets_insert)}_ROLE"
+}
+
+resource "snowflake_user" "user" {
+  provider          = snowflake.security_admin
+  name              = upper(local.secrets_insert)
+  default_warehouse = upper(local.secrets_insert)
+  default_role      = snowflake_account_role.security_admin_role.name
+  default_namespace = "${upper(local.secrets_insert)}.${upper(local.secrets_insert)}"
+
+  # Setting the attributes to `null`, effectively unsets the attribute
+  # Refer to this link `https://docs.snowflake.com/en/user-guide/key-pair-auth#configuring-key-pair-rotation`
+  # for more information
+  rsa_public_key    = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1 ? local.rsa_public_key_1 : null
+  rsa_public_key_2  = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 2 ? local.rsa_public_key_2 : null
+
+  depends_on = [ 
+    snowflake_account_role.security_admin_role
+  ]
 }
 
 provider "snowflake" {
   alias             = "account_admin"
   role              = "ACCOUNTADMIN"
-  organization_name = module.snowflake_user_privileges.provider_organization_name
-  account_name      = module.snowflake_user_privileges.provider_account_name
-  user              = module.snowflake_user_privileges.provider_user_name
-  authenticator     = module.snowflake_user_privileges.provider_authenticator
-  private_key       = module.snowflake_user_privileges.provider_private_key
+  organization_name = local.organization_name
+  account_name      = local.account_name
+  user              = local.admin_user
+  authenticator     = local.authenticator
+  private_key       = local.active_private_key
 
   # Enable preview features
   preview_features_enabled = [
@@ -68,39 +92,112 @@ provider "snowflake" {
   ]
 }
 
+resource "snowflake_account_role" "account_admin_role" {
+  provider = snowflake.account_admin
+  name     = "${local.user_name}_ADMIN_ROLE"
+}
+
+resource "snowflake_grant_privileges_to_account_role" "user" {
+  provider          = snowflake.security_admin
+  privileges        = ["MONITOR"]
+  account_role_name = snowflake_account_role.security_admin_role.name  
+  on_account_object {
+    object_type = "USER"
+    object_name = local.user_name
+  }
+
+  depends_on = [ 
+    snowflake_user.user,
+    snowflake_account_role.security_admin_role 
+  ]
+}
+
+resource "snowflake_grant_account_role" "user_security_admin" {
+  provider  = snowflake.security_admin
+  role_name = snowflake_account_role.security_admin_role.name
+  user_name = local.user_name
+
+  depends_on = [ 
+    snowflake_user.user,
+    snowflake_account_role.security_admin_role 
+  ]
+}
+
 resource "snowflake_warehouse" "tableflow" {
-  name           = upper(local.secrets_insert)
+  name           = local.warehouse_name
   warehouse_size = "xsmall"
   auto_suspend   = 60
   provider       = snowflake
+}
 
-  depends_on = [ module.snowflake_user_privileges ]
+resource "snowflake_grant_privileges_to_account_role" "warehouse" {
+  provider          = snowflake.security_admin
+  privileges        = ["USAGE"]
+  account_role_name = snowflake_account_role.security_admin_role.name
+  on_account_object {
+    object_type = "WAREHOUSE"
+    object_name = local.warehouse_name
+  }
+
+  depends_on = [ 
+    snowflake_user.user,
+    snowflake_account_role.security_admin_role,
+    snowflake_warehouse.tableflow
+  ]
 }
 
 resource "snowflake_database" "tableflow" {
-  name     = upper(local.secrets_insert)
+  name     = local.database_name
   provider = snowflake
-
-  depends_on = [ snowflake_warehouse.tableflow ]
 }
 
-resource "snowflake_schema" "tableflow" {
-  name       = upper(local.secrets_insert)
-  database   = snowflake_database.tableflow.name
-  provider   = snowflake
+resource "snowflake_grant_privileges_to_account_role" "database" {
+  provider          = snowflake.account_admin
+  privileges        = ["USAGE"]
+  account_role_name = snowflake_account_role.account_admin_role.name
+  on_account_object {
+    object_type = "DATABASE"
+    object_name = snowflake_database.tableflow.name
+  }
 
-  depends_on = [
+  depends_on = [ 
+    snowflake_user.user,
+    snowflake_account_role.account_admin_role,
+    snowflake_warehouse.tableflow,
     snowflake_database.tableflow
   ]
 }
 
+resource "snowflake_schema" "tableflow" {
+  name       = local.schema_name
+  database   = snowflake_database.tableflow.name
+  provider   = snowflake
+}
+
+resource "snowflake_grant_privileges_to_account_role" "schema" {
+  provider          = snowflake.account_admin
+  privileges        = ["CREATE FILE FORMAT", "USAGE"]
+  account_role_name = snowflake_account_role.account_admin_role.name
+  on_schema {
+    schema_name = "${local.database_name}.${local.schema_name}"
+  }
+
+  depends_on = [ 
+    snowflake_user.user,
+    snowflake_account_role.account_admin_role,
+    snowflake_warehouse.tableflow,
+    snowflake_database.tableflow,
+    snowflake_schema.tableflow
+  ]
+}
+
 locals {
-  base_path = "s3://${local.secrets_insert}/10010010/10110010/${data.confluent_organization.signalroom.id}/${confluent_environment.tableflow_kickstarter.id}/${confluent_kafka_cluster.kafka_cluster.id}/v1/"
+  base_path = "s3://${local.secrets_insert}/101101/10110010/${data.confluent_organization.signalroom.id}/${confluent_environment.tableflow_kickstarter.id}/${confluent_kafka_cluster.kafka_cluster.id}/v1"
 }
 
 resource "snowflake_storage_integration" "aws_s3_integration" {
   provider                  = snowflake.account_admin
-  name                      = module.snowflake_user_privileges.aws_s3_integration_name
+  name                      = local.aws_s3_integration_name
   storage_allowed_locations = ["${local.base_path}"]
   storage_provider          = "S3"
   storage_aws_object_acl    = "bucket-owner-full-control"
@@ -112,16 +209,43 @@ resource "snowflake_storage_integration" "aws_s3_integration" {
     module.glue_s3_access_role
   ]
 }
+resource "snowflake_grant_privileges_to_account_role" "integration_grant" {
+  provider          = snowflake.account_admin
+  privileges        = ["USAGE"]
+  account_role_name = snowflake_account_role.account_admin_role.name
+  on_account_object {
+    object_type = "INTEGRATION"
+    object_name = local.aws_s3_integration_name
+  }
+
+  depends_on = [ 
+    snowflake_user.user,
+    snowflake_account_role.account_admin_role,
+    snowflake_storage_integration.aws_s3_integration
+  ]
+}
+
+resource "snowflake_grant_account_role" "user_account_admin" {
+  provider  = snowflake.account_admin
+  role_name = snowflake_account_role.account_admin_role.name
+  user_name = upper(local.secrets_insert)
+
+  depends_on = [ 
+    snowflake_user.user,
+    snowflake_account_role.account_admin_role 
+  ]
+}
 
 resource "snowflake_stage" "stock_trades" {
   provider            = snowflake
   name                = upper("stock_trades_stage")
   url                 = "${local.base_path}/${confluent_tableflow_topic.stock_trades.id}/data/"
-  database            = module.snowflake_user_privileges.database_name
-  schema              = module.snowflake_user_privileges.schema_name 
-  storage_integration = module.snowflake_user_privileges.aws_s3_integration_name
+  database            = local.database_name
+  schema              = local.schema_name 
+  storage_integration = local.aws_s3_integration_name
 
-  depends_on = [ 
+  depends_on = [
+    snowflake_schema.tableflow,
     snowflake_storage_integration.aws_s3_integration,
     module.snowflake_s3_access_role 
   ]
@@ -129,11 +253,11 @@ resource "snowflake_stage" "stock_trades" {
 
 resource "snowflake_external_table" "stock_trades" {
   provider    = snowflake
-  database    = module.snowflake_user_privileges.database_name
-  schema      = module.snowflake_user_privileges.schema_name
+  database    = local.database_name
+  schema      = local.schema_name
   name        = upper("stock_trades")
   file_format = "TYPE = 'PARQUET'"
-  location    = "@${module.snowflake_user_privileges.database_name}.${module.snowflake_user_privileges.schema_name}.${snowflake_stage.stock_trades.name}"
+  location    = "@${local.database_name}.${local.schema_name}.${snowflake_stage.stock_trades.name}"
   auto_refresh = true
 
   column {
@@ -171,9 +295,4 @@ resource "snowflake_external_table" "stock_trades" {
     name = "userid"
     type = "VARCHAR"
   }
-
-  depends_on = [
-    confluent_tableflow_topic.stock_trades,
-    snowflake_stage.stock_trades
-  ]
 }
