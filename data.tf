@@ -34,6 +34,8 @@ data "aws_secretsmanager_secret_version" "svc_public_keys" {
   secret_id = data.aws_secretsmanager_secret.svc_public_keys.id
 }
 
+data "confluent_organization" "signalroom" {}
+
 locals {
   rsa_public_key_1              = jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_1"]
   rsa_public_key_2              = jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_2"]
@@ -54,6 +56,3 @@ locals {
   database_name                 = "${upper(local.secrets_insert)}"
   schema_name                   = "${upper(local.secrets_insert)}"
 }
-
-# Reference the Confluent Cloud
-data "confluent_organization" "signalroom" {}
