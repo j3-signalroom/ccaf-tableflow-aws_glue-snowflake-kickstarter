@@ -20,10 +20,9 @@ The script helps you manage the lifecycle of Terraform-managed infrastructure re
 2. **Argument Parsing**:
    - Parses multiple required arguments, including:
      - `--profile`: The AWS SSO profile name.
-     - `--confluent-api-key` & `--confluent-api-secret`: The API key and secret for connecting to Confluent (likely for Kafka integration).
+     - `--confluent-api-key` and `--confluent-api-secret`: The API key and secret for connecting to Confluent (likely for Kafka integration).
      - `--snowflake-warehouse`: The Snowflake warehouse name.
      - `--day-count`: Number of days for some specific configuration.
-     - `--auto-offset-reset`: Kafka offset reset behavior (`earliest` or `latest`).
      - `--number-of-api-keys-to-retain`: Number of Confluent API keys to retain.
 
 3. **Validation Checks**:
@@ -55,17 +54,15 @@ deploy.sh <create | delete> --profile=<SSO_PROFILE_NAME> \
                             --confluent-api-secret=<CONFLUENT_API_SECRET> \
                             --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> \
                             --day-count=<DAY_COUNT> \
-                            --auto-offset-reset=<earliest | latest> \
                             --number-of-api-keys-to-retain=<NUMBER_OF_API_KEYS_TO_RETAIN>
 ```
 
 - **create**: Deploy infrastructure using Terraform.
 - **delete**: Remove infrastructure managed by Terraform.
 - `--profile=<SSO_PROFILE_NAME>`: The AWS SSO profile to use.
-- `--confluent-api-key` & `--confluent-api-secret`: Credentials for Confluent API.
+- `--confluent-api-key` and `--confluent-api-secret`: Credentials for Confluent API.
 - `--snowflake-warehouse`: The Snowflake warehouse to use.
 - `--day-count`: Number of days for some retention or lifecycle policy.
-- `--auto-offset-reset=<earliest | latest>`: Specify Kafka offset reset strategy.
 - `--number-of-api-keys-to-retain`: Specify the number of API keys to retain.
 
 ## 4.0 Summary
