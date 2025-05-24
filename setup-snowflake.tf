@@ -191,14 +191,22 @@ resource "snowflake_grant_privileges_to_account_role" "schema" {
   ]
 }
 
-locals {
-  base_path = "s3://${local.secrets_insert}/101101/10110010/${data.confluent_organization.signalroom.id}/${confluent_environment.tableflow_kickstarter.id}/${confluent_kafka_cluster.kafka_cluster.id}/v1"
+data "external" "topic_table_path" {
+  program = ["python3", "${path.module}/topic_table_path.py"]
+
+  query = {
+    kafka_topic_name = confluent_kafka_topic.stock_trades.name
+    kafka_cluster_id = confluent_kafka_cluster.kafka_cluster.id
+    environment_id = confluent_environment.tableflow_kickstarter.id
+    tableflow_api_key = module.tableflow_api_key.active_api_key.id
+    tableflow_api_secret = module.tableflow_api_key.active_api_key.secret
+  }
 }
 
 resource "snowflake_storage_integration" "aws_s3_integration" {
   provider                  = snowflake.account_admin
   name                      = local.aws_s3_integration_name
-  storage_allowed_locations = ["${local.base_path}"]
+  storage_allowed_locations = ["${data.external.topic_table_path.result["base_path"]}"]
   storage_provider          = "S3"
   storage_aws_object_acl    = "bucket-owner-full-control"
   storage_aws_role_arn      = local.snowflake_aws_role_arn
@@ -238,7 +246,7 @@ resource "snowflake_grant_account_role" "user_account_admin" {
 resource "snowflake_stage" "stock_trades" {
   provider            = snowflake
   name                = upper("stock_trades_stage")
-  url                 = "${local.base_path}/${confluent_tableflow_topic.stock_trades.id}/data/"
+  url                 = "${data.external.topic_table_path.result["table_path"]}/data/"
   database            = local.database_name
   schema              = local.schema_name 
   storage_integration = local.aws_s3_integration_name
