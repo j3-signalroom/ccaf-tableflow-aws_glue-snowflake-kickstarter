@@ -195,7 +195,7 @@ data "external" "topic_table_path" {
   program = ["python3", "${path.module}/topic_table_path.py"]
 
   query = {
-    kafka_topic_name = confluent_kafka_topic.stock_trades.name
+    kafka_topic_name = confluent_kafka_topic.stock_trades.topic_name
     kafka_cluster_id = confluent_kafka_cluster.kafka_cluster.id
     environment_id = confluent_environment.tableflow_kickstarter.id
     tableflow_api_key = module.tableflow_api_key.active_api_key.id
