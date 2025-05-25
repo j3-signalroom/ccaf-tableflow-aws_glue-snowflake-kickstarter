@@ -203,17 +203,26 @@ locals {
 # Perform a GET request to the Tableflow API to retrieve Tableflow info
 # from the enabled Tableflow Kafka Topic.
 data "http" "tableflow_topic" {
-  url = local.url
+  url    = local.url
+  method = "GET"
 
   request_headers = {
-    Authorization = "Bearer ${local.api_key}:${local.api_secret}"
+    Authorization = "Basic ${base64encode("${local.api_key}:${local.api_secret}")}"
     Accept        = "application/json"
   }
 }
 
-# Reference the Tableflow Topic's table_path and base_path from the response body.
+resource "null_resource" "after_tableflow_topic" {
+  triggers = {
+    response = data.http.tableflow_topic.response_body
+  }
+}
+
+# Local that now "depends on" the null-resource via its trigger to get the 
+# Tableflow Topic's table_path and base_path from the response body.
 locals {
-  topic_table_path = jsondecode(data.http.tableflow_topic.response_body)["spec"]["storage"]["table_path"]
+  response_body    = jsondecode(null_resource.after_tableflow_topic.triggers["response"])
+  topic_table_path = local.response_body["spec"]["storage"]["table_path"]
   part_before_v1   = split("/v1/", local.topic_table_path)
   base_path        = "${local.part_before_v1[0]}/v1/"
 }
