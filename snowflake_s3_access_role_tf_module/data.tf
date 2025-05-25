@@ -1,15 +1,31 @@
-data "aws_iam_policy_document" "snowflake_s3_policy" {
+data "aws_iam_policy_document" "snowflake_s3_initial_policy" {  
   statement {
     effect = "Allow"
     principals {
       type        = "AWS"
-      identifiers = [var.iam_user_arn]
+      identifiers = [var.snowflake_s3_role_arn]
     }
     actions = ["sts:AssumeRole"]
     condition {
       test     = "StringEquals"
       variable = "sts:ExternalId"
-      values   = [var.external_id]
+      values   = ["xxxxxxxxx"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "snowflake_s3_final_policy" {
+  statement {
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = [var.snowflake_s3_role_arn]
+    }
+    actions = ["sts:AssumeRole"]
+    condition {
+      test     = "StringEquals"
+      variable = "sts:ExternalId"
+      values   = [snowflake_storage_integration.aws_s3_integration.storage_aws_external_id]
     }
   }
 }
