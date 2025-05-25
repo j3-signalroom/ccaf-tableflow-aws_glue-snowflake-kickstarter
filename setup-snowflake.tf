@@ -230,7 +230,7 @@ resource "snowflake_storage_integration" "aws_s3_integration" {
 
   depends_on = [
     module.glue_s3_access_role,
-    data.data.http.tableflow_topic
+    data.http.tableflow_topic
   ]
 }
 resource "snowflake_grant_privileges_to_account_role" "integration_grant" {
@@ -271,7 +271,7 @@ resource "snowflake_stage" "stock_trades" {
     snowflake_schema.tableflow,
     snowflake_storage_integration.aws_s3_integration,
     module.snowflake_s3_access_role,
-    data.data.http.tableflow_topic
+    data.http.tableflow_topic
   ]
 }
 
