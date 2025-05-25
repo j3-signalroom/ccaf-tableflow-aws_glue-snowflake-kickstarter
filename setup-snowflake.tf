@@ -21,13 +21,6 @@ module "glue_s3_access_role" {
   s3_bucket_arn = aws_s3_bucket.iceberg_bucket.arn
 }
 
-module "snowflake_s3_access_role" {
-  source         = "./snowflake_s3_access_role_tf_module"
-  s3_bucket_arn  = aws_s3_bucket.iceberg_bucket.arn
-  iam_user_arn   = snowflake_storage_integration.aws_s3_integration.storage_aws_iam_user_arn
-  external_id    = snowflake_storage_integration.aws_s3_integration.storage_aws_external_id
-}
-
 provider "snowflake" {
   role              = "SYSADMIN"
   organization_name = local.organization_name
@@ -229,20 +222,17 @@ locals {
   base_path        = "${local.part_before_v1[0]}/v1/"
 }
 
-resource "snowflake_storage_integration" "aws_s3_integration" {
-  provider                  = snowflake.account_admin
-  name                      = local.aws_s3_integration_name
-  storage_allowed_locations = ["${local.base_path}"]
-  storage_provider          = "S3"
-  storage_aws_object_acl    = "bucket-owner-full-control"
-  storage_aws_role_arn      = local.snowflake_aws_role_arn
-  enabled                   = true
-  type                      = "EXTERNAL_STAGE"
-
-  depends_on = [
-    module.glue_s3_access_role,
-    data.http.tableflow_topic
-  ]
+module "snowflake_s3_access_role" {
+  source                  = "./snowflake_s3_access_role_tf_module"
+  s3_bucket_arn           = aws_s3_bucket.iceberg_bucket.arn
+  snowflake_s3_role_arn   = local.snowflake_aws_role_arn
+  aws_s3_integration_name = local.aws_s3_integration_name
+  base_path               = local.base_path
+  organization_name       = local.organization_name
+  account_name            = local.account_name
+  admin_user              = local.admin_user
+  authenticator           = local.authenticator
+  active_private_key      = local.active_private_key
 }
 
 resource "snowflake_grant_privileges_to_account_role" "integration_grant" {
@@ -257,7 +247,7 @@ resource "snowflake_grant_privileges_to_account_role" "integration_grant" {
   depends_on = [ 
     snowflake_user.user,
     snowflake_account_role.account_admin_role,
-    snowflake_storage_integration.aws_s3_integration
+    module.snowflake_s3_access_role
   ]
 }
 
@@ -280,8 +270,7 @@ resource "snowflake_stage" "stock_trades" {
   storage_integration = local.aws_s3_integration_name
 
   depends_on = [
-    snowflake_storage_integration.aws_s3_integration,
-    data.http.tableflow_topic
+    module.snowflake_s3_access_role
   ]
 }
 
