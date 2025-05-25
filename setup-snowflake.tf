@@ -1,31 +1,31 @@
 # Create the Snowflake user RSA keys pairs
 module "snowflake_user_rsa_key_pairs_rotation" {   
-    source  = "github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module"
+  source  = "github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module"
 
-    # Required Input(s)
-    aws_region                = var.aws_region
-    aws_account_id            = var.aws_account_id
-    snowflake_account         = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"]
-    service_account_user      = local.secrets_insert
+  # Required Input(s)
+  aws_region                = var.aws_region
+  aws_account_id            = var.aws_account_id
+  snowflake_account         = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"]
+  service_account_user      = local.secrets_insert
 
-    # Optional Input(s)
-    secret_insert             = local.secrets_insert
-    day_count                 = var.day_count
-    aws_lambda_memory_size    = var.aws_lambda_memory_size
-    aws_lambda_timeout        = var.aws_lambda_timeout
-    aws_log_retention_in_days = var.aws_log_retention_in_days
+  # Optional Input(s)
+  secret_insert             = local.secrets_insert
+  day_count                 = var.day_count
+  aws_lambda_memory_size    = var.aws_lambda_memory_size
+  aws_lambda_timeout        = var.aws_lambda_timeout
+  aws_log_retention_in_days = var.aws_log_retention_in_days
 }
 
 module "glue_s3_access_role" {
-  source                          = "./glue_s3_access_role_tf_module"
-  s3_bucket_arn                   = aws_s3_bucket.iceberg_bucket.arn
+  source        = "./glue_s3_access_role_tf_module"
+  s3_bucket_arn = aws_s3_bucket.iceberg_bucket.arn
 }
 
 module "snowflake_s3_access_role" {
-  source                          = "./snowflake_s3_access_role_tf_module"
-  s3_bucket_arn                   = aws_s3_bucket.iceberg_bucket.arn
-  storage_integration_role_arn    = snowflake_storage_integration.aws_s3_integration.storage_aws_iam_user_arn
-  storage_integration_external_id = snowflake_storage_integration.aws_s3_integration.storage_aws_external_id
+  source         = "./snowflake_s3_access_role_tf_module"
+  s3_bucket_arn  = aws_s3_bucket.iceberg_bucket.arn
+  iam_user_arn   = snowflake_storage_integration.aws_s3_integration.storage_aws_iam_user_arn
+  external_id    = snowflake_storage_integration.aws_s3_integration.storage_aws_external_id
 }
 
 provider "snowflake" {
@@ -212,6 +212,8 @@ data "http" "tableflow_topic" {
   }
 }
 
+# Ensure that the Tableflow Topic GET RESTful API call made before proceeding on to the
+# local variable declaration below.
 resource "null_resource" "after_tableflow_topic" {
   triggers = {
     response = data.http.tableflow_topic.response_body
@@ -242,6 +244,7 @@ resource "snowflake_storage_integration" "aws_s3_integration" {
     data.http.tableflow_topic
   ]
 }
+
 resource "snowflake_grant_privileges_to_account_role" "integration_grant" {
   provider          = snowflake.account_admin
   privileges        = ["USAGE"]
@@ -277,9 +280,7 @@ resource "snowflake_stage" "stock_trades" {
   storage_integration = local.aws_s3_integration_name
 
   depends_on = [
-    snowflake_schema.tableflow,
     snowflake_storage_integration.aws_s3_integration,
-    module.snowflake_s3_access_role,
     data.http.tableflow_topic
   ]
 }
@@ -328,4 +329,8 @@ resource "snowflake_external_table" "stock_trades" {
     name = "userid"
     type = "VARCHAR"
   }
+
+  depends_on = [
+    snowflake_stage.stock_trades
+  ]
 }
