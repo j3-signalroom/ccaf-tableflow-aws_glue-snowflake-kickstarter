@@ -197,7 +197,7 @@ locals {
   environment_id = confluent_environment.tableflow_kickstarter.id
   api_key        = module.tableflow_api_key.active_api_key.id
   api_secret     = module.tableflow_api_key.active_api_key.secret
-  url            = "https://api.confluent.cloud/tableflow/v1/tableflow-topics/${topic_name}?environment=${environment_id}&spec.kafka_cluster=${cluster_id}"
+  url            = "https://api.confluent.cloud/tableflow/v1/tableflow-topics/${local.topic_name}?environment=${local.environment_id}&spec.kafka_cluster=${local.cluster_id}"
 }
 
 # Perform a GET request to the Tableflow API to retrieve Tableflow info
