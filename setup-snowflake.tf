@@ -214,9 +214,9 @@ data "http" "tableflow_topic" {
 # Reference the Tableflow Topic's table_path and base_path from the response body.
 locals {
   topic_table_path = jsondecode(data.http.tableflow_topic.response_body)["spec"]["storage"]["table_path"]
-  base_path        = ""
+  part_before_v1   = split("/v1/", local.topic_table_path)
+  base_path        = "${local.part_before_v1[0]}/v1/"
 }
-
 
 resource "snowflake_storage_integration" "aws_s3_integration" {
   provider                  = snowflake.account_admin
