@@ -1,9 +1,0 @@
-[project]
-name = "ccaf-tableflow-aws-glue-snowflake-kickstarter"
-version = "0.01.00.000"
-description = "CCAF Tableflow AWS Glue Snowflake Kickstarter"
-readme = "README.md"
-requires-python = ">=3.11.9"
-dependencies = [
-    "cc-clients-python-lib>=0.19.0.0",
-]

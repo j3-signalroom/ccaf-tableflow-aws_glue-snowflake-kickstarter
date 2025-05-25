@@ -191,22 +191,37 @@ resource "snowflake_grant_privileges_to_account_role" "schema" {
   ]
 }
 
-data "external" "topic_table_path" {
-  program = ["python3", "${path.module}/topic_table_path.py"]
+locals {
+  topic_name     = confluent_kafka_topic.stock_trades.topic_name
+  cluster_id     = confluent_kafka_cluster.kafka_cluster.id
+  environment_id = confluent_environment.tableflow_kickstarter.id
+  api_key        = module.tableflow_api_key.active_api_key.id
+  api_secret     = module.tableflow_api_key.active_api_key.secret
+  url            = "https://api.confluent.cloud/tableflow/v1/tableflow-topics/${topic_name}?environment=${environment_id}&spec.kafka_cluster=${cluster_id}"
+}
 
-  query = {
-    kafka_topic_name = confluent_kafka_topic.stock_trades.topic_name
-    kafka_cluster_id = confluent_kafka_cluster.kafka_cluster.id
-    environment_id = confluent_environment.tableflow_kickstarter.id
-    tableflow_api_key = module.tableflow_api_key.active_api_key.id
-    tableflow_api_secret = module.tableflow_api_key.active_api_key.secret
+# Perform a GET request to the Tableflow API to retrieve Tableflow info
+# from the enabled Tableflow Kafka Topic.
+data "http" "tableflow_topic" {
+  url = local.url
+
+  request_headers = {
+    Authorization = "Bearer ${local.api_key}:${local.api_secret}"
+    Accept        = "application/json"
   }
 }
+
+# Reference the Tableflow Topic's table_path and base_path from the response body.
+locals {
+  topic_table_path = jsondecode(data.http.tableflow_topic.response_body)["spec"]["storage"]["table_path"]
+  base_path        = ""
+}
+
 
 resource "snowflake_storage_integration" "aws_s3_integration" {
   provider                  = snowflake.account_admin
   name                      = local.aws_s3_integration_name
-  storage_allowed_locations = ["${data.external.topic_table_path.result["base_path"]}"]
+  storage_allowed_locations = ["${local.base_path}"]
   storage_provider          = "S3"
   storage_aws_object_acl    = "bucket-owner-full-control"
   storage_aws_role_arn      = local.snowflake_aws_role_arn
@@ -214,7 +229,8 @@ resource "snowflake_storage_integration" "aws_s3_integration" {
   type                      = "EXTERNAL_STAGE"
 
   depends_on = [
-    module.glue_s3_access_role
+    module.glue_s3_access_role,
+    data.data.http.tableflow_topic
   ]
 }
 resource "snowflake_grant_privileges_to_account_role" "integration_grant" {
@@ -246,7 +262,7 @@ resource "snowflake_grant_account_role" "user_account_admin" {
 resource "snowflake_stage" "stock_trades" {
   provider            = snowflake
   name                = upper("stock_trades_stage")
-  url                 = "${data.external.topic_table_path.result["table_path"]}/data/"
+  url                 = "${local.topic_table_path}/data/"
   database            = local.database_name
   schema              = local.schema_name 
   storage_integration = local.aws_s3_integration_name
@@ -254,7 +270,8 @@ resource "snowflake_stage" "stock_trades" {
   depends_on = [
     snowflake_schema.tableflow,
     snowflake_storage_integration.aws_s3_integration,
-    module.snowflake_s3_access_role 
+    module.snowflake_s3_access_role,
+    data.data.http.tableflow_topic
   ]
 }
 
