@@ -37,12 +37,6 @@ resource "snowflake_storage_integration" "aws_s3_integration" {
   type                      = "EXTERNAL_STAGE"
 }
 
-resource "aws_iam_role_policy" "snowflake_s3_updated_trust_policy" {
-  name   = "snowflake_s3_updated_trust_policy"
-  role   = aws_iam_role.snowflake_s3_role.id
-  policy = data.aws_iam_policy_document.snowflake_s3_final_policy.json
-}
-
 resource "aws_iam_policy" "snowflake_s3_access_policy" {
   name   = "snowflake_s3_access_policy"
   policy = data.aws_iam_policy_document.snowflake_s3_access_policy.json

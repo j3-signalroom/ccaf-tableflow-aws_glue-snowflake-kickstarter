@@ -203,6 +203,12 @@ data "http" "tableflow_topic" {
     Authorization = "Basic ${base64encode("${local.api_key}:${local.api_secret}")}"
     Accept        = "application/json"
   }
+
+  retry {
+    attempts     = 2
+    min_delay_ms = 1000
+    max_delay_ms = 2000 
+  }
 }
 
 # Ensure that the Tableflow Topic GET RESTful API call made before proceeding on to the
