@@ -1,15 +1,17 @@
+data "aws_caller_identity" "current" {}
+
 data "aws_iam_policy_document" "snowflake_s3_initial_policy" {  
   statement {
     effect = "Allow"
     principals {
       type        = "AWS"
-      identifiers = [snowflake_storage_integration.aws_s3_integration.storage_aws_iam_user_arn]
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
     }
     actions = ["sts:AssumeRole"]
     condition {
       test     = "StringEquals"
       variable = "sts:ExternalId"
-      values   = [snowflake_storage_integration.aws_s3_integration.storage_aws_external_id]
+      values   = ["0000"]
     }
   }
 }
@@ -42,6 +44,22 @@ data "aws_iam_policy_document" "snowflake_s3_access_policy" {
       test     = "StringLike"
       variable = "s3:prefix"
       values   = ["*"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "snowflake_s3_final_policy" {  
+  statement {
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = [snowflake_storage_integration.aws_s3_integration.storage_aws_iam_user_arn]
+    }
+    actions = ["sts:AssumeRole"]
+    condition {
+      test     = "StringEquals"
+      variable = "sts:ExternalId"
+      values   = [snowflake_storage_integration.aws_s3_integration.storage_aws_external_id]
     }
   }
 }

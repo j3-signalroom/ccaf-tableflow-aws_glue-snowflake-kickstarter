@@ -209,6 +209,10 @@ data "http" "tableflow_topic" {
     min_delay_ms = 5000
     max_delay_ms = 9000 
   }
+
+  depends_on = [ 
+    confluent_tableflow_topic.stock_trades 
+  ]
 }
 
 # Ensure that the Tableflow Topic GET RESTful API call made before proceeding on to the
@@ -234,11 +238,10 @@ module "snowflake_s3_access_role" {
   snowflake_aws_role_arn  = local.snowflake_aws_role_arn
   aws_s3_integration_name = local.aws_s3_integration_name
   base_path               = local.base_path
-  organization_name       = local.organization_name
-  account_name            = local.account_name
-  admin_user              = local.admin_user
-  authenticator           = local.authenticator
-  active_private_key      = local.active_private_key
+
+  depends_on = [ 
+    module.glue_s3_access_role
+  ]
 }
 
 resource "snowflake_grant_privileges_to_account_role" "integration_grant" {
@@ -276,7 +279,8 @@ resource "snowflake_stage" "stock_trades" {
   storage_integration = local.aws_s3_integration_name
 
   depends_on = [
-    module.snowflake_s3_access_role
+    module.snowflake_s3_access_role,
+    snowflake_grant_privileges_to_account_role.integration_grant
   ]
 }
 
