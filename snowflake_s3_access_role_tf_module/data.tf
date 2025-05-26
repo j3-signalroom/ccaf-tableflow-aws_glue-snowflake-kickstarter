@@ -1,33 +1,20 @@
+data "aws_caller_identity" "current" {}
+
 data "aws_iam_policy_document" "snowflake_s3_initial_policy" {  
   statement {
     effect = "Allow"
     principals {
       type        = "AWS"
-      identifiers = [var.snowflake_s3_role_arn]
+      identifiers = [data.aws_caller_identity.current.id] # This is the AWS account ID of the current caller
     }
     actions = ["sts:AssumeRole"]
     condition {
       test     = "StringEquals"
       variable = "sts:ExternalId"
-      values   = ["xxxxxxxxx"]
+      values   = ["xxxxxxxx"]   # set dummy value
     }
   }
-}
-
-data "aws_iam_policy_document" "snowflake_s3_final_policy" {
-  statement {
-    effect = "Allow"
-    principals {
-      type        = "AWS"
-      identifiers = [var.snowflake_s3_role_arn]
-    }
-    actions = ["sts:AssumeRole"]
-    condition {
-      test     = "StringEquals"
-      variable = "sts:ExternalId"
-      values   = [snowflake_storage_integration.aws_s3_integration.storage_aws_external_id]
-    }
-  }
+  
 }
 
 data "aws_iam_policy_document" "snowflake_s3_access_policy" {
