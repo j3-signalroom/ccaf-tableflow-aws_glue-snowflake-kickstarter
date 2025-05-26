@@ -62,11 +62,12 @@ resource "snowflake_user" "user" {
   # Setting the attributes to `null`, effectively unsets the attribute
   # Refer to this link `https://docs.snowflake.com/en/user-guide/key-pair-auth#configuring-key-pair-rotation`
   # for more information
-  rsa_public_key    = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1 ? local.rsa_public_key_1 : null
-  rsa_public_key_2  = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 2 ? local.rsa_public_key_2 : null
+  rsa_public_key    = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1 ? jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_1"] : null
+  rsa_public_key_2  = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 2 ? jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_2"] : null
 
   depends_on = [ 
-    snowflake_account_role.security_admin_role
+    snowflake_account_role.security_admin_role,
+    module.snowflake_user_rsa_key_pairs_rotation
   ]
 }
 
@@ -180,7 +181,8 @@ resource "snowflake_grant_privileges_to_account_role" "schema" {
     snowflake_account_role.account_admin_role,
     snowflake_warehouse.tableflow,
     snowflake_database.tableflow,
-    snowflake_schema.tableflow
+    snowflake_schema.tableflow,
+    module.glue_s3_access_role
   ]
 }
 
@@ -238,10 +240,11 @@ module "snowflake_s3_access_role" {
   snowflake_aws_role_arn  = local.snowflake_aws_role_arn
   aws_s3_integration_name = local.aws_s3_integration_name
   base_path               = local.base_path
-
-  depends_on = [ 
-    module.glue_s3_access_role
-  ]
+  organization_name       = local.organization_name
+  account_name            = local.account_name
+  admin_user              = local.admin_user
+  authenticator           = local.authenticator
+  active_private_key      = local.active_private_key
 }
 
 resource "snowflake_grant_privileges_to_account_role" "integration_grant" {
