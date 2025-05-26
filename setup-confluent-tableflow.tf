@@ -70,7 +70,7 @@ module "tableflow_s3_access_role" {
   s3_bucket_name = aws_s3_bucket.iceberg_bucket.bucket
   iam_role_arn   = confluent_provider_integration.tableflow.aws[0].iam_role_arn
   external_id    = confluent_provider_integration.tableflow.aws[0].external_id
-  iam_role_name  = local.snowflake_aws_role_name
+  iam_role_name  = local.tableflow_s3_role_name
 }
 
 resource "confluent_tableflow_topic" "stock_trades" {
