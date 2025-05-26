@@ -37,8 +37,6 @@ data "aws_secretsmanager_secret_version" "svc_public_keys" {
 data "confluent_organization" "signalroom" {}
 
 locals {
-  rsa_public_key_1              = jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_1"]
-  rsa_public_key_2              = jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_2"]
   organization_name             = "${split("-", jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"])[0]}"
   account_name                  = "${split("-", jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"])[1]}"
   admin_user                    = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["admin_user"]
