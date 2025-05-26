@@ -1,21 +1,3 @@
-data "aws_caller_identity" "current" {}
-
-data "aws_iam_policy_document" "snowflake_s3_initial_policy" {  
-  statement {
-    effect = "Allow"
-    principals {
-      type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
-    }
-    actions = ["sts:AssumeRole"]
-    condition {
-      test     = "StringEquals"
-      variable = "sts:ExternalId"
-      values   = ["0000"]
-    }
-  }
-}
-
 data "aws_iam_policy_document" "snowflake_s3_access_policy" {
   statement {
     effect = "Allow"
@@ -48,7 +30,7 @@ data "aws_iam_policy_document" "snowflake_s3_access_policy" {
   }
 }
 
-data "aws_iam_policy_document" "snowflake_s3_final_policy" {  
+data "aws_iam_policy_document" "snowflake_s3_policy" {  
   statement {
     effect = "Allow"
     principals {

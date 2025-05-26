@@ -24,10 +24,9 @@ provider "snowflake" {
     "snowflake_storage_integration_resource"
   ]
 }
-
-resource "aws_iam_role" "snowflake_s3_role_initialization" {
-  name               = "snowflake_s3_role_initialization"
-  assume_role_policy = data.aws_iam_policy_document.snowflake_s3_initial_policy.json
+resource "aws_iam_role" "snowflake_s3_policy" {
+  name               = "snowflake_s3_policy"
+  assume_role_policy = data.aws_iam_policy_document.snowflake_s3_policy.json
 }
 
 resource "aws_iam_policy" "snowflake_s3_access_policy" {
@@ -36,7 +35,7 @@ resource "aws_iam_policy" "snowflake_s3_access_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "snowflake_s3_policy_attachment" {
-  role       = aws_iam_role.snowflake_s3_role_initialization.name
+  role       = aws_iam_role.snowflake_s3_policy.name
   policy_arn = aws_iam_policy.snowflake_s3_access_policy.arn
 }
 
@@ -49,18 +48,4 @@ resource "snowflake_storage_integration" "aws_s3_integration" {
   storage_aws_role_arn      = var.snowflake_aws_role_arn
   enabled                   = true
   type                      = "EXTERNAL_STAGE"
-
-  depends_on = [ 
-    aws_iam_role.snowflake_s3_role_initialization,
-    aws_iam_policy.snowflake_s3_access_policy
-  ]
-}
-
-resource "aws_iam_role" "snowflake_s3_role_finalization" {
-  name               = "snowflake_s3_role_finalization"
-  assume_role_policy = data.aws_iam_policy_document.snowflake_s3_final_policy.json
-
-  depends_on = [ 
-    snowflake_storage_integration.aws_s3_integration
-  ]
 }
