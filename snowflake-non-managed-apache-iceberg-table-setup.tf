@@ -1,15 +1,15 @@
 provider "snowflake" {
   role  = "SYSADMIN"
 
-  # Snowflake Terraform Provider 1.0.0 requires the `organization_name` and 
-  # `account_name` to be set, whereas the previous versions did not require
-  # this.  That is why we are setting these values here.  Plus, `account` as
-  # been deprecated in favor of `account_name`.
-  organization_name = "${split("-", jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"])[0]}"
-  account_name      = "${split("-", jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"])[1]}"
-  user              = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["admin_user"]
-  authenticator     = "SNOWFLAKE_JWT"
-  private_key       = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["active_rsa_public_key_number"] == 1 ? data.aws_secretsmanager_secret_version.admin_private_key_1.secret_string : data.aws_secretsmanager_secret_version.admin_private_key_2.secret_string
+  organization_name = local.organization_name
+  account_name      = local.account_name
+  user              = local.admin_user
+  authenticator     = local.authenticator
+  private_key       = local.active_private_key
+
+  preview_features_enabled = [
+    "snowflake_external_table_resource"
+  ]
 }
 
 resource "snowflake_warehouse" "tableflow" {
@@ -96,10 +96,6 @@ resource "snowflake_stage" "stock_trades" {
   database            = snowflake_database.tableflow.name
   schema              = snowflake_schema.tableflow.name
   storage_integration = snowflake_storage_integration.aws_s3_integration.name
-
-  depends_on = [
-    module.snowflake_s3_access_role
-  ]
 }
 
 resource "snowflake_external_table" "stock_trades" {
