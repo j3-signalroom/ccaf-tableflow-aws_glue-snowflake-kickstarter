@@ -88,7 +88,7 @@ provider "snowflake" {
 
 resource "snowflake_account_role" "account_admin_role" {
   provider = snowflake.account_admin
-  name     = "${local.user_name}_ADMIN_ROLE"
+  name     = local.account_admin_role
 }
 
 resource "snowflake_grant_privileges_to_account_role" "user" {
