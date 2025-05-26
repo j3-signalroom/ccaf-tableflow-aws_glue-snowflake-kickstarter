@@ -280,6 +280,7 @@ resource "snowflake_stage" "stock_trades" {
   database            = local.database_name
   schema              = local.schema_name 
   storage_integration = local.aws_s3_integration_name
+  aws_external_id     = module.snowflake_s3_access_role.aws_external_id
 
   depends_on = [
     module.snowflake_s3_access_role,
