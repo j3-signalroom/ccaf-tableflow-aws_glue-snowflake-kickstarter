@@ -170,7 +170,7 @@ resource "snowflake_schema" "tableflow" {
 
 resource "snowflake_grant_privileges_to_account_role" "schema" {
   provider          = snowflake.account_admin
-  privileges        = ["CREATE FILE FORMAT", "USAGE"]
+  privileges        = ["CREATE STAGE", "CREATE FILE FORMAT", "USAGE"]
   account_role_name = snowflake_account_role.account_admin_role.name
   on_schema {
     schema_name = "${local.database_name}.${local.schema_name}"
