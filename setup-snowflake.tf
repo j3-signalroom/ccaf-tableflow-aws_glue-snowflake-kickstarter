@@ -302,37 +302,37 @@ resource "snowflake_external_table" "stock_trades" {
   column {
     as   = "(value:side::string)"
     name = "side"
-    type = "VARCHAR"
+    type = "text"
   }
 
   column {
-    as   = "(value:quantity::integer)"
+    as   = "(value:quantity::int)"
     name = "quantity"
-    type = "INTEGER"
+    type = "int"
   }
 
   column {
     as   = "(value:symbol::string)"
     name = "symbol"
-    type = "VARCHAR"
+    type = "text"
   }
 
   column {
-    as   = "(value:price::integer)"
+    as   = "(value:price::int)"
     name = "price"
-    type = "INTEGER"
+    type = "int"
   }
 
   column {
     as   = "(value:account::string)"
     name = "account"
-    type = "VARCHAR"
+    type = "text"
   }
 
   column {
     as   = "(value:userid::string)"
     name = "userid"
-    type = "VARCHAR"
+    type = "text"
   }
 
   depends_on = [
