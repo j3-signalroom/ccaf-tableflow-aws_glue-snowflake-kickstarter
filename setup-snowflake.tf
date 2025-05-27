@@ -274,6 +274,8 @@ resource "snowflake_grant_account_role" "user_account_admin" {
   ]
 }
 
+# Create a Snowflake Stage that points to the S3 bucket where the Tableflow Kafka Topic
+# is writing the data. This stage will be used to load data into Snowflake.
 resource "snowflake_stage" "stock_trades" {
   provider            = snowflake
   name                = upper("stock_trades_stage")
@@ -290,17 +292,9 @@ resource "snowflake_stage" "stock_trades" {
     snowflake_grant_privileges_to_account_role.integration_grant
   ]
 }
-
-provider "aws" {
-  alias = "snowflake_integration"
-
-  assume_role {
-    role_arn     = module.snowflake_s3_access_role.snowflake_aws_role_arn
-    external_id  = module.snowflake_s3_access_role.aws_external_id
-    session_name = "snowflake_integration_session"
-  }
-}
-
+# Create an external table in Snowflake that references the data in the S3 bucket
+# that is being populated by the Tableflow Kafka Topic.
+# This external table will allow querying the data directly from Snowflake.
 resource "snowflake_external_table" "stock_trades" {
   provider    = snowflake
   database    = local.database_name
