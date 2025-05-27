@@ -3,7 +3,7 @@ resource "confluent_provider_integration" "tableflow" {
     id = confluent_environment.tableflow_kickstarter.id
   }
   aws {
-    customer_role_arn = local.snowflake_aws_role_arn
+    customer_role_arn = local.tableflow_s3_role_name
   }
   display_name = "tableflow_aws_integration"
 }
