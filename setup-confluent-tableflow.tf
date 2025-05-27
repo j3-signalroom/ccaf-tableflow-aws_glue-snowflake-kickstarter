@@ -66,7 +66,7 @@ resource "confluent_catalog_integration" "tableflow" {
 }
 
 module "tableflow_glue_s3_access_role" {
-  source         = "./tableflow_glue_s3_access_role_tf_module"
+  source         = "./modules/tableflow_glue_s3_access_role"
   s3_bucket_name = aws_s3_bucket.iceberg_bucket.bucket
   iam_role_arn   = confluent_provider_integration.tableflow.aws[0].iam_role_arn
   external_id    = confluent_provider_integration.tableflow.aws[0].external_id
