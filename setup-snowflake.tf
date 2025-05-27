@@ -282,6 +282,8 @@ resource "snowflake_stage" "stock_trades" {
   schema              = local.schema_name 
   storage_integration = local.aws_s3_integration_name
   aws_external_id     = module.snowflake_s3_access_role.aws_external_id
+  comment             = "Stage for stock trades data from Tableflow Kafka Topic"
+  file_format         = "TYPE = 'PARQUET'"
 
   depends_on = [
     module.snowflake_s3_access_role,
@@ -307,6 +309,7 @@ resource "snowflake_external_table" "stock_trades" {
   file_format = "TYPE = 'PARQUET'"
   location    = "@${local.database_name}.${local.schema_name}.${snowflake_stage.stock_trades.name}"
   auto_refresh = true
+  comment      = "External table for stock trades data from Tableflow Kafka Topic"
 
   column {
     as   = "(value:side::string)"
