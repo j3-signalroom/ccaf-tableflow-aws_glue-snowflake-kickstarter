@@ -1,4 +1,4 @@
-data "aws_iam_policy_document" "snowflake_s3_access_policy" {
+data "aws_iam_policy_document" "snowflake_glue_s3_access_policy" {
   statement {
     effect = "Allow"
     actions = [
@@ -13,7 +13,6 @@ data "aws_iam_policy_document" "snowflake_s3_access_policy" {
     ]
     resources = ["${var.s3_bucket_arn}/*"]
   }
-
   statement {
     effect = "Allow"
     actions = [
@@ -30,7 +29,7 @@ data "aws_iam_policy_document" "snowflake_s3_access_policy" {
   }
 }
 
-data "aws_iam_policy_document" "snowflake_s3_policy" {  
+data "aws_iam_policy_document" "snowflake_glue_s3_policy" {  
   statement {
     effect = "Allow"
     principals {
@@ -43,5 +42,13 @@ data "aws_iam_policy_document" "snowflake_s3_policy" {
       variable = "sts:ExternalId"
       values   = [snowflake_storage_integration.aws_s3_integration.storage_aws_external_id]
     }
+  }
+  statement {
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["glue.amazonaws.com"]
+    }
+    actions = ["sts:AssumeRole"]
   }
 }

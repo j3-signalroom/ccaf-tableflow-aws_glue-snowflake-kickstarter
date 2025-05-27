@@ -1,4 +1,4 @@
-variable "snowflake_s3_role_name" {
+variable "snowflake_glue_s3_role_name" {
   description = "The name of the Snowflake AWS S3 role."
   type        = string
 }
