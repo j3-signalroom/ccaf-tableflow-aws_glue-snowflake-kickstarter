@@ -16,11 +16,6 @@ module "snowflake_user_rsa_key_pairs_rotation" {
   aws_log_retention_in_days = var.aws_log_retention_in_days
 }
 
-module "glue_s3_access_role" {
-  source        = "./glue_s3_access_role_tf_module"
-  s3_bucket_arn = aws_s3_bucket.iceberg_bucket.arn
-}
-
 provider "snowflake" {
   role              = "SYSADMIN"
   organization_name = local.organization_name
@@ -181,8 +176,7 @@ resource "snowflake_grant_privileges_to_account_role" "schema" {
     snowflake_account_role.account_admin_role,
     snowflake_warehouse.tableflow,
     snowflake_database.tableflow,
-    snowflake_schema.tableflow,
-    module.glue_s3_access_role
+    snowflake_schema.tableflow
   ]
 }
 
@@ -234,18 +228,18 @@ locals {
   base_path        = "${local.part_before_v1[0]}/v1/"
 }
 
-module "snowflake_s3_access_role" {
-  source                  = "./snowflake_s3_access_role_tf_module"
-  s3_bucket_arn           = aws_s3_bucket.iceberg_bucket.arn
-  snowflake_s3_role_name  = local.snowflake_aws_role_name
-  snowflake_aws_role_arn  = local.snowflake_aws_role_arn
-  aws_s3_integration_name = local.aws_s3_integration_name
-  base_path               = local.base_path
-  organization_name       = local.organization_name
-  account_name            = local.account_name
-  admin_user              = local.admin_user
-  authenticator           = local.authenticator
-  active_private_key      = local.active_private_key
+module "snowflake_glue_s3_access_role" {
+  source                      = "./snowflake_glue_s3_access_role_tf_module"
+  s3_bucket_arn               = aws_s3_bucket.iceberg_bucket.arn
+  snowflake_glue_s3_role_name = local.snowflake_aws_role_name
+  snowflake_aws_role_arn      = local.snowflake_aws_role_arn
+  aws_s3_integration_name     = local.aws_s3_integration_name
+  base_path                   = local.base_path
+  organization_name           = local.organization_name
+  account_name                = local.account_name
+  admin_user                  = local.admin_user
+  authenticator               = local.authenticator
+  active_private_key          = local.active_private_key
 }
 
 resource "snowflake_grant_privileges_to_account_role" "integration_grant" {
@@ -260,7 +254,7 @@ resource "snowflake_grant_privileges_to_account_role" "integration_grant" {
   depends_on = [ 
     snowflake_user.user,
     snowflake_account_role.account_admin_role,
-    module.snowflake_s3_access_role
+    module.snowflake_glue_s3_access_role
   ]
 }
 
@@ -283,15 +277,16 @@ resource "snowflake_stage" "stock_trades" {
   database            = local.database_name
   schema              = local.schema_name 
   storage_integration = local.aws_s3_integration_name
-  aws_external_id     = module.snowflake_s3_access_role.aws_external_id
+  aws_external_id     = module.snowflake_glue_s3_access_role.aws_external_id
   comment             = "Stage for stock trades data from Tableflow Kafka Topic"
   file_format         = "TYPE = 'PARQUET'"
 
   depends_on = [
-    module.snowflake_s3_access_role,
+    module.snowflake_glue_s3_access_role,
     snowflake_grant_privileges_to_account_role.integration_grant
   ]
 }
+
 # Create an external table in Snowflake that references the data in the S3 bucket
 # that is being populated by the Tableflow Kafka Topic.
 # This external table will allow querying the data directly from Snowflake.
@@ -306,41 +301,101 @@ resource "snowflake_external_table" "stock_trades" {
   comment      = "External table for stock trades data from Tableflow Kafka Topic"
 
   column {
-    as   = "(value:side::string)"
-    name = "side"
-    type = "VARCHAR"
+    as   = "(value:key::binary)"
+    name = "key"
+    type = "binary"
   }
 
   column {
-    as   = "(value:quantity::bigint)"
+    as   = "(value:side::string)"
+    name = "side"
+    type = "string"
+  }
+
+  column {
+    as   = "(value:quantity::int)"
     name = "quantity"
-    type = "BIGINT"
+    type = "int"
   }
 
   column {
     as   = "(value:symbol::string)"
     name = "symbol"
-    type = "VARCHAR"
+    type = "string"
   }
 
   column {
-    as   = "(value:price::bigint)"
+    as   = "(value:price::int)"
     name = "price"
-    type = "BIGINT"
+    type = "int"
   }
 
   column {
     as   = "(value:account::string)"
     name = "account"
-    type = "VARCHAR"
+    type = "string"
   }
 
   column {
     as   = "(value:userid::string)"
     name = "userid"
-    type = "VARCHAR"
+    type = "string"
   }
 
+  column {
+    as   = "(value:_x24_x24topic::string)"
+    name = "_x24_x24topic"
+    type = "string"
+  }
+
+  column {
+    as   = "(value:_x24_x24partition::int)"
+    name = "_x24_x24partition"
+    type = "int"
+  }
+
+  column {
+    as   = "(value:_x24_x24headers::object)"
+    name = "_x24_x24headers"
+    type = "object"
+  }
+
+  column {
+    as   = "(value:_x24_x24leader_x2Depoch::int)"
+    name = "_x24_x24leader_x2Depoch"
+    type = "int"
+  }
+
+  column {
+    as   = "(value:_x24_x24offset::bigint)"
+    name = "_x24_x24offset"
+    type = "bigint"
+  }
+
+  column {
+    as   = "to_timestamp_ltz(value:_x24_x24timestamp::string)"
+    name = "_x24_x24timestamp"
+    type = "timestamp_ltz"
+  }
+
+  column {
+    as   = "(value:_x24_x24timestamp_x2Dtype::string)"
+    name = "_x24_x24timestamp_x2Dtype"
+    type = "string"
+  }
+
+  column {
+    as   = "(value:_x24_x24raw_x2Dkey::binary)"
+    name = "_x24_x24raw_x2Dkey"
+    type = "binary"
+  }
+
+  column {
+    as   = "(value:_x24_x24raw_x2Dvalue::binary)"
+    name = "_x24_x24raw_x2Dvalue"
+    type = "binary"
+  }
+  
   depends_on = [
     snowflake_stage.stock_trades
   ]
