@@ -1,4 +1,4 @@
-data "aws_iam_policy_document" "tableflow_s3_policy" {
+data "aws_iam_policy_document" "tableflow_glue_s3_policy" {
   statement {
     effect = "Allow"
     principals {
@@ -12,7 +12,6 @@ data "aws_iam_policy_document" "tableflow_s3_policy" {
       values   = [var.external_id]
     }
   }
-
   statement {
     effect = "Allow"
     principals {
@@ -21,9 +20,19 @@ data "aws_iam_policy_document" "tableflow_s3_policy" {
     }
     actions = ["sts:TagSession"]
   }
+  statement {
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["glue.amazonaws.com"]
+    }
+    actions = ["sts:AssumeRole"]
+  }
 }
 
-data "aws_iam_policy_document" "tableflow_s3_access_policy" {
+data "aws_caller_identity" "current" {}
+
+data "aws_iam_policy_document" "tableflow_glue_s3_access_policy" {
   statement {
     effect = "Allow"
     actions = [
@@ -44,5 +53,23 @@ data "aws_iam_policy_document" "tableflow_s3_access_policy" {
       "s3:ListMultipartUploadParts"
     ]
     resources = ["arn:aws:s3:::${var.s3_bucket_name}/*"]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "glue:DeleteTable",
+      "glue:DeleteDatabase",
+      "glue:CreateTable",
+      "glue:CreateDatabase",
+      "glue:UpdateTable",
+      "glue:UpdateDatabase",
+      "glue:GetTable",
+      "glue:GetDatabase",
+      "glue:GetTables",
+      "glue:GetDatabases",
+      "glue:GetTableVersion",
+      "glue:GetTableVersions"
+    ]
+     resources = ["arn:aws:glue:${var.region}:${data.aws_caller_identity.current.account_id}:*"]
   }
 }
