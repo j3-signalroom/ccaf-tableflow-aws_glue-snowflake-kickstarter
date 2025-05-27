@@ -229,7 +229,7 @@ locals {
 }
 
 module "snowflake_glue_s3_access_role" {
-  source                      = "./snowflake_glue_s3_access_role_tf_module"
+  source                      = "./modules/snowflake_glue_s3_access_role"
   s3_bucket_arn               = aws_s3_bucket.iceberg_bucket.arn
   snowflake_glue_s3_role_name = local.snowflake_aws_role_name
   snowflake_aws_role_arn      = local.snowflake_aws_role_arn
