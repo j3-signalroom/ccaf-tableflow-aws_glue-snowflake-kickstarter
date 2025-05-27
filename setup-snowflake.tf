@@ -88,7 +88,7 @@ provider "snowflake" {
 
 resource "snowflake_account_role" "account_admin_role" {
   provider = snowflake.account_admin
-  name     = "${local.user_name}_ADMIN_ROLE"
+  name     = local.account_admin_role
 }
 
 resource "snowflake_grant_privileges_to_account_role" "user" {
@@ -170,7 +170,7 @@ resource "snowflake_schema" "tableflow" {
 
 resource "snowflake_grant_privileges_to_account_role" "schema" {
   provider          = snowflake.account_admin
-  privileges        = ["CREATE FILE FORMAT", "USAGE"]
+  privileges        = ["CREATE STAGE", "CREATE FILE FORMAT", "USAGE"]
   account_role_name = snowflake_account_role.account_admin_role.name
   on_schema {
     schema_name = "${local.database_name}.${local.schema_name}"
@@ -237,6 +237,7 @@ locals {
 module "snowflake_s3_access_role" {
   source                  = "./snowflake_s3_access_role_tf_module"
   s3_bucket_arn           = aws_s3_bucket.iceberg_bucket.arn
+  snowflake_s3_role_name  = local.snowflake_aws_role_name
   snowflake_aws_role_arn  = local.snowflake_aws_role_arn
   aws_s3_integration_name = local.aws_s3_integration_name
   base_path               = local.base_path
@@ -280,11 +281,22 @@ resource "snowflake_stage" "stock_trades" {
   database            = local.database_name
   schema              = local.schema_name 
   storage_integration = local.aws_s3_integration_name
+  aws_external_id     = module.snowflake_s3_access_role.aws_external_id
 
   depends_on = [
     module.snowflake_s3_access_role,
     snowflake_grant_privileges_to_account_role.integration_grant
   ]
+}
+
+provider "aws" {
+  alias = "snowflake_integration"
+
+  assume_role {
+    role_arn     = module.snowflake_s3_access_role.snowflake_aws_role_arn
+    external_id  = module.snowflake_s3_access_role.aws_external_id
+    session_name = "snowflake_integration_session"
+  }
 }
 
 resource "snowflake_external_table" "stock_trades" {

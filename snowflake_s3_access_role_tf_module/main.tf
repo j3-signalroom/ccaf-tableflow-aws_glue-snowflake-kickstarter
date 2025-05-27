@@ -11,7 +11,6 @@ terraform {
     }
 }
 
-
 provider "snowflake" {
   role              = "ACCOUNTADMIN"
   organization_name = var.organization_name
@@ -25,10 +24,10 @@ provider "snowflake" {
     "snowflake_storage_integration_resource"
   ]
 }
-
 resource "aws_iam_role" "snowflake_s3_role" {
-  name               = "snowflake_s3_role"
-  assume_role_policy = data.aws_iam_policy_document.snowflake_s3_initial_policy.json
+  name               = var.snowflake_s3_role_name
+  description        = "IAM role for Snowflake S3 access"
+  assume_role_policy = data.aws_iam_policy_document.snowflake_s3_policy.json
 }
 
 resource "aws_iam_policy" "snowflake_s3_access_policy" {
@@ -50,8 +49,4 @@ resource "snowflake_storage_integration" "aws_s3_integration" {
   storage_aws_role_arn      = var.snowflake_aws_role_arn
   enabled                   = true
   type                      = "EXTERNAL_STAGE"
-
-  depends_on = [ 
-    aws_iam_role.snowflake_s3_role,
-  ]
 }

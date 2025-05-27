@@ -1,3 +1,8 @@
+variable "snowflake_s3_role_name" {
+  description = "The name of the Snowflake AWS S3 role."
+  type        = string
+}
+
 variable "snowflake_aws_role_arn" {
   description = "The ARN of the Snowflake AWS role."
   type        = string
