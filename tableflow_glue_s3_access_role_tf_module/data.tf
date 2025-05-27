@@ -62,7 +62,13 @@ data "aws_iam_policy_document" "tableflow_glue_s3_access_policy" {
       "glue:CreateTable",
       "glue:CreateDatabase",
       "glue:UpdateTable",
-      "glue:UpdateDatabase"
+      "glue:UpdateDatabase",
+      "glue:GetTable",
+      "glue:GetDatabase",
+      "glue:GetTables",
+      "glue:GetDatabases",
+      "glue:GetTableVersion",
+      "glue:GetTableVersions"
     ]
      resources = ["arn:aws:glue:${var.region}:${data.aws_caller_identity.current.account_id}:*"]
   }
