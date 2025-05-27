@@ -31,7 +31,7 @@ The script helps you manage the lifecycle of Terraform-managed infrastructure re
 
 4. **AWS SSO Login**:
    - Logs in using the specified AWS SSO profile to get temporary AWS credentials.
-   - Uses `aws2-wrap` to export AWS credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, `AWS_REGION`, `AWS_ACCOUNT_ID`) for further use by Terraform.
+   - Uses `aws2-wrap` to export AWS credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, `AWS_REGION`) for further use by Terraform.
 
 5. **Creating the `terraform.tfvars` File**:
    - A `terraform.tfvars` file is generated dynamically using the supplied arguments.

@@ -108,13 +108,11 @@ fi
 aws sso login $AWS_PROFILE
 eval $(aws2-wrap $AWS_PROFILE --export)
 export AWS_REGION=$(aws configure get region $AWS_PROFILE)
-export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
 
 # Create terraform.tfvars file
 if [ create_action = true ]
 then
-    printf "aws_account_id=\"${AWS_ACCOUNT_ID}\"\
-    \naws_region=\"${AWS_REGION}\"\
+    printf "aws_region=\"${AWS_REGION}\"\
     \naws_access_key_id=\"${AWS_ACCESS_KEY_ID}\"\
     \naws_secret_access_key=\"${AWS_SECRET_ACCESS_KEY}\"\
     \naws_session_token=\"${AWS_SESSION_TOKEN}\"\
@@ -123,8 +121,7 @@ then
     \nsnowflake_warehouse=\"${snowflake_warehouse}\"\
     \nday_count=${day_count}" > terraform.tfvars
 else
-    printf "aws_account_id=\"${AWS_ACCOUNT_ID}\"\
-    \naws_region=\"${AWS_REGION}\"\
+    printf "aws_region=\"${AWS_REGION}\"\
     \naws_access_key_id=\"${AWS_ACCESS_KEY_ID}\"\
     \naws_secret_access_key=\"${AWS_SECRET_ACCESS_KEY}\"\
     \naws_session_token=\"${AWS_SESSION_TOKEN}\"\

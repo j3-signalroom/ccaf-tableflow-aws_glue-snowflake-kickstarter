@@ -14,11 +14,6 @@ variable "aws_region" {
     type        = string
 }
 
-variable "aws_account_id" {
-    description = "The AWS Account ID."
-    type        = string
-}
-
 variable "aws_access_key_id" {
     description = "The AWS Access Key ID."
     type        = string
