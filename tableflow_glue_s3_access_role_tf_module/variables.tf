@@ -18,3 +18,8 @@ variable "iam_role_name" {
   description = "The name of the IAM role for accessing S3 with a trust policy for Confluent"
   type        = string
 }
+
+variable "region" {
+  description = "AWS region where the resources will be created"
+  type        = string
+}
