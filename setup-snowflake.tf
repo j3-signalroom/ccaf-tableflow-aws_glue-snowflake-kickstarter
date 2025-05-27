@@ -289,6 +289,16 @@ resource "snowflake_stage" "stock_trades" {
   ]
 }
 
+provider "aws" {
+  alias = "snowflake_integration"
+
+  assume_role {
+    role_arn     = module.snowflake_s3_access_role.snowflake_aws_role_arn
+    external_id  = module.snowflake_s3_access_role.aws_external_id
+    session_name = "snowflake_integration_session"
+  }
+}
+
 resource "snowflake_external_table" "stock_trades" {
   provider    = snowflake
   database    = local.database_name
