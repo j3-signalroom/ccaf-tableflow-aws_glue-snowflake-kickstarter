@@ -107,6 +107,7 @@ terraform graph | dot -Tpng > .blog/images/terraform-visualization.png
 
 ### 2.5 Snowflake
 * [Snowflake Create Storage Integration](https://docs.snowflake.com/en/sql-reference/sql/create-storage-integration)
+* [Snowflake Terraform Registry](https://registry.terraform.io/providers/snowflakedb/snowflake/2.1.0)
 
 ## 3.0 Important Note(s)
 * [Known Issue(s)](KNOWNISSUES.md)
