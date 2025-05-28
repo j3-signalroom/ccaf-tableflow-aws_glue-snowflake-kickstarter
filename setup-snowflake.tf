@@ -26,9 +26,9 @@ provider "snowflake" {
 
   # Enable preview features
   preview_features_enabled = [
-    "snowflake_file_format_resource",
     "snowflake_stage_resource",
-    "snowflake_external_table_resource"
+    "snowflake_external_table_resource",
+    "snowflake_file_format_resource"
   ]
 }
 
@@ -77,7 +77,10 @@ provider "snowflake" {
 
   # Enable preview features
   preview_features_enabled = [
-    "snowflake_storage_integration_resource"
+    "snowflake_storage_integration_resource",
+    "snowflake_stage_resource",
+    "snowflake_external_table_resource",
+    "snowflake_file_format_resource"
   ]
 }
 
@@ -268,18 +271,31 @@ resource "snowflake_grant_account_role" "user_account_admin" {
   ]
 }
 
+resource "snowflake_file_format" "parquet" {
+  provider = snowflake
+  name        = "PARQUET_FORMAT"
+  database    = snowflake_database.tableflow.name
+  schema      = snowflake_schema.tableflow.name 
+  format_type = "PARQUET"
+  comment     = "File format for Parquet files used in Tableflow Kafka Topic"
+
+  depends_on = [
+    snowflake_grant_privileges_to_account_role.schema,
+    snowflake_grant_privileges_to_account_role.database,
+    snowflake_grant_privileges_to_account_role.warehouse
+  ]
+}
+
 # Create a Snowflake Stage that points to the S3 bucket where the Tableflow Kafka Topic
 # is writing the data. This stage will be used to load data into Snowflake.
 resource "snowflake_stage" "stock_trades" {
   provider            = snowflake
-  name                = upper("stock_trades_stage")
+  name                = "${upper(confluent_kafka_topic.stock_trades.topic_name)}_STAGE"
   url                 = "${local.topic_table_path}/data/"
-  database            = local.database_name
-  schema              = local.schema_name 
+  database            = snowflake_database.tableflow.name
+  schema              = snowflake_schema.tableflow.name 
   storage_integration = local.aws_s3_integration_name
-  aws_external_id     = module.snowflake_glue_s3_access_role.aws_external_id
   comment             = "Stage for stock trades data from Tableflow Kafka Topic"
-  file_format         = "TYPE = 'PARQUET'"
 
   depends_on = [
     module.snowflake_glue_s3_access_role,
@@ -291,12 +307,13 @@ resource "snowflake_stage" "stock_trades" {
 # that is being populated by the Tableflow Kafka Topic.
 # This external table will allow querying the data directly from Snowflake.
 resource "snowflake_external_table" "stock_trades" {
-  provider    = snowflake
-  database    = local.database_name
-  schema      = local.schema_name
-  name        = upper("stock_trades")
-  file_format = "TYPE = 'PARQUET'"
-  location    = "@${local.database_name}.${local.schema_name}.${snowflake_stage.stock_trades.name}"
+  provider     = snowflake
+  database     = snowflake_database.tableflow.name
+  schema       = snowflake_schema.tableflow.name
+  name         = upper(confluent_kafka_topic.stock_trades.topic_name)
+  file_format  = "TYPE = 'PARQUET'"
+  pattern      = ".*\\.parquet"
+  location     = "@${snowflake_stage.stock_trades.fully_qualified_name}"
   auto_refresh = true
   comment      = "External table for stock trades data from Tableflow Kafka Topic"
 
@@ -307,9 +324,9 @@ resource "snowflake_external_table" "stock_trades" {
   }
 
   column {
-    as   = "(value:side::string)"
+    as   = "(value:side::varchar)"
     name = "side"
-    type = "string"
+    type = "varchar"
   }
 
   column {
@@ -319,9 +336,9 @@ resource "snowflake_external_table" "stock_trades" {
   }
 
   column {
-    as   = "(value:symbol::string)"
+    as   = "(value:symbol::varchar)"
     name = "symbol"
-    type = "string"
+    type = "varchar"
   }
 
   column {
@@ -331,21 +348,21 @@ resource "snowflake_external_table" "stock_trades" {
   }
 
   column {
-    as   = "(value:account::string)"
+    as   = "(value:account::varchar)"
     name = "account"
-    type = "string"
+    type = "varchar"
   }
 
   column {
-    as   = "(value:userid::string)"
+    as   = "(value:userid::varchar)"
     name = "userid"
-    type = "string"
+    type = "varchar"
   }
 
   column {
-    as   = "(value:_x24_x24topic::string)"
+    as   = "(value:_x24_x24topic::varchar)"
     name = "_x24_x24topic"
-    type = "string"
+    type = "varchar"
   }
 
   column {
@@ -355,9 +372,9 @@ resource "snowflake_external_table" "stock_trades" {
   }
 
   column {
-    as   = "(value:_x24_x24headers::object)"
+    as   = "(value:_x24_x24headers::variant)"
     name = "_x24_x24headers"
-    type = "object"
+    type = "variant"
   }
 
   column {
@@ -373,15 +390,15 @@ resource "snowflake_external_table" "stock_trades" {
   }
 
   column {
-    as   = "to_timestamp_ltz(value:_x24_x24timestamp::string)"
+    as   = "to_timestamp_ltz(value:_x24_x24timestamp::varchar)"
     name = "_x24_x24timestamp"
     type = "timestamp_ltz"
   }
 
   column {
-    as   = "(value:_x24_x24timestamp_x2Dtype::string)"
+    as   = "(value:_x24_x24timestamp_x2Dtype::varchar)"
     name = "_x24_x24timestamp_x2Dtype"
-    type = "string"
+    type = "varchar"
   }
 
   column {
@@ -397,6 +414,9 @@ resource "snowflake_external_table" "stock_trades" {
   }
   
   depends_on = [
-    snowflake_stage.stock_trades
+    snowflake_database.tableflow,
+    snowflake_schema.tableflow,
+    snowflake_stage.stock_trades,
+    snowflake_file_format.parquet
   ]
 }
