@@ -290,113 +290,113 @@ resource "snowflake_stage" "stock_trades" {
 # Create an external table in Snowflake that references the data in the S3 bucket
 # that is being populated by the Tableflow Kafka Topic.
 # This external table will allow querying the data directly from Snowflake.
-resource "snowflake_external_table" "stock_trades" {
-  provider    = snowflake.account_admin
-  database    = snowflake_database.tableflow.name
-  schema      = snowflake_schema.tableflow.name
-  name        = upper(confluent_kafka_topic.stock_trades.topic_name)
-  file_format = "TYPE = 'PARQUET'"
-  location    = "@${snowflake_database.tableflow.name}.${snowflake_schema.tableflow.name}.${snowflake_stage.stock_trades.name}"
-  auto_refresh = true
-  comment      = "External table for stock trades data from Tableflow Kafka Topic"
+# resource "snowflake_external_table" "stock_trades" {
+#   provider    = snowflake.account_admin
+#   database    = snowflake_database.tableflow.name
+#   schema      = snowflake_schema.tableflow.name
+#   name        = upper(confluent_kafka_topic.stock_trades.topic_name)
+#   file_format = "TYPE = 'PARQUET'"
+#   location    = "@${snowflake_database.tableflow.name}.${snowflake_schema.tableflow.name}.${snowflake_stage.stock_trades.name}"
+#   auto_refresh = true
+#   comment      = "External table for stock trades data from Tableflow Kafka Topic"
 
-  column {
-    as   = "(value:key::binary)"
-    name = "key"
-    type = "binary"
-  }
+#   column {
+#     as   = "(value:key::binary)"
+#     name = "key"
+#     type = "binary"
+#   }
 
-  column {
-    as   = "(value:side::varchar)"
-    name = "side"
-    type = "varchar"
-  }
+#   column {
+#     as   = "(value:side::varchar)"
+#     name = "side"
+#     type = "varchar"
+#   }
 
-  column {
-    as   = "(value:quantity::int)"
-    name = "quantity"
-    type = "int"
-  }
+#   column {
+#     as   = "(value:quantity::int)"
+#     name = "quantity"
+#     type = "int"
+#   }
 
-  column {
-    as   = "(value:symbol::varchar)"
-    name = "symbol"
-    type = "varchar"
-  }
+#   column {
+#     as   = "(value:symbol::varchar)"
+#     name = "symbol"
+#     type = "varchar"
+#   }
 
-  column {
-    as   = "(value:price::int)"
-    name = "price"
-    type = "int"
-  }
+#   column {
+#     as   = "(value:price::int)"
+#     name = "price"
+#     type = "int"
+#   }
 
-  column {
-    as   = "(value:account::varchar)"
-    name = "account"
-    type = "varchar"
-  }
+#   column {
+#     as   = "(value:account::varchar)"
+#     name = "account"
+#     type = "varchar"
+#   }
 
-  column {
-    as   = "(value:userid::varchar)"
-    name = "userid"
-    type = "varchar"
-  }
+#   column {
+#     as   = "(value:userid::varchar)"
+#     name = "userid"
+#     type = "varchar"
+#   }
 
-  column {
-    as   = "(value:_x24_x24topic::varchar)"
-    name = "_x24_x24topic"
-    type = "varchar"
-  }
+#   column {
+#     as   = "(value:_x24_x24topic::varchar)"
+#     name = "_x24_x24topic"
+#     type = "varchar"
+#   }
 
-  column {
-    as   = "(value:_x24_x24partition::int)"
-    name = "_x24_x24partition"
-    type = "int"
-  }
+#   column {
+#     as   = "(value:_x24_x24partition::int)"
+#     name = "_x24_x24partition"
+#     type = "int"
+#   }
 
-  column {
-    as   = "(value:_x24_x24headers::variant)"
-    name = "_x24_x24headers"
-    type = "variant"
-  }
+#   column {
+#     as   = "(value:_x24_x24headers::variant)"
+#     name = "_x24_x24headers"
+#     type = "variant"
+#   }
 
-  column {
-    as   = "(value:_x24_x24leader_x2Depoch::int)"
-    name = "_x24_x24leader_x2Depoch"
-    type = "int"
-  }
+#   column {
+#     as   = "(value:_x24_x24leader_x2Depoch::int)"
+#     name = "_x24_x24leader_x2Depoch"
+#     type = "int"
+#   }
 
-  column {
-    as   = "(value:_x24_x24offset::bigint)"
-    name = "_x24_x24offset"
-    type = "bigint"
-  }
+#   column {
+#     as   = "(value:_x24_x24offset::bigint)"
+#     name = "_x24_x24offset"
+#     type = "bigint"
+#   }
 
-  column {
-    as   = "to_timestamp_ltz(value:_x24_x24timestamp::varchar)"
-    name = "_x24_x24timestamp"
-    type = "timestamp_ltz"
-  }
+#   column {
+#     as   = "to_timestamp_ltz(value:_x24_x24timestamp::varchar)"
+#     name = "_x24_x24timestamp"
+#     type = "timestamp_ltz"
+#   }
 
-  column {
-    as   = "(value:_x24_x24timestamp_x2Dtype::varchar)"
-    name = "_x24_x24timestamp_x2Dtype"
-    type = "varchar"
-  }
+#   column {
+#     as   = "(value:_x24_x24timestamp_x2Dtype::varchar)"
+#     name = "_x24_x24timestamp_x2Dtype"
+#     type = "varchar"
+#   }
 
-  column {
-    as   = "(value:_x24_x24raw_x2Dkey::binary)"
-    name = "_x24_x24raw_x2Dkey"
-    type = "binary"
-  }
+#   column {
+#     as   = "(value:_x24_x24raw_x2Dkey::binary)"
+#     name = "_x24_x24raw_x2Dkey"
+#     type = "binary"
+#   }
 
-  column {
-    as   = "(value:_x24_x24raw_x2Dvalue::binary)"
-    name = "_x24_x24raw_x2Dvalue"
-    type = "binary"
-  }
+#   column {
+#     as   = "(value:_x24_x24raw_x2Dvalue::binary)"
+#     name = "_x24_x24raw_x2Dvalue"
+#     type = "binary"
+#   }
   
-  depends_on = [
-    snowflake_stage.stock_trades
-  ]
-}
+#   depends_on = [
+#     snowflake_stage.stock_trades
+#   ]
+# }
