@@ -365,56 +365,56 @@ resource "snowflake_external_table" "stock_trades" {
   }
 
   column {
-    as   = "(value:${double_dollar_signs}topic::varchar)"
-    name = "${double_dollar_signs}topic"
+    as   = "(value:${local.double_dollar_signs}topic::varchar)"
+    name = "${local.double_dollar_signs}topic"
     type = "varchar"
   }
 
   column {
-    as   = "(value:${double_dollar_signs}partition::int)"
-    name = "${double_dollar_signs}partition"
+    as   = "(value:${local.double_dollar_signs}partition::int)"
+    name = "${local.double_dollar_signs}partition"
     type = "int"
   }
 
   column {
-    as   = "(value:${double_dollar_signs}headers::variant)"
-    name = "${double_dollar_signs}headers"
+    as   = "(value:${local.double_dollar_signs}headers::variant)"
+    name = "${local.double_dollar_signs}headers"
     type = "variant"
   }
 
   column {
-    as   = "(value:${double_dollar_signs}leader${dash}epoch::int)"
-    name = "${double_dollar_signs}leader${dash}epoch"
+    as   = "(value:${local.double_dollar_signs}leader${local.dash}epoch::int)"
+    name = "${local.double_dollar_signs}leader${local.dash}epoch"
     type = "int"
   }
 
   column {
-    as   = "(value:${double_dollar_signs}offset::bigint)"
-    name = "${double_dollar_signs}offset"
+    as   = "(value:${local.double_dollar_signs}offset::bigint)"
+    name = "${local.double_dollar_signs}offset"
     type = "bigint"
   }
 
   column {
-    as   = "to_timestamp_ltz(value:${double_dollar_signs}timestamp::varchar)"
-    name = "${double_dollar_signs}timestamp"
+    as   = "to_timestamp_ltz(value:${local.double_dollar_signs}timestamp::varchar)"
+    name = "${local.double_dollar_signs}timestamp"
     type = "timestamp_ltz"
   }
 
   column {
-    as   = "(value:${double_dollar_signs}timestamp${dash}type::varchar)"
-    name = "${double_dollar_signs}timestamp${dash}type"
+    as   = "(value:${local.double_dollar_signs}timestamp${local.dash}type::varchar)"
+    name = "${local.double_dollar_signs}timestamp${local.dash}type"
     type = "varchar"
   }
 
   column {
-    as   = "(value:${double_dollar_signs}raw${dash}key::binary)"
-    name = "${double_dollar_signs}raw${dash}key"
+    as   = "(value:${local.double_dollar_signs}raw${local.dash}key::binary)"
+    name = "${local.double_dollar_signs}raw${local.dash}key"
     type = "binary"
   }
 
   column {
-    as   = "(value:${double_dollar_signs}raw${dash}value::binary)"
-    name = "${double_dollar_signs}raw${dash}value"
+    as   = "(value:${local.double_dollar_signs}raw${local.dash}value::binary)"
+    name = "${local.double_dollar_signs}raw${local.dash}value"
     type = "binary"
   }
   
