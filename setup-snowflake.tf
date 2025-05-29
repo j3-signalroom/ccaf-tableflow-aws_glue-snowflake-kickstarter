@@ -286,6 +286,11 @@ resource "snowflake_file_format" "parquet" {
   ]
 }
 
+locals {
+  double_dollar_signs = "_x24_x24"
+  dash                = "_x2D"
+}
+
 # Create a Snowflake Stage that points to the S3 bucket where the Tableflow Kafka Topic
 # is writing the data. This stage will be used to load data into Snowflake.
 resource "snowflake_stage" "stock_trades" {
@@ -360,56 +365,56 @@ resource "snowflake_external_table" "stock_trades" {
   }
 
   column {
-    as   = "(value:_x24_x24topic::varchar)"
-    name = "_x24_x24topic"
+    as   = "(value:${double_dollar_signs}topic::varchar)"
+    name = "${double_dollar_signs}topic"
     type = "varchar"
   }
 
   column {
-    as   = "(value:_x24_x24partition::int)"
-    name = "_x24_x24partition"
+    as   = "(value:${double_dollar_signs}partition::int)"
+    name = "${double_dollar_signs}partition"
     type = "int"
   }
 
   column {
-    as   = "(value:_x24_x24headers::variant)"
-    name = "_x24_x24headers"
+    as   = "(value:${double_dollar_signs}headers::variant)"
+    name = "${double_dollar_signs}headers"
     type = "variant"
   }
 
   column {
-    as   = "(value:_x24_x24leader_x2Depoch::int)"
-    name = "_x24_x24leader_x2Depoch"
+    as   = "(value:${double_dollar_signs}leader${dash}epoch::int)"
+    name = "${double_dollar_signs}leader${dash}epoch"
     type = "int"
   }
 
   column {
-    as   = "(value:_x24_x24offset::bigint)"
-    name = "_x24_x24offset"
+    as   = "(value:${double_dollar_signs}offset::bigint)"
+    name = "${double_dollar_signs}offset"
     type = "bigint"
   }
 
   column {
-    as   = "to_timestamp_ltz(value:_x24_x24timestamp::varchar)"
-    name = "_x24_x24timestamp"
+    as   = "to_timestamp_ltz(value:${double_dollar_signs}timestamp::varchar)"
+    name = "${double_dollar_signs}timestamp"
     type = "timestamp_ltz"
   }
 
   column {
-    as   = "(value:_x24_x24timestamp_x2Dtype::varchar)"
-    name = "_x24_x24timestamp_x2Dtype"
+    as   = "(value:${double_dollar_signs}timestamp${dash}type::varchar)"
+    name = "${double_dollar_signs}timestamp${dash}type"
     type = "varchar"
   }
 
   column {
-    as   = "(value:_x24_x24raw_x2Dkey::binary)"
-    name = "_x24_x24raw_x2Dkey"
+    as   = "(value:${double_dollar_signs}raw${dash}key::binary)"
+    name = "${double_dollar_signs}raw${dash}key"
     type = "binary"
   }
 
   column {
-    as   = "(value:_x24_x24raw_x2Dvalue::binary)"
-    name = "_x24_x24raw_x2Dvalue"
+    as   = "(value:${double_dollar_signs}raw${dash}value::binary)"
+    name = "${double_dollar_signs}raw${dash}value"
     type = "binary"
   }
   
