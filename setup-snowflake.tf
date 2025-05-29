@@ -54,8 +54,8 @@ resource "snowflake_user" "user" {
   default_role      = snowflake_account_role.security_admin_role.name
   default_namespace = "${local.database_name}.${local.schema_name}"
 
-  # Setting the attributes to `null`, effectively unsets the attribute
-  # Refer to this link `https://docs.snowflake.com/en/user-guide/key-pair-auth#configuring-key-pair-rotation`
+  # Setting the attributes to `null`, effectively unsets the attribute.  Refer to the 
+  # `https://docs.snowflake.com/en/user-guide/key-pair-auth#configuring-key-pair-rotation`
   # for more information
   rsa_public_key    = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1 ? jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_1"] : null
   rsa_public_key_2  = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 2 ? jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_2"] : null
@@ -214,8 +214,8 @@ data "http" "tableflow_topic" {
   ]
 }
 
-# Ensure that the Tableflow Topic GET RESTful API call made before proceeding on to the
-# local variable declaration below.
+# Ensure that the Tableflow Topic GET RESTful API call made before proceeding
+# on to the local variable declaration below.
 resource "null_resource" "after_tableflow_topic" {
   triggers = {
     response = data.http.tableflow_topic.response_body
@@ -286,8 +286,13 @@ resource "snowflake_file_format" "parquet" {
   ]
 }
 
-# Create a Snowflake Stage that points to the S3 bucket where the Tableflow Kafka Topic
-# is writing the data. This stage will be used to load data into Snowflake.
+locals {
+  double_dollar_signs = "_x24_x24"
+  dash                = "_x2D"
+}
+
+# Create a Snowflake Stage that points to the S3 bucket where the Tableflow Kafka
+# Topic is writing the data. This stage will be used to load data into Snowflake.
 resource "snowflake_stage" "stock_trades" {
   provider            = snowflake
   name                = "${upper(confluent_kafka_topic.stock_trades.topic_name)}_STAGE"
@@ -304,8 +309,8 @@ resource "snowflake_stage" "stock_trades" {
 }
 
 # Create an external table in Snowflake that references the data in the S3 bucket
-# that is being populated by the Tableflow Kafka Topic.
-# This external table will allow querying the data directly from Snowflake.
+# that is being populated by the Tableflow Kafka Topic.  This external table will
+# allow querying the data directly from Snowflake.
 resource "snowflake_external_table" "stock_trades" {
   provider     = snowflake
   database     = snowflake_database.tableflow.name
@@ -360,56 +365,56 @@ resource "snowflake_external_table" "stock_trades" {
   }
 
   column {
-    as   = "(value:_x24_x24topic::varchar)"
-    name = "_x24_x24topic"
+    as   = "(value:${local.double_dollar_signs}topic::varchar)"
+    name = "${local.double_dollar_signs}topic"
     type = "varchar"
   }
 
   column {
-    as   = "(value:_x24_x24partition::int)"
-    name = "_x24_x24partition"
+    as   = "(value:${local.double_dollar_signs}partition::int)"
+    name = "${local.double_dollar_signs}partition"
     type = "int"
   }
 
   column {
-    as   = "(value:_x24_x24headers::variant)"
-    name = "_x24_x24headers"
+    as   = "(value:${local.double_dollar_signs}headers::variant)"
+    name = "${local.double_dollar_signs}headers"
     type = "variant"
   }
 
   column {
-    as   = "(value:_x24_x24leader_x2Depoch::int)"
-    name = "_x24_x24leader_x2Depoch"
+    as   = "(value:${local.double_dollar_signs}leader${local.dash}epoch::int)"
+    name = "${local.double_dollar_signs}leader${local.dash}epoch"
     type = "int"
   }
 
   column {
-    as   = "(value:_x24_x24offset::bigint)"
-    name = "_x24_x24offset"
+    as   = "(value:${local.double_dollar_signs}offset::bigint)"
+    name = "${local.double_dollar_signs}offset"
     type = "bigint"
   }
 
   column {
-    as   = "to_timestamp_ltz(value:_x24_x24timestamp::varchar)"
-    name = "_x24_x24timestamp"
+    as   = "to_timestamp_ltz(value:${local.double_dollar_signs}timestamp::varchar)"
+    name = "${local.double_dollar_signs}timestamp"
     type = "timestamp_ltz"
   }
 
   column {
-    as   = "(value:_x24_x24timestamp_x2Dtype::varchar)"
-    name = "_x24_x24timestamp_x2Dtype"
+    as   = "(value:${local.double_dollar_signs}timestamp${local.dash}type::varchar)"
+    name = "${local.double_dollar_signs}timestamp${local.dash}type"
     type = "varchar"
   }
 
   column {
-    as   = "(value:_x24_x24raw_x2Dkey::binary)"
-    name = "_x24_x24raw_x2Dkey"
+    as   = "(value:${local.double_dollar_signs}raw${local.dash}key::binary)"
+    name = "${local.double_dollar_signs}raw${local.dash}key"
     type = "binary"
   }
 
   column {
-    as   = "(value:_x24_x24raw_x2Dvalue::binary)"
-    name = "_x24_x24raw_x2Dvalue"
+    as   = "(value:${local.double_dollar_signs}raw${local.dash}value::binary)"
+    name = "${local.double_dollar_signs}raw${local.dash}value"
     type = "binary"
   }
   
