@@ -54,8 +54,8 @@ resource "snowflake_user" "user" {
   default_role      = snowflake_account_role.security_admin_role.name
   default_namespace = "${local.database_name}.${local.schema_name}"
 
-  # Setting the attributes to `null`, effectively unsets the attribute
-  # Refer to this link `https://docs.snowflake.com/en/user-guide/key-pair-auth#configuring-key-pair-rotation`
+  # Setting the attributes to `null`, effectively unsets the attribute.  Refer to the 
+  # `https://docs.snowflake.com/en/user-guide/key-pair-auth#configuring-key-pair-rotation`
   # for more information
   rsa_public_key    = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1 ? jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_1"] : null
   rsa_public_key_2  = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 2 ? jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_2"] : null
@@ -214,8 +214,8 @@ data "http" "tableflow_topic" {
   ]
 }
 
-# Ensure that the Tableflow Topic GET RESTful API call made before proceeding on to the
-# local variable declaration below.
+# Ensure that the Tableflow Topic GET RESTful API call made before proceeding
+# on to the local variable declaration below.
 resource "null_resource" "after_tableflow_topic" {
   triggers = {
     response = data.http.tableflow_topic.response_body
@@ -291,8 +291,8 @@ locals {
   dash                = "_x2D"
 }
 
-# Create a Snowflake Stage that points to the S3 bucket where the Tableflow Kafka Topic
-# is writing the data. This stage will be used to load data into Snowflake.
+# Create a Snowflake Stage that points to the S3 bucket where the Tableflow Kafka
+# Topic is writing the data. This stage will be used to load data into Snowflake.
 resource "snowflake_stage" "stock_trades" {
   provider            = snowflake
   name                = "${upper(confluent_kafka_topic.stock_trades.topic_name)}_STAGE"
@@ -309,8 +309,8 @@ resource "snowflake_stage" "stock_trades" {
 }
 
 # Create an external table in Snowflake that references the data in the S3 bucket
-# that is being populated by the Tableflow Kafka Topic.
-# This external table will allow querying the data directly from Snowflake.
+# that is being populated by the Tableflow Kafka Topic.  This external table will
+# allow querying the data directly from Snowflake.
 resource "snowflake_external_table" "stock_trades" {
   provider     = snowflake
   database     = snowflake_database.tableflow.name
