@@ -39,11 +39,11 @@ data "confluent_organization" "signalroom" {}
 data "aws_caller_identity" "current" {}
 
 locals {
-  snowflake_organization_name             = "${split("-", jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"])[0]}"
-  snowflake_account_name                  = "${split("-", jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"])[1]}"
-  snowflake_admin_user                    = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["admin_user"]
-  snowflake_active_private_key            = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["active_rsa_public_key_number"] == 1 ? data.aws_secretsmanager_secret_version.admin_private_key_1.secret_string : data.aws_secretsmanager_secret_version.admin_private_key_2.secret_string
-  snowflake_authenticator                 = "SNOWFLAKE_JWT"
+  snowflake_organization_name   = "${split("-", jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"])[0]}"
+  snowflake_account_name        = "${split("-", jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"])[1]}"
+  snowflake_admin_user          = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["admin_user"]
+  snowflake_active_private_key  = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["active_rsa_public_key_number"] == 1 ? data.aws_secretsmanager_secret_version.admin_private_key_1.secret_string : data.aws_secretsmanager_secret_version.admin_private_key_2.secret_string
+  snowflake_authenticator       = "SNOWFLAKE_JWT"
   cloud                         = "AWS"
   secrets_insert                = "tableflow_kickstarter"
   confluent_secrets_path_prefix = "/confluent_cloud_resource/${local.secrets_insert}"

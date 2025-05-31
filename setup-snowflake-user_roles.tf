@@ -17,17 +17,17 @@ module "snowflake_user_rsa_key_pairs_rotation" {
 }
 
 module "snowflake_glue_s3_access_role" {
-  source                      = "./modules/snowflake_glue_s3_access_role"
-  s3_bucket_arn               = aws_s3_bucket.iceberg_bucket.arn
-  snowflake_glue_s3_role_name = local.snowflake_aws_role_name
-  snowflake_aws_role_arn      = local.snowflake_aws_role_arn
-  aws_s3_integration_name     = local.aws_s3_integration_name
-  tableflow_topic_s3_base_path                   = local.tableflow_topic_s3_base_path
-  organization_name           = local.snowflake_organization_name
-  account_name                = local.snowflake_account_name
-  admin_user                  = local.snowflake_admin_user
-  authenticator               = local.snowflake_authenticator
-  active_private_key          = local.snowflake_active_private_key
+  source                       = "./modules/snowflake_glue_s3_access_role"
+  s3_bucket_arn                = aws_s3_bucket.iceberg_bucket.arn
+  snowflake_glue_s3_role_name  = local.snowflake_aws_role_name
+  snowflake_aws_role_arn       = local.snowflake_aws_role_arn
+  aws_s3_integration_name      = local.aws_s3_integration_name
+  tableflow_topic_s3_base_path = local.tableflow_topic_s3_base_path
+  organization_name            = local.snowflake_organization_name
+  account_name                 = local.snowflake_account_name
+  admin_user                   = local.snowflake_admin_user
+  authenticator                = local.snowflake_authenticator
+  active_private_key           = local.snowflake_active_private_key
 }
 
 resource "snowflake_user" "user" {
