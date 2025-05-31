@@ -144,7 +144,7 @@ resource "snowflake_database" "tableflow" {
 }
 
 resource "snowflake_grant_privileges_to_account_role" "database" {
-  provider          = snowflake.account_admin
+  provider          = snowflake
   privileges        = ["USAGE"]
   account_role_name = snowflake_account_role.account_admin_role.name
   on_account_object {
@@ -167,8 +167,8 @@ resource "snowflake_schema" "tableflow" {
 }
 
 resource "snowflake_grant_privileges_to_account_role" "schema" {
-  provider          = snowflake.account_admin
-  privileges        = ["CREATE STAGE", "CREATE FILE FORMAT", "USAGE"]
+  provider          = snowflake
+  privileges        = ["CREATE STAGE", "CREATE FILE FORMAT", "CREATE EXTERNAL TABLE", "USAGE"]
   account_role_name = snowflake_account_role.account_admin_role.name
   on_schema {
     schema_name = "${local.database_name}.${local.schema_name}"
@@ -246,7 +246,7 @@ module "snowflake_glue_s3_access_role" {
 }
 
 resource "snowflake_grant_privileges_to_account_role" "integration_grant" {
-  provider          = snowflake.account_admin
+  provider          = snowflake
   privileges        = ["USAGE"]
   account_role_name = snowflake_account_role.account_admin_role.name
   on_account_object {
@@ -262,7 +262,7 @@ resource "snowflake_grant_privileges_to_account_role" "integration_grant" {
 }
 
 resource "snowflake_grant_account_role" "user_account_admin" {
-  provider  = snowflake.account_admin
+  provider  = snowflake
   role_name = snowflake_account_role.account_admin_role.name
   user_name = snowflake_user.user.name
   depends_on = [ 
@@ -272,7 +272,7 @@ resource "snowflake_grant_account_role" "user_account_admin" {
 }
 
 resource "snowflake_file_format" "parquet" {
-  provider = snowflake
+  provider    = snowflake
   name        = "PARQUET_FORMAT"
   database    = snowflake_database.tableflow.name
   schema      = snowflake_schema.tableflow.name 
@@ -286,9 +286,19 @@ resource "snowflake_file_format" "parquet" {
   ]
 }
 
-locals {
-  double_dollar_signs = "_x24_x24"
-  dash                = "_x2D"
+resource "snowflake_grant_privileges_to_account_role" "file_format_usage" {
+  provider          = snowflake
+  privileges        = ["USAGE"]
+  account_role_name = snowflake_account_role.account_admin_role.name
+  on_schema_object {
+    object_type = "FILE FORMAT"
+    object_name = "${snowflake_database.tableflow.name}.${snowflake_schema.tableflow.name}.${snowflake_file_format.parquet.name}"
+  }
+
+  depends_on = [
+    snowflake_file_format.parquet,
+    snowflake_account_role.account_admin_role
+  ]
 }
 
 # Create a Snowflake Stage that points to the S3 bucket where the Tableflow Kafka
@@ -308,6 +318,26 @@ resource "snowflake_stage" "stock_trades" {
   ]
 }
 
+resource "snowflake_grant_privileges_to_account_role" "stage_usage" {
+  provider          = snowflake
+  privileges        = ["USAGE"]
+  account_role_name = snowflake_account_role.account_admin_role.name
+  on_schema_object {
+    object_type = "STAGE"
+    object_name = "${snowflake_database.tableflow.name}.${snowflake_schema.tableflow.name}.${snowflake_stage.stock_trades.name}"
+  }
+
+  depends_on = [
+    snowflake_stage.stock_trades,
+    snowflake_account_role.account_admin_role
+  ]
+}
+
+locals {
+  double_dollar_signs = "_x24_x24"
+  dash                = "_x2D"
+}
+
 # Create an external table in Snowflake that references the data in the S3 bucket
 # that is being populated by the Tableflow Kafka Topic.  This external table will
 # allow querying the data directly from Snowflake.
@@ -316,7 +346,7 @@ resource "snowflake_external_table" "stock_trades" {
   database     = snowflake_database.tableflow.name
   schema       = snowflake_schema.tableflow.name
   name         = upper(confluent_kafka_topic.stock_trades.topic_name)
-  file_format  = "TYPE = 'PARQUET'"
+  file_format  = "TYPE = 'PARQUET'" # snowflake_file_format.parquet.name
   pattern      = ".*\\.parquet"
   location     = "@${snowflake_stage.stock_trades.fully_qualified_name}"
   auto_refresh = true
@@ -421,7 +451,7 @@ resource "snowflake_external_table" "stock_trades" {
   depends_on = [
     snowflake_database.tableflow,
     snowflake_schema.tableflow,
-    snowflake_stage.stock_trades,
-    snowflake_file_format.parquet
+    snowflake_grant_privileges_to_account_role.stage_usage,
+    snowflake_grant_privileges_to_account_role.file_format_usage
   ]
 }
