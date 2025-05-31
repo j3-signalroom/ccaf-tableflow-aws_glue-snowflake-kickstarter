@@ -52,7 +52,8 @@ resource "snowflake_grant_privileges_to_account_role" "integration_usage" {
   }
 
   depends_on = [ 
-    snowflake_grant_account_role.user_security_admin
+    snowflake_grant_account_role.user_security_admin,
+    snowflake_user.user
   ]
 }
 
