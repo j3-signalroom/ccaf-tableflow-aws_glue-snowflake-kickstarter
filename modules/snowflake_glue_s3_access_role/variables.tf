@@ -18,7 +18,7 @@ variable "aws_s3_integration_name" {
   type        = string
 }
 
-variable "base_path" {
+variable "tableflow_topic_s3_base_path" {
   description = "The base path for the S3 bucket."
   type        = string
 }
