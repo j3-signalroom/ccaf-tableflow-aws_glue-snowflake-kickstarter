@@ -60,4 +60,5 @@ locals {
   system_admin_role             = "${local.user_name}_SYSTEM_ADMIN_ROLE"
   tableflow_glue_s3_role_name   = "tableflow_glue_s3_role"
   tableflow_glue_s3_role_arn    = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.tableflow_glue_s3_role_name}"
+  stage_fully_qualified_name    = "${local.database_name}.${local.schema_name}.${local.stage_name}"
 }
