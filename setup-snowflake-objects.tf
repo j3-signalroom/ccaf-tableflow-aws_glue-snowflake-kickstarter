@@ -67,16 +67,16 @@ locals {
 # Create an external table in Snowflake that references the data in the S3 bucket
 # that is being populated by the Tableflow Kafka Topic.  This external table will
 # allow querying the data directly from Snowflake.
-resource "snowflake_external_table" "stock_trades" {
+resource "snowflake_external_table" "stock_trades_with_metadata" {
   provider     = snowflake
   database     = local.database_name
   schema       = local.schema_name
-  name         = upper(confluent_kafka_topic.stock_trades.topic_name)
+  name         = "${upper(confluent_kafka_topic.stock_trades.topic_name)}_WITH_METADATA"
   file_format  = "FORMAT_NAME = ${snowflake_file_format.parquet.fully_qualified_name}"
   pattern      = ".*\\.parquet"
   location     = "@${snowflake_stage.stock_trades.fully_qualified_name}"
   auto_refresh = true
-  comment      = "External table for stock trades data from Tableflow Kafka Topic"
+  comment      = "External table for stock trades data from Tableflow Kafka Topic.  Along with metadata, key and value columns are included."
 
   column {
     as   = "(value:key::binary)"
@@ -174,6 +174,57 @@ resource "snowflake_external_table" "stock_trades" {
     type = "binary"
   }
   
+  depends_on = [
+    confluent_kafka_topic.stock_trades,
+    snowflake_stage.stock_trades,
+    snowflake_file_format.parquet
+  ]
+}
+
+# Create an external table in Snowflake that references the data in the S3 bucket
+# that is being populated by the Tableflow Kafka Topic.  This external table will
+# allow querying the data directly from Snowflake.
+resource "snowflake_external_table" "stock_trades_without_metadata" {
+  provider     = snowflake
+  database     = local.database_name
+  schema       = local.schema_name
+  name         = "${upper(confluent_kafka_topic.stock_trades.topic_name)}"
+  file_format  = "FORMAT_NAME = ${snowflake_file_format.parquet.fully_qualified_name}"
+  pattern      = ".*\\.parquet"
+  location     = "@${snowflake_stage.stock_trades.fully_qualified_name}"
+  auto_refresh = true
+  comment      = "External table for stock trades data from Tableflow Kafka Topic"
+
+  column {
+    as   = "(value:quantity::int)"
+    name = "quantity"
+    type = "int"
+  }
+
+  column {
+    as   = "(value:symbol::varchar)"
+    name = "symbol"
+    type = "varchar"
+  }
+
+  column {
+    as   = "(value:price::int)"
+    name = "price"
+    type = "int"
+  }
+
+  column {
+    as   = "(value:account::varchar)"
+    name = "account"
+    type = "varchar"
+  }
+
+  column {
+    as   = "(value:userid::varchar)"
+    name = "userid"
+    type = "varchar"
+  }
+
   depends_on = [
     confluent_kafka_topic.stock_trades,
     snowflake_stage.stock_trades,
