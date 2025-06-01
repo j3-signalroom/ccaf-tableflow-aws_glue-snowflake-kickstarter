@@ -70,7 +70,7 @@ resource "snowflake_external_table" "stock_trades" {
   database     = local.database_name
   schema       = local.schema_name
   name         = upper(confluent_kafka_topic.stock_trades.topic_name)
-  file_format  = "TYPE = '${snowflake_file_format.parquet.format_type}'"
+  file_format  = "TYPE = ${snowflake_file_format.parquet.format_type}"
   pattern      = ".*\\.parquet"
   location     = "@${local.stage_fully_qualified_name}"
   auto_refresh = true
