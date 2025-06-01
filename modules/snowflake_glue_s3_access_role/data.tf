@@ -11,7 +11,7 @@ data "aws_iam_policy_document" "snowflake_glue_s3_access_policy" {
       "s3:AbortMultipartUpload",
       "s3:ListMultipartUploadParts"
     ]
-    resources = ["${var.s3_bucket_arn}/*"]
+    resources = ["arn:aws:s3:::${substr(var.tableflow_topic_s3_base_path,5,length(var.tableflow_topic_s3_base_path))}*"]
   }
   statement {
     effect = "Allow"
