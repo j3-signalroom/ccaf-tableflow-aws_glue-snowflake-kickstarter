@@ -45,10 +45,10 @@ resource "snowflake_grant_privileges_to_account_role" "database_usage" {
   ]
 }
 
-# Emits GRANT ALL PRIVILEGES ON INTEGRATION <integration_name> TO ROLE <security_admin_role>;
-resource "snowflake_grant_privileges_to_account_role" "integration_all_privileges" {
+# Emits GRANT USAGE ON INTEGRATION <integration_name> TO ROLE <security_admin_role>;
+resource "snowflake_grant_privileges_to_account_role" "integration_usage" {
   provider          = snowflake.security_admin
-  privileges        = ["ALL PRIVILEGES"]
+  privileges        = ["USAGE"]
   account_role_name = snowflake_account_role.security_admin_role.name
   on_account_object {
     object_type = "INTEGRATION"
@@ -61,10 +61,10 @@ resource "snowflake_grant_privileges_to_account_role" "integration_all_privilege
   ]
 }
 
-# Emits GRANT ALL PRIVILEGES ON SCHEMA <FQN_schema_name> TO ROLE <security_admin_role>;
-resource "snowflake_grant_privileges_to_account_role" "schema_all_privileges" {
+# Emits GRANT CREATE STAGE, CREATE FILE FORMAT, CREATE EXTERNAL TABLE, USAGE ON SCHEMA <schema_fully_qualified_name> TO ROLE <security_admin_role>;
+resource "snowflake_grant_privileges_to_account_role" "schema_multiple_grants" {
   provider          = snowflake.security_admin
-  privileges        = ["ALL PRIVILEGES"]
+  privileges        = ["CREATE STAGE", "CREATE FILE FORMAT", "CREATE EXTERNAL TABLE", "USAGE"]
   account_role_name = snowflake_account_role.security_admin_role.name
   on_schema {
     schema_name = "${local.database_name}.${local.schema_name}"
@@ -75,10 +75,10 @@ resource "snowflake_grant_privileges_to_account_role" "schema_all_privileges" {
   ]
 }
 
-# Emits GRANT ALL PRIVILEGES ON FUTURE FILE FORMATS IN SCHEMA <FQN_schema_name> TO ROLE <security_admin_role>;
-resource "snowflake_grant_privileges_to_account_role" "future_file_format_all_privileges" {
+# Emits GRANT USAGE ON FUTURE FILE FORMATS IN SCHEMA <schema_fully_qualified_name> TO ROLE <security_admin_role>;
+resource "snowflake_grant_privileges_to_account_role" "future_file_format_usage" {
   provider          = snowflake.security_admin
-  privileges        = ["ALL PRIVILEGES"]
+  privileges        = ["USAGE"]
   account_role_name = snowflake_account_role.security_admin_role.name
   on_schema_object {
     future {
@@ -92,10 +92,10 @@ resource "snowflake_grant_privileges_to_account_role" "future_file_format_all_pr
   ]
 }
 
-# Emits GRANT ALL PRIVILEGES ON FUTURE STAGES IN SCHEMA <schema_name> TO ROLE <security_admin_role>;
-resource "snowflake_grant_privileges_to_account_role" "future_stage_all_privileges" {
+# Emits GRANT USAGE ON FUTURE STAGES IN SCHEMA <schema_name> TO ROLE <security_admin_role>;
+resource "snowflake_grant_privileges_to_account_role" "future_stage_usage" {
   provider          = snowflake.security_admin
-  privileges        = ["ALL PRIVILEGES"]
+  privileges        = ["USAGE"]
   account_role_name = snowflake_account_role.security_admin_role.name
   on_schema_object {
     future {
@@ -109,7 +109,7 @@ resource "snowflake_grant_privileges_to_account_role" "future_stage_all_privileg
   ]
 }
 
-# Emits GRANT SELECT ON EXTERNAL TABLE <FQN_external_table_name> TO ROLE <security_admin_role>;
+# Emits GRANT SELECT ON EXTERNAL TABLE <external_table_fully_qualified_name> TO ROLE <security_admin_role>;
 resource "snowflake_grant_privileges_to_account_role" "external_table_select" {
   provider          = snowflake.security_admin
   privileges        = ["SELECT"]
