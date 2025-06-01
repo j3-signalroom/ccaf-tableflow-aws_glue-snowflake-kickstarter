@@ -62,7 +62,7 @@ resource "snowflake_grant_account_role" "user_security_admin" {
 }
 
 resource "snowflake_account_role" "system_admin_role" {
-  provider = snowflake.security_admin
+  provider = snowflake
   name     = local.system_admin_role
   comment  = "System Admin role for ${local.user_name}"
 }
