@@ -8,19 +8,25 @@ On [March 19, 2025](https://docs.confluent.io/cloud/current/release-notes/index.
 Welcome to the forefront of the data revolution, where every challenge is an opportunity and innovation knows no bounds.
 
 <!-- toc -->
-+ [**1.0 Kickoff**](#10-kickoff)
-    - [**1.1 DevOps in Action: Running Terraform Locally**](#11-devops-in-action-running-terraform-locally)
-    - [**1.2 Visualizing the Terraform Configuration**](#12-visualizing-the-terraform-configuration)
-+ [**2.0 Resources**](#20-resources)
-    - [**2.1 Confluent Cloud for Apache Kafka (CCAK)**](#21-confluent-cloud-for-apache-kafka-ccak)
-    - [**2.2 Confluent Cloud for Apache Flink (CCAF)**](#22-confluent-cloud-for-apache-flink-ccaf)
-    - [**2.3 Tableflow for Apache Iceberg**](#23-tableflow-for-apache-iceberg)
-    - [**2.4 AWS Glue Data Catalog**](#24-aws-glue-data-catalog)
-    - [**2.5 Snowflake**](#25-snowflake)
-+ [**3.0 Important Note(s)**](#30-important-notes)
++ [**1.0 Purpose**](#10-purpose)
++ [**2.0 Kickoff**](#20-kickoff)
+    - [**2.1 DevOps in Action: Running Terraform Locally**](#21-devops-in-action-running-terraform-locally)
+    - [**2.2 Visualizing the Terraform Configuration**](#22-visualizing-the-terraform-configuration)
++ [**3.0 Resources**](#30-resources)
+    - [**3.1 Confluent Cloud for Apache Kafka (CCAK)**](#31-confluent-cloud-for-apache-kafka-ccak)
+    - [**3.2 Confluent Cloud for Apache Flink (CCAF)**](#32-confluent-cloud-for-apache-flink-ccaf)
+    - [**3.3 Tableflow for Apache Iceberg**](#33-tableflow-for-apache-iceberg)
+    - [**3.4 AWS Glue Data Catalog**](#34-aws-glue-data-catalog)
+    - [**3.5 Snowflake**](#35-snowflake)
++ [**4.0 Important Note(s)**](#40-important-notes)
 <!-- tocstop -->
 
-## 1.0 Kickoff
+## 1.0 Purpose
+The purpose of this repository is to provide a comprehensive Terraform configuration that sets up a Confluent Cloud environment with a Kafka Cluster, Flink Compute Pool, and a DataGen Source Connector to produce continuous synthetic stock trades into a Kafka Topic that will be Tableflow-enabled, along with AWS Secrets Manager, an AWS S3 bucket, AWS Glue Data Catalog, and Snowflake Database (as illustrated in the picture below).
+
+![cc-kafka-tableflow-glue-snowflake](.blog/images/cc-kafka-tableflow-glue-snowflake.png)
+
+## 2.0 Kickoff
 
 **These are the steps**
 
@@ -51,10 +57,10 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
 
 4. Apart of the Terraform configurations, is the `snowflake_user_rsa_key_pairs_rotation`, a Terraform [module](https://developer.hashicorp.com/terraform/language/modules) that is an  automated solution for managing the entire lifecycle of [RSA key pairs](https://github.com/j3-signalroom/j3-techstack-lexicon/blob/main/cryptographic-glossary.md#rsa-key-pair) used to authenticate a Snowflake service account. It leverages the Infrastructure-as-Code (IaC) approach with a specialized AWS Lambda function, known as the [IaC Snowflake User RSA Key Pairs Generator](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_generator-lambda), to automate the generation and rotation of RSA key pairs. The module allows users to define rotation intervals (e.g., every 30 days since the last key generation) to enhance security by regularly renewing cryptographic credentials. Additionally, it integrates seamlessly with AWS Secrets Manager to securely store and manage the generated key pairs, ensuring that the keys remain protected and easily accessible for Snowflake authentication without manual intervention.
 
-### 1.1 DevOps in Action: Running Terraform Locally
+### 2.1 DevOps in Action: Running Terraform Locally
 Install the [Terraform CLI](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) on your local machine, and make sure you have an [HCP Terraform account](https://app.terraform.io/session) to run the Terraform configuration.  Learn how to set up Terraform Cloud for local use by clicking [here](.blog/setup-terraform-cloud.md).
 
-Then run the following command to set up the Terraform configuration locally. This command will create a Confluent Cloud environment with a Kafka Cluster configured for Tableflow, AWS Secrets Manager, an AWS S3 bucket with a `warehouse` folder, AWS Glue Data Catalog, and Snowflake Database:
+Then run the following command to set up the Terraform configuration locally. This command will create a Confluent Cloud environment with a Kafka Cluster configured for Tableflow, AWS Secrets Manager, an AWS S3 bucket, AWS Glue Data Catalog, and Snowflake Database:
 
 ```bash
 deploy.sh <create | delete> --profile=<SSO_PROFILE_NAME> \
@@ -75,7 +81,7 @@ deploy.sh <create | delete> --profile=<SSO_PROFILE_NAME> \
 
 To learn more about this script, click [here](.blog/deploy-script-explanation.md).
 
-### 1.2 Visualizing the Terraform Configuration
+### 2.2 Visualizing the Terraform Configuration
 Below is the Terraform visualization of the Terraform configuration. It shows the resources and their dependencies, making the infrastructure setup easier to understand.
 
 ![Terraform Visulization](.blog/images/terraform-visualization.png)
@@ -88,27 +94,27 @@ When you update the Terraform Configuration, to update the Terraform visualizati
 terraform graph | dot -Tpng > .blog/images/terraform-visualization.png
 ```
 
-## 2.0 Resources
+## 3.0 Resources
 * [Shift Left: Unifying Operations and Analytics With Data Products eBook](https://www.confluent.io/resources/ebook/unifying-operations-analytics-with-data-products/?utm_medium=sem&utm_source=google&utm_campaign=ch.sem_br.nonbrand_tp.prs_tgt.dsa_mt.dsa_rgn.namer_lng.eng_dv.all_con.resources&utm_term=&creative=&device=c&placement=&gad_source=1&gad_campaignid=12131734288&gbraid=0AAAAADRv2c3NnjtbB2EmbR4ZfsjGY1Uge&gclid=EAIaIQobChMIm5KUs7GhjQMVQDUIBR0YgAilEAAYASAAEgKu8_D_BwE)
 
-### 2.1 Confluent Cloud for Apache Kafka (CCAK)
+### 3.1 Confluent Cloud for Apache Kafka (CCAK)
 * [Datagen Source Connector for Confluent Cloud](https://docs.confluent.io/cloud/current/connectors/cc-datagen-source.html)
 
-### 2.2 Confluent Cloud for Apache Flink (CCAF)
+### 3.2 Confluent Cloud for Apache Flink (CCAF)
 * [Stream Processing with Confluent Cloud for Apache Flink](https://docs.confluent.io/cloud/current/flink/overview.html#stream-processing-with-af-long)
 
-### 2.3 Tableflow for Apache Iceberg
+### 3.3 Tableflow for Apache Iceberg
 * [Tableflow in Confluent Cloud](https://docs.confluent.io/cloud/current/topics/tableflow/overview.html#cloud-tableflow)
 * [Terraforming Snowflake](https://quickstarts.snowflake.com/guide/terraforming_snowflake/index.html?index=..%2F..index&utm_cta=website-workload-cortex-timely-content-copilot-ama#0)
 * [Terraform Provider Confluent Tableflow Examples Configuration](https://github.com/confluentinc/terraform-provider-confluent/tree/master/examples/configurations/tableflow)
 
-### 2.4 AWS Glue Data Catalog
+### 3.4 AWS Glue Data Catalog
 * [Data discovery and cataloging in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/catalog-and-crawler.html)
 
-### 2.5 Snowflake
+### 3.5 Snowflake
 * [Snowflake Create Storage Integration](https://docs.snowflake.com/en/sql-reference/sql/create-storage-integration)
 * [Snowflake Terraform Registry](https://registry.terraform.io/providers/snowflakedb/snowflake/2.1.0)
 * [Option 1: Configuring a Snowflake storage integration to access Amazon S3](https://docs.snowflake.com/en/user-guide/data-load-s3-config-storage-integration)
 
-## 3.0 Important Note(s)
+## 4.0 Important Note(s)
 * [Known Issue(s)](KNOWNISSUES.md)
