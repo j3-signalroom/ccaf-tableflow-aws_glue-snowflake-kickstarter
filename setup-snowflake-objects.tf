@@ -44,16 +44,18 @@ resource "snowflake_file_format" "parquet" {
 resource "snowflake_stage" "stock_trades" {
   provider            = snowflake
   name                = local.stage_name
-  url                 = "${local.tableflow_topic_s3_table_path}/data"
+  url                 = "${local.tableflow_topic_s3_table_path}/data/"
   database            = local.database_name
   schema              = local.schema_name
   storage_integration = local.aws_s3_integration_name
+  file_format         = "FORMAT_NAME = ${snowflake_file_format.parquet.fully_qualified_name}"
   comment             = "Stage for stock trades data from Tableflow Kafka Topic"
 
   depends_on = [
     module.snowflake_glue_s3_access_role,
-    snowflake_grant_privileges_to_account_role.integration_all_privileges,
-    snowflake_schema.tableflow_kickstarter
+    snowflake_grant_privileges_to_account_role.integration_usage,
+    snowflake_schema.tableflow_kickstarter,
+    snowflake_file_format.parquet
   ]
 }
 
@@ -70,9 +72,9 @@ resource "snowflake_external_table" "stock_trades" {
   database     = local.database_name
   schema       = local.schema_name
   name         = upper(confluent_kafka_topic.stock_trades.topic_name)
-  file_format  = "TYPE = ${snowflake_file_format.parquet.format_type}"
+  file_format  = "FORMAT_NAME = ${snowflake_file_format.parquet.fully_qualified_name}"
   pattern      = ".*\\.parquet"
-  location     = "@${local.stage_fully_qualified_name}"
+  location     = "@${snowflake_stage.stock_trades.fully_qualified_name}"
   auto_refresh = true
   comment      = "External table for stock trades data from Tableflow Kafka Topic"
 

@@ -1,5 +1,4 @@
 # Known Issues
 All known issues related to this project will be documented in this file.
 
-
-* Issue [#139](https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter/issues/139)
+> _If you have a known issue that is not listed here, please open an issue on the project's GitHub repository._
