@@ -110,7 +110,25 @@ resource "snowflake_grant_privileges_to_account_role" "future_stage_usage" {
 }
 
 # Emits GRANT SELECT ON EXTERNAL TABLE <external_table_fully_qualified_name> TO ROLE <security_admin_role>;
-resource "snowflake_grant_privileges_to_account_role" "external_table_select" {
+resource "snowflake_grant_privileges_to_account_role" "stock_trades_with_metadata_external_table_select" {
+  provider          = snowflake.security_admin
+  privileges        = ["SELECT"]
+  account_role_name = snowflake_account_role.security_admin_role.name
+
+  on_schema_object {
+    object_type = "EXTERNAL TABLE"
+    object_name = "${local.database_name}.${local.schema_name}.${upper(confluent_kafka_topic.stock_trades.topic_name)}_WITH_METADATA"
+  }
+
+  depends_on = [
+    confluent_kafka_topic.stock_trades,
+    snowflake_grant_account_role.user_security_admin,
+    snowflake_external_table.stock_trades_with_metadata
+  ]
+}
+
+# Emits GRANT SELECT ON EXTERNAL TABLE <external_table_fully_qualified_name> TO ROLE <security_admin_role>;
+resource "snowflake_grant_privileges_to_account_role" "stock_trades_without_metadata_external_table_select" {
   provider          = snowflake.security_admin
   privileges        = ["SELECT"]
   account_role_name = snowflake_account_role.security_admin_role.name
@@ -123,6 +141,6 @@ resource "snowflake_grant_privileges_to_account_role" "external_table_select" {
   depends_on = [
     confluent_kafka_topic.stock_trades,
     snowflake_grant_account_role.user_security_admin,
-    snowflake_external_table.stock_trades
+    snowflake_external_table.stock_trades_without_metadata
   ]
 }
