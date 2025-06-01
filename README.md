@@ -5,6 +5,8 @@ As we evolved to data lakes, many challenges persisted: maintenance overhead, sl
 
 On [March 19, 2025](https://docs.confluent.io/cloud/current/release-notes/index.html#march-19-2025), Confluent proudly announced the general availability of [Tableflow for Apache Iceberg](https://docs.confluent.io/cloud/current/topics/tableflow/overview.html#cloud-tableflow), marking a transformative milestone for data warehousing and data lakes. This monumental release redefines data management by seamlessly addressing the complexities of modern data infrastructures. Leveraging the unparalleled power of our fully managed open-source trifecta—Apache Kafka, Apache Flink, and Apache Iceberg—we now deliver a unified solution that adeptly serves both operational and analytical data needs.
 
+![this-is-us-sterling-k-brown](.blog/images/this-is-us-sterling-k-brown.gif)
+
 Welcome to the forefront of the data revolution, where every challenge is an opportunity and innovation knows no bounds.
 
 <!-- toc -->
