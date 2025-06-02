@@ -46,7 +46,7 @@ The purpose of this repository is to provide a comprehensive Terraform configura
 
 2. Clone the repo:
     ```bash
-    git clone https://github.com/j3-signalroom/ccaf-tableflow-snowflake-kickstarter.git
+    git clone https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter.git
     ```
 
 3. Set up your Terraform Cloud environment locally. Here's what you can expect:
