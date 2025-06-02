@@ -1,3 +1,4 @@
+# `ACCOUNTADMIN` role is required to create the storage integration.
 provider "snowflake" {
   role              = "ACCOUNTADMIN"
   organization_name = var.organization_name
