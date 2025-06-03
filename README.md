@@ -28,7 +28,7 @@ The purpose of this project is to follow the [how-to instructions](https://docs.
 
 ![tableflow-iceberg-aws-glue](.blog/images/tableflow-iceberg-aws-glue.png)
 
-Instead of doing it manually, we will **automate** the entire process using Terraform to create a fully functional Confluent Cloud environment with Tableflow, Apache Iceberg, AWS Glue Data Catalog, and Snowflake Database. The Terraform configuration will automate the setup of the Confluent Cloud environment featuring a Kafka Cluster, Flink Compute Pool, and a DataGen Source Connector to continuously produce synthetic stock trades into a Kafka Topic that will be Tableflow-enabled:
+Instead of doing it _manually_, we will **automate** the entire process using Terraform to create a fully functional Confluent Cloud environment with Tableflow, Apache Iceberg, AWS Glue Data Catalog, and Snowflake Database. The Terraform configuration will automate the setup of the Confluent Cloud environment featuring a Kafka Cluster, Flink Compute Pool, and a DataGen Source Connector to continuously produce synthetic stock trades into a Kafka Topic that will be Tableflow-enabled:
 
 ![cc-kafka-tableflow-glue-snowflake](.blog/images/cc-kafka-tableflow-glue-snowflake.png)
 
