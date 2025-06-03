@@ -24,7 +24,11 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
 <!-- tocstop -->
 
 ## 1.0 Purpose
-The purpose of this repository is to provide a comprehensive Terraform configuration that sets up a Confluent Cloud environment with a Kafka Cluster, Flink Compute Pool, and a DataGen Source Connector to produce continuous synthetic stock trades into a Kafka Topic that will be Tableflow-enabled, along with AWS Secrets Manager, an AWS S3 bucket, AWS Glue Data Catalog, and Snowflake Database (as illustrated in the picture below).
+The purpose of this project is to follow the [how-to instructions](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/overview.html) provided by Confluent for configuring Tableflow to use S3 as your BYOS choice and to integrate with AWS Glue in Confluent Cloud, utilizing Snowflake as the compute engine:
+
+![tableflow-iceberg-aws-glue](.blog/images/tableflow-iceberg-aws-glue.png)
+
+Instead of doing it manually, we will **automate** the entire process using Terraform to create a fully functional Confluent Cloud environment with Tableflow, Apache Iceberg, AWS Glue Data Catalog, and Snowflake Database. The Terraform configuration will automate the setup of the Confluent Cloud environment featuring a Kafka Cluster, Flink Compute Pool, and a DataGen Source Connector to continuously produce synthetic stock trades into a Kafka Topic that will be Tableflow-enabled:
 
 ![cc-kafka-tableflow-glue-snowflake](.blog/images/cc-kafka-tableflow-glue-snowflake.png)
 
@@ -79,7 +83,7 @@ deploy.sh <create | delete> --profile=<SSO_PROFILE_NAME> \
 > `<CONFLUENT_API_SECRET>`|your organization's Confluent Cloud API Secret.
 > `<SNOWFLAKE_WAREHOUSE>`|the Snowflake warehouse (or "virtual warehouse") you choose to run the resources in Snowflake.
 > `<DAY_COUNT>`|how many day(s) should the API Key be rotated for.
-> `<NUMBER_OF_API_KEYS_TO_RETAIN>`|Specifies the number of API keys to create and retain.
+> `<NUMBER_OF_API_KEYS_TO_RETAIN>`|specifies the number of API keys to create and retain.
 
 To learn more about this script, click [here](.blog/deploy-script-explanation.md).
 
