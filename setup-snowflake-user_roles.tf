@@ -30,6 +30,7 @@ module "snowflake_glue_s3_access_role" {
   active_private_key           = local.snowflake_active_private_key
 }
 
+# Emits CREATE USER <user_name> DEFAULT_WAREHOUSE = <warehouse_name> DEFAULT_ROLE = <system_admin_role> DEFAULT_NAMESPACE = <database_name>.<schema_name> RSA_PUBLIC_KEY = <rsa_public_key> RSA_PUBLIC_KEY_2 = NULL;
 resource "snowflake_user" "user" {
   provider          = snowflake.security_admin
   name              = local.user_name
