@@ -44,12 +44,14 @@ resource "snowflake_user" "user" {
   rsa_public_key_2  = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 2 ? jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_2"] : null
 }
 
+# Emits CREATE ROLE <security_admin_role> COMMENT = 'Security Admin role for <user_name>';
 resource "snowflake_account_role" "security_admin_role" {
   provider = snowflake.security_admin
   name     = local.security_admin_role
   comment  = "Security Admin role for ${local.user_name}"
 }
 
+# Emits GRANT ROLE <security_admin_role> TO USER <user_name>;
 resource "snowflake_grant_account_role" "user_security_admin" {
   provider  = snowflake.security_admin
   role_name = snowflake_account_role.security_admin_role.name
@@ -61,12 +63,14 @@ resource "snowflake_grant_account_role" "user_security_admin" {
   ]
 }
 
+# Emits CREATE ROLE <system_admin_role> COMMENT = 'System Admin role for <user_name>';
 resource "snowflake_account_role" "system_admin_role" {
   provider = snowflake.security_admin
   name     = local.system_admin_role
   comment  = "System Admin role for ${local.user_name}"
 }
 
+# Emits GRANT ROLE <user_system_admin> TO USER <user_name>;
 resource "snowflake_grant_account_role" "user_system_admin" {
   provider  = snowflake
   role_name = snowflake_account_role.system_admin_role.name
