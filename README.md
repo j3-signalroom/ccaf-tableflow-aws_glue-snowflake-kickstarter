@@ -113,6 +113,7 @@ terraform graph | dot -Tpng > .blog/images/terraform-visualization.png
 * [Tableflow in Confluent Cloud](https://docs.confluent.io/cloud/current/topics/tableflow/overview.html#cloud-tableflow)
 * [Terraforming Snowflake](https://quickstarts.snowflake.com/guide/terraforming_snowflake/index.html?index=..%2F..index&utm_cta=website-workload-cortex-timely-content-copilot-ama#0)
 * [Terraform Provider Confluent Tableflow Examples Configuration](https://github.com/confluentinc/terraform-provider-confluent/tree/master/examples/configurations/tableflow)
+* [Learn more about Apache Iceberg](https://iceberg.apache.org/docs/latest/)
 
 ### 3.4 AWS Glue Data Catalog
 * [Data discovery and cataloging in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/catalog-and-crawler.html)
