@@ -79,7 +79,7 @@ deploy.sh <create | delete> --profile=<SSO_PROFILE_NAME> \
 > `<CONFLUENT_API_SECRET>`|your organization's Confluent Cloud API Secret.
 > `<SNOWFLAKE_WAREHOUSE>`|the Snowflake warehouse (or "virtual warehouse") you choose to run the resources in Snowflake.
 > `<DAY_COUNT>`|how many day(s) should the API Key be rotated for.
-> `<NUMBER_OF_API_KEYS_TO_RETAIN>`|Specifies the number of API keys to create and retain.
+> `<NUMBER_OF_API_KEYS_TO_RETAIN>`|specifies the number of API keys to create and retain.
 
 To learn more about this script, click [here](.blog/deploy-script-explanation.md).
 
