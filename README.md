@@ -24,7 +24,7 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
 <!-- tocstop -->
 
 ## 1.0 Purpose
-The purpose of this project is to follow the [how-to instructions](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/overview.html) provided by Confluent for configuring Tableflow to use [S3](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/configure-storage.html#bring-your-own-storage-byos) as your (BYOS)[https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/configure-storage.html#bring-your-own-storage-byos] choice and to integrate with [AWS Glue](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/catalog-integration/integrate-with-aws-glue-catalog.html) in Confluent Cloud, utilizing Snowflake as the compute engine:
+The purpose of this project is to follow the [how-to instructions](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/overview.html) provided by Confluent for configuring Tableflow to use [S3](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/configure-storage.html#bring-your-own-storage-byos) as your [BYOS](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/configure-storage.html#bring-your-own-storage-byos) choice and to integrate with [AWS Glue](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/catalog-integration/integrate-with-aws-glue-catalog.html) in Confluent Cloud, utilizing Snowflake as the compute engine:
 
 ![tableflow-iceberg-aws-glue](.blog/images/tableflow-iceberg-aws-glue.png)
 
