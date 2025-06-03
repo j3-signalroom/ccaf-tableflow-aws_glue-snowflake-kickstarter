@@ -11,7 +11,7 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
 
 <!-- toc -->
 + [**1.0 Purpose**](#10-purpose)
-+ [**2.0 Kickoff**](#20-kickoff)
++ [**2.0 Let's Get Started!**](#20-lets-get-started)
     - [**2.1 DevOps in Action: Running Terraform Locally**](#21-devops-in-action-running-terraform-locally)
     - [**2.2 Visualizing the Terraform Configuration**](#22-visualizing-the-terraform-configuration)
 + [**3.0 Resources**](#30-resources)
@@ -32,7 +32,7 @@ Instead of doing it manually, we will **automate** the entire process using Terr
 
 ![cc-kafka-tableflow-glue-snowflake](.blog/images/cc-kafka-tableflow-glue-snowflake.png)
 
-## 2.0 Kickoff
+## 2.0 Let's Get Started!
 
 **These are the steps**
 
