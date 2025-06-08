@@ -10,7 +10,7 @@ On [March 19, 2025](https://docs.confluent.io/cloud/current/release-notes/index.
 Welcome to the forefront of the data revolution, where every challenge is an opportunity and innovation knows no bounds.
 
 <!-- toc -->
-+ [**1.0 Purpose**](#10-purpose)
++ [**1.0 The Impetus**](#10-the-impetus)
 + [**2.0 Let's Get Started!**](#20-lets-get-started)
     - [**2.1 DevOps in Action: Running Terraform Locally**](#21-devops-in-action-running-terraform-locally)
     - [**2.2 Visualizing the Terraform Configuration**](#22-visualizing-the-terraform-configuration)
@@ -23,14 +23,16 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
 + [**4.0 Important Note(s)**](#40-important-notes)
 <!-- tocstop -->
 
-## 1.0 Purpose
-The purpose of this project is to follow the [how-to instructions](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/overview.html) provided by Confluent for configuring Tableflow to use [S3](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/configure-storage.html#bring-your-own-storage-byos) as your [BYOS](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/configure-storage.html#bring-your-own-storage-byos) choice and to integrate with [AWS Glue](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/catalog-integration/integrate-with-aws-glue-catalog.html) in Confluent Cloud, utilizing Snowflake as the compute engine:
+## 1.0 The Impetus
+The driving force behind this project is the need to simplify and **automate** the process of [setting up](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/overview.html) a Confluent Cloud environment with [Tableflow for Apache Iceberg](https://docs.confluent.io/cloud/current/topics/tableflow/overview.html#cloud-tableflow), [AWS S3 Bucket](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/configure-storage.html#bring-your-own-storage-byos), [AWS Glue Data Catalog](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/catalog-integration/integrate-with-aws-glue-catalog.html), and Snowflake Database. The goal is to eliminate the [_manual steps_](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/overview.html) involved in configuring these components, making it easier for data practitioners to focus on building data products rather than managing infrastructure.
 
+Turned this picture:
 ![tableflow-iceberg-aws-glue](.blog/images/tableflow-iceberg-aws-glue.png)
 
-Instead of doing it _manually_, we will **automate** the entire process using **Terraform** to create a fully functional Confluent Cloud environment with Tableflow, Apache Iceberg, AWS Glue Data Catalog, and Snowflake Database. The Terraform configuration will automate the setup of the Confluent Cloud environment featuring a Kafka Cluster, Flink Compute Pool, and a DataGen Source Connector to continuously produce synthetic stock trades into a Kafka Topic that will be Tableflow-enabled:
-
+Into reality:
 ![cc-kafka-tableflow-glue-snowflake](.blog/images/cc-kafka-tableflow-glue-snowflake.png)
+
+All with the help of [Terraform](https://developer.hashicorp.com/terraform), a powerful tool for infrastructure as code (IaC) that allows you to define and manage your infrastructure using declarative configuration files. This project leverages Terraform to automate the setup of Confluent Cloud, AWS Glue Data Catalog, and Snowflake, ensuring a consistent and repeatable deployment process.
 
 ## 2.0 Let's Get Started!
 
