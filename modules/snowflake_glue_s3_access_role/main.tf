@@ -37,3 +37,19 @@ resource "snowflake_storage_integration" "aws_s3_integration" {
   enabled                   = true
   type                      = "EXTERNAL_STAGE"
 }
+
+# Emits GRANT USAGE ON INTEGRATION <integration_name> TO ROLE <security_admin_role>;
+resource "snowflake_grant_privileges_to_account_role" "integration_usage" {
+  provider          = snowflake.security_admin
+  privileges        = ["USAGE"]
+  account_role_name = var.security_admin_role_name
+  on_account_object {
+    object_type = "INTEGRATION"
+    object_name = var.aws_s3_integration_name
+  }
+
+  depends_on = [
+    snowflake_storage_integration.aws_s3_integration,
+    aws_iam_role_policy_attachment.snowflake_glue_s3_policy_attachment
+  ]
+}

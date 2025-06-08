@@ -53,7 +53,6 @@ resource "snowflake_stage" "stock_trades" {
 
   depends_on = [
     module.snowflake_glue_s3_access_role,
-    snowflake_grant_privileges_to_account_role.integration_usage,
     snowflake_schema.tableflow_kickstarter,
     snowflake_file_format.parquet
   ]
