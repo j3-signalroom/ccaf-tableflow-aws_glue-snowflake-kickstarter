@@ -32,7 +32,7 @@ Turned this picture:
 Into reality:
 ![cc-kafka-tableflow-glue-snowflake](.blog/images/cc-kafka-tableflow-glue-snowflake.png)
 
-All with the help of [Terraform](https://developer.hashicorp.com/terraform), a powerful tool for infrastructure as code (IaC) that allows you to define and manage your infrastructure using declarative configuration files. This project leverages Terraform to automate the setup of Confluent Cloud, AWS Glue Data Catalog, and Snowflake, ensuring a consistent and repeatable deployment process.
+With the assistance [Terraform](https://developer.hashicorp.com/terraform), a powerful tool for infrastructure as code (IaC), you can define and manage your infrastructure using declarative configuration files. This project utilizes Terraform to automate the setup of Confluent Cloud, AWS S3 Bucket, AWS Glue Data Catalog, and Snowflake, ensuring a **_consistent_** and **_repeatable_** deployment process.
 
 ## 2.0 Let's Get Started!
 
