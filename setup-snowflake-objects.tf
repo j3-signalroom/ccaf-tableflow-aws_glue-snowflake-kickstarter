@@ -174,15 +174,14 @@ resource "snowflake_external_table" "stock_trades_with_metadata" {
   }
   
   depends_on = [
-    confluent_kafka_topic.stock_trades,
-    snowflake_stage.stock_trades,
-    snowflake_file_format.parquet
+    confluent_tableflow_topic.stock_trades,
+    snowflake_stage.stock_trades
   ]
 }
 
-# Create an external table in Snowflake that references the data in the S3 bucket
-# that is being populated by the Tableflow Kafka Topic.  This external table will
-# allow querying the data directly from Snowflake.
+# # Create an external table in Snowflake that references the data in the S3 bucket
+# # that is being populated by the Tableflow Kafka Topic.  This external table will
+# # allow querying the data directly from Snowflake.
 resource "snowflake_external_table" "stock_trades_without_metadata" {
   provider     = snowflake
   database     = local.database_name
@@ -225,8 +224,7 @@ resource "snowflake_external_table" "stock_trades_without_metadata" {
   }
 
   depends_on = [
-    confluent_kafka_topic.stock_trades,
-    snowflake_stage.stock_trades,
-    snowflake_file_format.parquet
+    confluent_tableflow_topic.stock_trades,
+    snowflake_stage.stock_trades
   ]
 }
