@@ -52,8 +52,8 @@ resource "snowflake_stage" "stock_trades" {
   comment             = "Stage for stock trades data from Tableflow Kafka Topic"
 
   depends_on = [
+    confluent_tableflow_topic.stock_trades,
     module.snowflake_glue_s3_access_role,
-    snowflake_grant_privileges_to_account_role.integration_usage,
     snowflake_schema.tableflow_kickstarter,
     snowflake_file_format.parquet
   ]
@@ -175,9 +175,7 @@ resource "snowflake_external_table" "stock_trades_with_metadata" {
   }
   
   depends_on = [
-    confluent_kafka_topic.stock_trades,
-    snowflake_stage.stock_trades,
-    snowflake_file_format.parquet
+    snowflake_stage.stock_trades
   ]
 }
 
@@ -226,8 +224,6 @@ resource "snowflake_external_table" "stock_trades_without_metadata" {
   }
 
   depends_on = [
-    confluent_kafka_topic.stock_trades,
-    snowflake_stage.stock_trades,
-    snowflake_file_format.parquet
+    snowflake_stage.stock_trades
   ]
 }

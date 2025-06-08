@@ -45,22 +45,6 @@ resource "snowflake_grant_privileges_to_account_role" "database_usage" {
   ]
 }
 
-# Emits GRANT USAGE ON INTEGRATION <integration_name> TO ROLE <security_admin_role>;
-resource "snowflake_grant_privileges_to_account_role" "integration_usage" {
-  provider          = snowflake.account_admin
-  privileges        = ["USAGE"]
-  account_role_name = snowflake_account_role.security_admin_role.name
-  on_account_object {
-    object_type = "INTEGRATION"
-    object_name = local.aws_s3_integration_name
-  }
-
-  depends_on = [ 
-    snowflake_grant_account_role.user_security_admin,
-    snowflake_user.user
-  ]
-}
-
 # Emits GRANT CREATE STAGE, CREATE FILE FORMAT, CREATE EXTERNAL TABLE, USAGE ON SCHEMA <schema_fully_qualified_name> TO ROLE <security_admin_role>;
 resource "snowflake_grant_privileges_to_account_role" "schema_multiple_grants" {
   provider          = snowflake.security_admin

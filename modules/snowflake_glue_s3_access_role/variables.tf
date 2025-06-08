@@ -8,6 +8,11 @@ variable "snowflake_aws_role_arn" {
   type        = string
 }
 
+variable "security_admin_role_name" {
+  description = "The security admin role name for Snowflake."
+  type        = string
+}
+
 variable "s3_bucket_arn" {
   description = "The ARN S3 bucket."
   type        = string
