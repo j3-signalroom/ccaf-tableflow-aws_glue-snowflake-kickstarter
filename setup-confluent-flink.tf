@@ -4,15 +4,56 @@ resource "confluent_service_account" "flink_sql_statements_runner" {
   description  = "Service account for running Flink SQL Statements in the Kafka cluster"
 }
 
-resource "confluent_role_binding" "flink_sql_statements_runner_env_admin" {
-  principal   = "User:${confluent_service_account.flink_sql_statements_runner.id}"
-  role_name   = "EnvironmentAdmin"
-  crn_pattern = confluent_environment.tableflow_kickstarter.resource_name
+data "confluent_organization" "signalroom" {}
+
+resource "confluent_role_binding" "flink_sql_runner_as_flink_developer" {
+    principal   = "User:${confluent_service_account.flink_sql_runner.id}"
+    role_name   = "FlinkDeveloper"
+    crn_pattern = data.confluent_organization.signalroom.resource_name
+
+    depends_on = [ 
+        confluent_service_account.flink_sql_runner
+    ]
 }
 
-data "confluent_flink_region" "env" {
-  cloud        = local.cloud
-  region       = var.aws_region
+resource "confluent_role_binding" "flink_sql_runner_as_resource_owner_topic_access" {
+    principal   = "User:${confluent_service_account.flink_sql_runner.id}"
+    role_name   = "ResourceOwner"
+    crn_pattern = "${confluent_kafka_clusterkafka_cluster.rbac_crn}/kafka=${confluent_kafka_clusterkafka_cluster.id}/topic=*"
+
+    depends_on = [
+        confluent_role_binding.flink_sql_runner_as_flink_developer
+    ]
+}
+
+resource "confluent_role_binding" "flink_sql_runner_as_assigner" {
+    principal   = "User:${confluent_service_account.flink_sql_runner.id}"
+    role_name   = "Assigner"
+    crn_pattern = "${data.confluent_organization.signalroom.resource_name}/service-account=${confluent_service_account.flink_sql_runner.id}"
+
+    depends_on = [
+        confluent_role_binding.flink_sql_runner_as_resource_owner_topic_access
+    ]
+}
+
+resource "confluent_role_binding" "flink_sql_runner_schema_registry_access" {
+    principal   = "User:${confluent_service_account.flink_sql_runner.id}"
+    role_name   = "ResourceOwner"
+    crn_pattern = "${data.confluent_schema_registry_cluster.env.resource_name}/subject=*"
+    
+    depends_on = [
+        confluent_role_binding.flink_sql_runner_as_assigner
+    ]
+}
+
+resource "confluent_role_binding" "flink_sql_runner_as_resource_owner_transactional_access" {
+    principal   = "User:${confluent_service_account.flink_sql_runner.id}"
+    role_name   = "ResourceOwner"
+    crn_pattern = "${confluent_kafka_clusterkafka_cluster.rbac_crn}/kafka=${confluent_kafka_clusterkafka_cluster.id}/transactional-id=*"
+
+    depends_on = [
+        confluent_role_binding.flink_sql_runner_schema_registry_access
+    ]
 }
 
 # https://docs.confluent.io/cloud/current/flink/get-started/quick-start-cloud-console.html#step-1-create-a-af-compute-pool
@@ -60,6 +101,11 @@ module "flink_api_key_rotation" {
     key_display_name = "Confluent Schema Registry Cluster Service Account API Key - {date} - Managed by Terraform Cloud"
     number_of_api_keys_to_retain = var.number_of_api_keys_to_retain
     day_count = var.day_count
+}
+
+data "confluent_flink_region" "env" {
+  cloud        = local.cloud
+  region       = var.aws_region
 }
 
 # Create the Flink-specific API key that will be used to submit statements.
