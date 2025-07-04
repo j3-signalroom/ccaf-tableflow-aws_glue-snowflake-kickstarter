@@ -1,5 +1,5 @@
 # Service account to perform the task within Confluent Cloud to execute the Flink SQL statements
-resource "confluent_service_account" "flink_sql_statements_runner" {
+resource "confluent_service_account" "flink_sql_runner" {
   display_name = "tableflow_flink_statements_runner"
   description  = "Service account for running Flink SQL Statements in the Kafka cluster"
 }
@@ -19,7 +19,7 @@ resource "confluent_role_binding" "flink_sql_runner_as_flink_developer" {
 resource "confluent_role_binding" "flink_sql_runner_as_resource_owner_topic_access" {
     principal   = "User:${confluent_service_account.flink_sql_runner.id}"
     role_name   = "ResourceOwner"
-    crn_pattern = "${confluent_kafka_clusterkafka_cluster.rbac_crn}/kafka=${confluent_kafka_clusterkafka_cluster.id}/topic=*"
+    crn_pattern = "${confluent_kafka_cluster.kafka_cluster.rbac_crn}/kafka=${confluent_kafka_cluster.kafka_cluster.id}/topic=*"
 
     depends_on = [
         confluent_role_binding.flink_sql_runner_as_flink_developer
@@ -49,14 +49,13 @@ resource "confluent_role_binding" "flink_sql_runner_schema_registry_access" {
 resource "confluent_role_binding" "flink_sql_runner_as_resource_owner_transactional_access" {
     principal   = "User:${confluent_service_account.flink_sql_runner.id}"
     role_name   = "ResourceOwner"
-    crn_pattern = "${confluent_kafka_clusterkafka_cluster.rbac_crn}/kafka=${confluent_kafka_clusterkafka_cluster.id}/transactional-id=*"
+    crn_pattern = "${confluent_kafka_cluster.kafka_cluster.rbac_crn}/kafka=${confluent_kafka_cluster.kafka_cluster.id}/transactional-id=*"
 
     depends_on = [
         confluent_role_binding.flink_sql_runner_schema_registry_access
     ]
 }
 
-# https://docs.confluent.io/cloud/current/flink/get-started/quick-start-cloud-console.html#step-1-create-a-af-compute-pool
 resource "confluent_flink_compute_pool" "env" {
   display_name = "tableflow_flink_statement_runner"
   cloud        = local.cloud
@@ -66,8 +65,8 @@ resource "confluent_flink_compute_pool" "env" {
     id = confluent_environment.tableflow_kickstarter.id
   }
   depends_on = [
-    confluent_role_binding.flink_sql_statements_runner_env_admin,
-    confluent_api_key.flink_sql_statements_runner_api_key,
+    confluent_role_binding.flink_sql_runner_as_resource_owner_transactional_access,
+    confluent_api_key.flink_sql_runner_api_key,
   ]
 }
 
@@ -79,9 +78,9 @@ module "flink_api_key_rotation" {
 
     # Required Input(s)
     owner = {
-        id          = confluent_service_account.flink_sql_statements_runner.id
-        api_version = confluent_service_account.flink_sql_statements_runner.api_version
-        kind        = confluent_service_account.flink_sql_statements_runner.kind
+        id          = confluent_service_account.flink_sql_runner.id
+        api_version = confluent_service_account.flink_sql_runner.api_version
+        kind        = confluent_service_account.flink_sql_runner.kind
     }
 
     resource = {
@@ -109,13 +108,13 @@ data "confluent_flink_region" "env" {
 }
 
 # Create the Flink-specific API key that will be used to submit statements.
-resource "confluent_api_key" "flink_sql_statements_runner_api_key" {
+resource "confluent_api_key" "flink_sql_runner_api_key" {
   display_name = "tableflow_flink_statements_runner_api_key"
-  description  = "Flink API Key that is owned by 'flink_sql_statements_runner' service account"
+  description  = "Flink API Key that is owned by 'flink_sql_runner' service account"
   owner {
-    id          = confluent_service_account.flink_sql_statements_runner.id
-    api_version = confluent_service_account.flink_sql_statements_runner.api_version
-    kind        = confluent_service_account.flink_sql_statements_runner.kind
+    id          = confluent_service_account.flink_sql_runner.id
+    api_version = confluent_service_account.flink_sql_runner.api_version
+    kind        = confluent_service_account.flink_sql_runner.kind
   }
   managed_resource {
     id          = data.confluent_flink_region.env.id
@@ -129,6 +128,6 @@ resource "confluent_api_key" "flink_sql_statements_runner_api_key" {
 
   depends_on = [
     confluent_environment.tableflow_kickstarter,
-    confluent_service_account.flink_sql_statements_runner
+    confluent_service_account.flink_sql_runner
   ]
 }

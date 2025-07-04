@@ -88,7 +88,7 @@ deploy.sh <create | delete> --profile=<SSO_PROFILE_NAME> \
 To learn more about this script, click [here](.blog/deploy-script-explanation.md).
 
 After a successfuly run of the script, here's what you can expect:
-- A Confluent Cloud environment featuring a Kafka Cluster, fully equipped with pre-configured example Kafka topics—ready to power your data streaming needs.
+- A Confluent Cloud environment featuring a Standard Kafka Cluster, fully equipped with pre-configured example Kafka topics—ready to power your data streaming needs.
 - AWS Secrets Manager securely stores API Key Secrets for the Kafka Cluster.
 - Configure the Datagen Source Connector Kafka Topics for Tableflow.
 - An AWS S3 bucket with a dedicated folder, named after the Kafka Cluster ID, that serves as the landing zone for Apache Iceberg Tables populated by the Datagen Source Connector.
