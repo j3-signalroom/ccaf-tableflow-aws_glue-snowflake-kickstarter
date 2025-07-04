@@ -38,30 +38,26 @@ With the assistance [Terraform](https://developer.hashicorp.com/terraform), a po
 
 **These are the steps**
 
-1. Take care of the cloud and local environment prequisities listed below:
-    > You need to have the following cloud accounts:
-    > - [AWS Account](https://signin.aws.amazon.com/) *with SSO configured*
-    > - [Confluent Cloud Account](https://confluent.cloud/)
-    > - [Snowflake Account](https://app.snowflake.com/)
-    > - [Terraform Cloud Account](https://app.terraform.io/)
+1. Take care of the local environment prequisities listed below:
+    * You need to have the following installed on your local machine:
+        - [AWS CLI version 2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+        - [Confluent CLI version 4 or higher](https://docs.confluent.io/confluent-cli/4.0/overview.html)
+        - [Terraform CLI version 1.12.2 or higher](https://developer.hashicorp.com/terraform/install)
 
-    > You need to have the following installed on your local machine:
-    > - [AWS CLI version 2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-    > - [Confluent CLI version 4 or higher](https://docs.confluent.io/confluent-cli/4.0/overview.html)
-    > - [Terraform CLI version 1.11.4 or higher](https://developer.hashicorp.com/terraform/install)
+2. Get your Confluent Cloud API key pair, by execute the following Confluent CLI command to generate the Cloud API Key:
 
-2. Clone the repo:
+    > Click [here](.blog/why-do-you-need-the-confluent-cloud-api-key.md#2-integration-with-cicd-pipelines) to learn why you need it.
+
+    ```shell
+    confluent api-key create --resource "cloud" 
+    ```
+
+    The API Key pair allows Terraform to provision, manage, and update Confluent Cloud resources as defined in your infrastructure code, maintaining a secure, automated deployment pipeline.
+
+3. Clone the repo:
     ```bash
     git clone https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter.git
     ```
-
-3. Set up your Terraform Cloud environment locally. Here's what you can expect:
-    - A Confluent Cloud environment featuring a Kafka Cluster, fully equipped with pre-configured example Kafka topics—ready to power your data streaming needs.
-    - AWS Secrets Manager securely stores API Key Secrets for the Kafka Cluster.
-    - Configure the Datagen Source Connector Kafka Topics for Tableflow.
-    - An AWS S3 bucket with a dedicated warehouse folder serves as the landing zone for Apache Iceberg Tables populated by the Datagen Source Connector.
-    - An AWS Glue Data Catalog ensures seamless integration with the S3 bucket and enables efficient data discovery.
-    - A Snowflake Database, where the data from the S3 bucket will be ingested and transformed into a Snowflake Table.
 
 4. Apart of the Terraform configurations, is the `snowflake_user_rsa_key_pairs_rotation`, the [`iac-snowflake-user-rsa_key_pairs_rotation-tf_module`](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module) Terraform [module](https://developer.hashicorp.com/terraform/language/modules) to automate the creation and rotation of [RSA key pairs](https://github.com/j3-signalroom/j3-techstack-lexicon/blob/main/cryptographic-glossary.md#rsa-key-pair) for a Snowflake service account user.  It leverages a specialized AWS Lambda function, known as the [`iac-snowflake-user-rsa_key_pairs_generator-lambda`](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_generator-lambda), to automate the generation and rotation of RSA key pairs. The module allows users to define rotation intervals (e.g., every 30 days since the last key generation) to enhance security by regularly renewing cryptographic credentials. Additionally, it integrates seamlessly with AWS Secrets Manager to securely store and manage the generated key pairs, ensuring that the keys remain protected and easily accessible for Snowflake authentication without manual intervention.
 
@@ -69,6 +65,8 @@ With the assistance [Terraform](https://developer.hashicorp.com/terraform), a po
 Install the [Terraform CLI](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) on your local machine, and make sure you have an [HCP Terraform account](https://app.terraform.io/session) to run the Terraform configuration.  Learn how to set up Terraform Cloud for local use by clicking [here](.blog/setup-terraform-cloud.md).
 
 Then run the following command to set up the Terraform configuration locally. This command will create a Confluent Cloud environment with a Kafka Cluster configured for Tableflow, AWS Secrets Manager, an AWS S3 bucket, AWS Glue Data Catalog, and Snowflake Database:
+
+> **Note**: _The script and this project in general assumes your hyperscaler (i.e., cloud provider) is **AWS**.  Moreover, that it is expected the AWS account is configured with SSO (Single Sign On) support._
 
 ```bash
 deploy.sh <create | delete> --profile=<SSO_PROFILE_NAME> \
@@ -88,6 +86,14 @@ deploy.sh <create | delete> --profile=<SSO_PROFILE_NAME> \
 > `<NUMBER_OF_API_KEYS_TO_RETAIN>`|specifies the number of API keys to create and retain.
 
 To learn more about this script, click [here](.blog/deploy-script-explanation.md).
+
+After a successfuly run of the script, here's what you can expect:
+- A Confluent Cloud environment featuring a Kafka Cluster, fully equipped with pre-configured example Kafka topics—ready to power your data streaming needs.
+- AWS Secrets Manager securely stores API Key Secrets for the Kafka Cluster.
+- Configure the Datagen Source Connector Kafka Topics for Tableflow.
+- An AWS S3 bucket with a dedicated folder, named after the Kafka Cluster ID, that serves as the landing zone for Apache Iceberg Tables populated by the Datagen Source Connector.
+- An AWS Glue Data Catalog ensures seamless integration with the S3 bucket and enables efficient data discovery.
+- A Snowflake Database, where the data from the S3 bucket will be ingested and transformed into a Snowflake Table.
 
 ### 2.2 Visualizing the Terraform Configuration
 Below is the Terraform visualization of the Terraform configuration. It shows the resources and their dependencies, making the infrastructure setup easier to understand.
