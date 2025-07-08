@@ -148,7 +148,6 @@ else
     # Snowflake Base Path
     snowflake_base_path=/snowflake_resource/tableflow_kickstarter
 
-
     # Force the delete of the AWS Secrets
     aws secretsmanager delete-secret --secret-id ${confluent_base_path}/schema_registry_cluster/python_client --force-delete-without-recovery || true
     aws secretsmanager delete-secret --secret-id ${confluent_base_path}/kafka_cluster/app_manager/python_client --force-delete-without-recovery || true
