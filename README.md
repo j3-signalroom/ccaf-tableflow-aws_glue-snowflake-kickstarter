@@ -9,6 +9,8 @@ On [March 19, 2025](https://docs.confluent.io/cloud/current/release-notes/index.
 
 _Confluent Tableflow for Apache Iceberg enables you to turn a Kafka topic into an Apache Iceberg table_, usable for both operational and analytical tasks. This feature is innovative because it lets you utilize Apache Iceberg’s table format to manage your data as you wish, while still taking advantage of Kafka’s real-time streaming capabilities.
 
+![omg](.blog/images/omg.gif)
+
 Welcome to the forefront of the data revolution, where every challenge is an opportunity and innovation knows no bounds.
 
 <!-- toc -->
@@ -54,13 +56,14 @@ Problem|Challenge|Impact|Solution
 **Unable to do Concurrent Read and Write Operations**|Large analytic workloads often involve multiple processes reading from and writing to the same data simultaneously. Distributed storage systems do not inherently support these concurrent operations smoothly.|Without proper handling, this can lead to data corruption or version conflicts, especially during high-throughput operations.|_Apache Iceberg’s transactional model enables concurrent operations safely by managing snapshots and transactions, ensuring data integrity and consistency._
 **Too Many Small Files**|Distributed storage systems can accumulate many small files over time due to frequent appends or updates.|Small files lead to inefficient I/O operations and high metadata costs, degrading query performance and increasing storage costs.|_Apache Iceberg handles file compaction as part of data maintenance routines, merging small files into larger ones to optimize storage and access efficiency._
 
-By addressing these challenges, the Apache Iceberg table format provides the following for your data lakehouse solutions (that combines the best of data warehouse and data lake design):
-* enables scalablility, 
-* high-performance, 
-* easy-to-use, and 
-* lowers cost. 
+By tackling these challenges head-on, Apache Iceberg enhances your data lakehouse architecture (merging the best of data lakes and warehouses) by providing:
 
-### 1.1.1 How Tableflow Catalog uses AWS Glue Data Catalog
+* **Scalability** _to handle massive datasets with ease_
+* **High Performance** _for fast analytical queries_
+* **Simplicity** _through an intuitive and open design_
+* **Cost Efficiency** _by optimizing storage and compute resources_
+
+### 1.1.1 Apache Iceberg Secret Sauce
 With the challenges resolved by Apache Iceberg when working on a distributed storage system, the question arises: how does it manage the _metadata_? This is where Apache Iceberg utilizes a catalog engine, that is **AWS Glue Data Catalog** to:
 * ACID transactions,
 * time travel,
@@ -76,7 +79,7 @@ With the challenges resolved by Apache Iceberg when working on a distributed sto
 
 The Apache Iceberg metadata is organized in a heirarchical tree structure, with metadata files at the top, followed by manifest lists, and then manifest files:
 
-![apache-iceberg-table-structure](images/apache-iceberg-table-structure.png)
+![apache-iceberg-table-structure](.blog/images/apache-iceberg-table-structure.png)
 
 * **Metadata files:** Files that define a table’s structure, including its schema, partitioning scheme, and a listing of snapshots.
 * **Manifest lists:** Files that define a single snapshot of the table as a list of manifest files and stats on those manifests that allow for creating more efficient execution plans.
@@ -85,11 +88,11 @@ The Apache Iceberg metadata is organized in a heirarchical tree structure, with 
 ## 1.2 Why Apache Iceberg is a Game-changer?
 The true power of Apache Iceberg is that it allows for the separation of storage from compute. This means we are **NO LONGER LOCKED INTO** a single data vendor’s compute engine (e.g., **Flink**, and **Snowflake**)! We store the data independently of the compute engine in our distributed storage system (Amazon S3). Then, we connect to the compute engine that best fits our use case for whatever situation we use our data in! Moreover, we could have one copy of the data and use different engines for different use cases. Now, let that sit with you!
 
-![office-mind-blown](images/office-mind-blown.gif)
+![office-mind-blown](.blog/images/office-mind-blown.gif)
 
 > Imagine the freedom to choose the most cost-effective solution every time you process your data. Whether Apache Flink is more budget-friendly than Snowflake or vice versa, you have the power to decide! Your data isn’t locked into any specific compute engine, giving you ultimate flexibility to optimize for both performance and cost.
 
-![patrick-mind-blown](images/patrick-mind-blown.gif)
+![patrick-mind-blown](.blog/images/patrick-mind-blown.gif)
 
 ## 2.0 Let's Get Started!
 
