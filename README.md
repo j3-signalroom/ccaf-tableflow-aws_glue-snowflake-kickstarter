@@ -3,18 +3,18 @@ Data practitioners are entering a golden era-a time defined by groundbreaking po
 
 As we evolved to data lakes, many challenges persisted: maintenance overhead, slow adaptability to surging data demands, and the constant struggle to preserve context. With the burgeoning tide of ML and AI, the stakes have escalated even further. Yet, these challenges are paving the way for unprecedented opportunities for innovation and efficiency. Today, every obstacle is a stepping stone toward a more agile, insightful, and future-ready data landscape.
 
-On [March 19, 2025](https://docs.confluent.io/cloud/current/release-notes/index.html#march-19-2025), Confluent proudly announced the general availability of [Tableflow for Apache Iceberg](https://docs.confluent.io/cloud/current/topics/tableflow/overview.html#cloud-tableflow), marking a transformative milestone for data warehousing and data lakes. This monumental release redefines data management by seamlessly addressing the complexities of modern data infrastructures. Leveraging the unparalleled power of our fully managed open-source trifecta—Apache Kafka, Apache Flink, and Apache Iceberg—we now deliver a unified solution that adeptly serves both operational and analytical data needs.
+On [March 19, 2025](https://docs.confluent.io/cloud/current/release-notes/index.html#march-19-2025), Confluent proudly announced the general availability of [Tableflow for Apache Iceberg](https://docs.confluent.io/cloud/current/topics/tableflow/overview.html#cloud-tableflow), marking a transformative milestone for data lakehouses. This monumental release redefines data management by seamlessly addressing the complexities of modern data infrastructures. Leveraging the unparalleled power of our **_fully managed open-source trifecta—Apache Kafka, Apache Flink, and Apache Iceberg_**—we now deliver a unified solution that adeptly serves both operational and analytical data needs.
 
 ![this-is-us-sterling-k-brown](.blog/images/this-is-us-sterling-k-brown.gif)
 
-[TODO --- What is Tableflow?]
+_Confluent Tableflow for Apache Iceberg enables you to turn a Kafka topic into an Apache Iceberg table_, usable for both operational and analytical tasks. This feature is innovative because it lets you utilize Apache Iceberg’s table format to manage your data as you wish, while still taking advantage of Kafka’s real-time streaming capabilities.
 
 Welcome to the forefront of the data revolution, where every challenge is an opportunity and innovation knows no bounds.
 
 <!-- toc -->
 + [**1.0 The Impetus**](#10-the-impetus)
     - [**1.1 What is Apache Iceberg?**](#11-what-is-apache-iceberg)
-    - [**1.1.1 How AWS Glue Data Catalog makes Apache Iceberg work**](#111-how-aws-glue-data-catalog-makes-apache-iceberg-work)
+    - [**1.1.1 How Tableflow Catalog uses AWS Glue Data Catalog**](#111-how-tableflow-catalog-uses-aws-glue-data-catalog)
     - [**1.2 Why Apache Iceberg is a Game-changer?**](#12-why-apache-iceberg-is-a-game-changer)
 + [**2.0 Let's Get Started!**](#20-lets-get-started)
     - [**2.1 DevOps in Action: Running Terraform Locally**](#21-devops-in-action-running-terraform-locally)
@@ -37,7 +37,9 @@ Turned this picture:
 Into reality:
 ![cc-kafka-tableflow-glue-snowflake](.blog/images/cc-kafka-tableflow-glue-snowflake.png)
 
-With the assistance [Terraform](https://developer.hashicorp.com/terraform), a powerful tool for infrastructure as code (IaC), you can define and manage your infrastructure using declarative configuration files. This project utilizes Terraform to automate the setup of Confluent Cloud, AWS S3 Bucket, AWS Glue Data Catalog, and Snowflake, ensuring a **_consistent_** and **_repeatable_** deployment process.
+With the assistance of [Terraform](https://developer.hashicorp.com/terraform), a powerful tool for infrastructure as code (IaC), you can define and manage your infrastructure using declarative configuration files. This project leverages Terraform to automate the setup of Confluent Cloud, AWS S3 Bucket, AWS Glue Data Catalog, and Snowflake, ensuring a **_consistent_** and **_repeatable_** deployment process.
+
+However, this project is not just about automation; it also serves as a **_kickstarter_** for your data lakehouse journey. By providing a ready-to-use infrastructure setup, you can quickly get started with Tableflow for Apache Iceberg, enabling you to focus on building data products and utilizing the power of real-time data streaming. Before we dive into the details, let’s first understand what Apache Iceberg is and why it is a game-changer for data lakehouses.
 
 ## 1.1 What is Apache Iceberg?
 The primary purpose of this project is to highlight Tableflow, Confluent Cloud's Apache Iceberg implementation.  With that said, let's answer what is Apache Iceberg.  Apache Iceberg was created in 2017 by Netflix’s Ryan Blue and Daniel Weeks. It is an open table format designed to resolve the deficiencies of working with data lakes, especially those on a distributed storage system, Amazon S3. A table format is a method of structuring a dataset’s files to present them as a unified “table.” From the user’s perspective, it can be defined as the answer to the question, “What data is in this table?” However, to implement a table format on a distributed storage system, Apache Iceberg needed to overcome several challenges posed by distributed storage systems:
@@ -58,15 +60,15 @@ By addressing these challenges, the Apache Iceberg table format provides the fol
 * easy-to-use, and 
 * lowers cost. 
 
-### 1.1.1 How AWS Glue Data Catalog makes Apache Iceberg work
+### 1.1.1 How Tableflow Catalog uses AWS Glue Data Catalog
 With the challenges resolved by Apache Iceberg when working on a distributed storage system, the question arises: how does it manage the _metadata_? This is where Apache Iceberg utilizes a catalog engine, that is **AWS Glue Data Catalog** to:
 * ACID transactions,
 * time travel,
-* schema evolution,
+* schema evolution (**_Tableflow overrides this with its own schema evolution logic._**),
 * version rollback,
 * partition pruning,
 * column statistics,
-* data compaction,
+* data compaction (**_Tableflow overrides this with its own compaction logic._**),
 * centralized metadata,
 * simplified ETL,
 * data governance, and
