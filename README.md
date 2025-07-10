@@ -16,7 +16,8 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
 <!-- toc -->
 + [**1.0 The Impetus**](#10-the-impetus)
     - [**1.1 What is Apache Iceberg?**](#11-what-is-apache-iceberg)
-    - [**1.1.1 How Tableflow Catalog uses AWS Glue Data Catalog**](#111-how-tableflow-catalog-uses-aws-glue-data-catalog)
+        - [**1.1.1 Apache Iceberg Secret Sauce**](#111-apache-iceberg-secret-sauce)
+        - [**1.1.2 How Tableflow Catalog uses AWS Glue Data Catalog**](#112-how-tableflow-catalog-uses-aws-glue-data-catalog)
     - [**1.2 Why Apache Iceberg is a Game-changer?**](#12-why-apache-iceberg-is-a-game-changer)
 + [**2.0 Let's Get Started!**](#20-lets-get-started)
     - [**2.1 DevOps in Action: Running Terraform Locally**](#21-devops-in-action-running-terraform-locally)
@@ -64,18 +65,18 @@ By tackling these challenges head-on, Apache Iceberg enhances your data lakehous
 * **Cost Efficiency** _by optimizing storage and compute resources_
 
 ### 1.1.1 Apache Iceberg Secret Sauce
-With the challenges resolved by Apache Iceberg when working on a distributed storage system, the question arises: how does it manage the _metadata_? This is where Apache Iceberg utilizes a catalog engine, that is **AWS Glue Data Catalog** to:
+With the challenges resolved by Apache Iceberg when working on S3 (a distributed storage system), the question arises: how does it manage the _metadata_? This is where Apache Iceberg utilizes a **catalog engine** to:
 * ACID transactions,
 * time travel,
-* schema evolution (**_Tableflow overrides this with its own schema evolution logic._**),
+* schema evolution,
 * version rollback,
 * partition pruning,
 * column statistics,
-* data compaction (**_Tableflow overrides this with its own compaction logic._**),
+* data compaction,
 * centralized metadata,
 * simplified ETL,
 * data governance, and
-* integration with processing engines (e.g., **Flink**, and **Snowflake**).
+* integration with compute engines (e.g., **Snowflake**).
 
 The Apache Iceberg metadata is organized in a heirarchical tree structure, with metadata files at the top, followed by manifest lists, and then manifest files:
 
@@ -84,6 +85,17 @@ The Apache Iceberg metadata is organized in a heirarchical tree structure, with 
 * **Metadata files:** Files that define a table’s structure, including its schema, partitioning scheme, and a listing of snapshots.
 * **Manifest lists:** Files that define a single snapshot of the table as a list of manifest files and stats on those manifests that allow for creating more efficient execution plans.
 * **Manifest files:** A list of data files containing each data file’s location/path and key metadata about those data files, which allows for creating more efficient execution plans.
+
+Tableflow includes a built-in catalog engine (a.k.a., Iceberg RESTful catalog service) called the [**Tableflow Catalog**](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/catalog-integration/overview.html) which provides access to the Iceberg tables created by Tableflow.  The Tableflow Catalog synchronizes with [AWS Glue Data Catalog](https://docs.aws.amazon.com/glue/latest/dg/catalog-and-crawler.html) to allow integration with compute engines like **Snowflake** and **AWS Athena**. This integration enables you to query Iceberg tables using SQL, making it easier to work with your data in a familiar way.
+
+![tableflow-catalog-interaction](.blog/images/tableflow-catalog-interaction.png)
+
+> **Note**: _Although it is not depicted in the drawing above, AWS Glue Data Catalog also supports integration with other compute engines like **Snowflake** (which is showcased in this project), and **Apache Spark**._
+
+### 1.1.2 How Tableflow Catalog uses AWS Glue Data Catalog
+Tableflow Catalog synchronizes the Iceberg table metadata with AWS Glue Data Catalog, allowing you to use the Iceberg tables in your compute engines. This synchronization is done through a process called [**catalog integration**](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/catalog-integration/integrate-with-aws-glue-catalog.html#cloud-tableflow-integrate-with-aws-glue-catalog), which enables the Tableflow Catalog to register Iceberg tables in AWS Glue Data Catalog. Once registered, these tables can be queried using SQL in various compute engines that support AWS Glue Data Catalog as a metadata store, such as **Snowflake** and **AWS Athena**.
+
+> **Note**: _The Tableflow Catalog ensures that AWS Glue Data Catalog remains current with the latest Iceberg table metadata. This means that any changes to Iceberg tables, such as schema updates or new data files, are automatically reflected in AWS Glue Data Catalog, making the Tableflow Catalog **the single source of truth** for Iceberg table metadata._
 
 ## 1.2 Why Apache Iceberg is a Game-changer?
 The true power of Apache Iceberg is that it allows for the separation of storage from compute. This means we are **NO LONGER LOCKED INTO** a single data vendor’s compute engine (e.g., **Flink**, and **Snowflake**)! We store the data independently of the compute engine in our distributed storage system (Amazon S3). Then, we connect to the compute engine that best fits our use case for whatever situation we use our data in! Moreover, we could have one copy of the data and use different engines for different use cases. Now, let that sit with you!
@@ -168,9 +180,6 @@ When you update the Terraform Configuration, to update the Terraform visualizati
 terraform graph | dot -Tpng > .blog/images/terraform-visualization.png
 ```
 
-## 2.0 From Manual to Automated
-
-
 ## 3.0 Resources
 * [Shift Left: Unifying Operations and Analytics With Data Products eBook](https://www.confluent.io/resources/ebook/unifying-operations-analytics-with-data-products/?utm_medium=sem&utm_source=google&utm_campaign=ch.sem_br.nonbrand_tp.prs_tgt.dsa_mt.dsa_rgn.namer_lng.eng_dv.all_con.resources&utm_term=&creative=&device=c&placement=&gad_source=1&gad_campaignid=12131734288&gbraid=0AAAAADRv2c3NnjtbB2EmbR4ZfsjGY1Uge&gclid=EAIaIQobChMIm5KUs7GhjQMVQDUIBR0YgAilEAAYASAAEgKu8_D_BwE)
 
@@ -182,6 +191,7 @@ terraform graph | dot -Tpng > .blog/images/terraform-visualization.png
 
 ### 3.3 Tableflow for Apache Iceberg
 * [Tableflow in Confluent Cloud](https://docs.confluent.io/cloud/current/topics/tableflow/overview.html#cloud-tableflow)
+* [Integrate Catalogs with Tableflow in Confluent Cloud](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/catalog-integration/overview.html)
 * [Terraforming Snowflake](https://quickstarts.snowflake.com/guide/terraforming_snowflake/index.html?index=..%2F..index&utm_cta=website-workload-cortex-timely-content-copilot-ama#0)
 * [Terraform Provider Confluent Tableflow Examples Configuration](https://github.com/confluentinc/terraform-provider-confluent/tree/master/examples/configurations/tableflow)
 * [Learn more about Apache Iceberg](https://iceberg.apache.org/docs/latest/)
