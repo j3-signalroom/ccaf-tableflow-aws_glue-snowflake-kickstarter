@@ -18,6 +18,7 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
     - [**1.1 What is Apache Iceberg?**](#11-what-is-apache-iceberg)
         - [**1.1.1 Apache Iceberg Secret Sauce**](#111-apache-iceberg-secret-sauce)
         - [**1.1.2 How Tableflow Catalog uses AWS Glue Data Catalog**](#112-how-tableflow-catalog-uses-aws-glue-data-catalog)
+        - [**1.1.3 Bring Your Own Storage (BYOS)**](#113-bring-your-own-storage-byos)
     - [**1.2 Why Apache Iceberg is a Game-changer?**](#12-why-apache-iceberg-is-a-game-changer)
 + [**2.0 Let's Get Started!**](#20-lets-get-started)
     - [**2.1 DevOps in Action: Running Terraform Locally**](#21-devops-in-action-running-terraform-locally)
@@ -96,6 +97,9 @@ Tableflow includes a built-in catalog engine (a.k.a., Iceberg RESTful catalog se
 Tableflow Catalog synchronizes the Iceberg table metadata with AWS Glue Data Catalog, allowing you to use the Iceberg tables in your compute engines. This synchronization is done through a process called [**catalog integration**](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/catalog-integration/integrate-with-aws-glue-catalog.html#cloud-tableflow-integrate-with-aws-glue-catalog), which enables the Tableflow Catalog to register Iceberg tables in AWS Glue Data Catalog. Once registered, these tables can be queried using SQL in various compute engines that support AWS Glue Data Catalog as a metadata store, such as **Snowflake** and **AWS Athena**.
 
 > **Note**: _The Tableflow Catalog ensures that AWS Glue Data Catalog remains current with the latest Iceberg table metadata. This means that any changes to Iceberg tables, such as schema updates or new data files, are automatically reflected in AWS Glue Data Catalog, making the Tableflow Catalog **the single source of truth** for Iceberg table metadata._
+
+### 1.1.3 Bring Your Own Storage (BYOS)
+Tableflow supports the Bring Your Own Storage (BYOS) model, which allows you to use your own storage system for Iceberg tables. This enables you to utilize your existing data lake infrastructure, such as **Amazon S3**, to store Iceberg tables while still benefiting from Tableflow’s features and capabilities. BYOS gives you control over your data storage while allowing you to use Tableflow’s powerful tools for managing and querying Iceberg tables through integration with AWS Glue Data Catalog to access Snowflake’s capabilities.
 
 ## 1.2 Why Apache Iceberg is a Game-changer?
 The true power of Apache Iceberg is that it allows for the separation of storage from compute. This means we are **NO LONGER LOCKED INTO** a single data vendor’s compute engine (e.g., **Flink**, and **Snowflake**)! We store the data independently of the compute engine in our distributed storage system (Amazon S3). Then, we connect to the compute engine that best fits our use case for whatever situation we use our data in! Moreover, we could have one copy of the data and use different engines for different use cases. Now, let that sit with you!
