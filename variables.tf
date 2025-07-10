@@ -89,3 +89,25 @@ variable "snowflake_warehouse" {
     description = "The Snowflake warehouse."
     type        = string
 }
+
+variable "drop_flink_statements" {
+    description = "A list of the drop Flink SQL statements."
+    type        = list(object({
+        id   = number
+        file = string
+    }))
+    default     = [
+        {id = 1, file = "dt_stock_total_trades"}
+    ]
+}
+
+variable "create_set_1_flink_statements" {
+    description = "A list of the create set 1 Flink SQL statements."
+    type        = list(object({
+        id   = number
+        file = string
+    }))
+    default     = [
+        {id = 1, file = "ctas_stock_total_trades"}
+    ]
+}
