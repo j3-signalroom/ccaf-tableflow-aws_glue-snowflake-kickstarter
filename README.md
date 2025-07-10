@@ -20,8 +20,8 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
         - [**1.1.2 How Tableflow Catalog uses AWS Glue Data Catalog**](#112-how-tableflow-catalog-uses-aws-glue-data-catalog)
         - [**1.1.3 Bring Your Own Storage (BYOS)**](#113-bring-your-own-storage-byos)
     - [**1.2 Why Apache Iceberg is a Game-changer?**](#12-why-apache-iceberg-is-a-game-changer)
-+ [**2.0 Let's Get Started!**](#20-lets-get-started)
-    - [**2.1 DevOps in Action: Running Terraform Locally**](#21-devops-in-action-running-terraform-locally)
++ [**2.0 Now Let's Dive In!**](#20-now-lets-dive-in)
+    - [**2.1 From Manual to Automated (DevOps in Action: Running Terraform Locally)**](#21-from-manual-to-automated-devops-in-action-running-terraform-locally)
     - [**2.2 Visualizing the Terraform Configuration**](#22-visualizing-the-terraform-configuration)
 + [**3.0 Resources**](#30-resources)
     - [**3.1 Confluent Cloud for Apache Kafka (CCAK)**](#31-confluent-cloud-for-apache-kafka-ccak)
@@ -110,7 +110,7 @@ The true power of Apache Iceberg is that it allows for the separation of storage
 
 ![patrick-mind-blown](.blog/images/patrick-mind-blown.gif)
 
-## 2.0 Let's Get Started!
+## 2.0 Now Let's Dive In!
 
 **These are the steps**
 
@@ -137,7 +137,7 @@ The true power of Apache Iceberg is that it allows for the separation of storage
 
 4. Apart of the Terraform configurations, is the `snowflake_user_rsa_key_pairs_rotation`, the [`iac-snowflake-user-rsa_key_pairs_rotation-tf_module`](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module) Terraform [module](https://developer.hashicorp.com/terraform/language/modules) to automate the creation and rotation of [RSA key pairs](https://github.com/j3-signalroom/j3-techstack-lexicon/blob/main/cryptographic-glossary.md#rsa-key-pair) for a Snowflake service account user.  It leverages a specialized AWS Lambda function, known as the [`iac-snowflake-user-rsa_key_pairs_generator-lambda`](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_generator-lambda), to automate the generation and rotation of RSA key pairs. The module allows users to define rotation intervals (e.g., every 30 days since the last key generation) to enhance security by regularly renewing cryptographic credentials. Additionally, it integrates seamlessly with AWS Secrets Manager to securely store and manage the generated key pairs, ensuring that the keys remain protected and easily accessible for Snowflake authentication without manual intervention.
 
-### 2.1 DevOps in Action: Running Terraform Locally
+### 2.1 From Manual to Automated (DevOps in Action: Running Terraform Locally)
 Install the [Terraform CLI](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) on your local machine, and make sure you have an [HCP Terraform account](https://app.terraform.io/session) to run the Terraform configuration.  Learn how to set up Terraform Cloud for local use by clicking [here](.blog/setup-terraform-cloud.md).
 
 Then run the following command to set up the Terraform configuration locally. This command will create a Confluent Cloud environment with a Kafka Cluster configured for Tableflow, AWS Secrets Manager, an AWS S3 bucket, AWS Glue Data Catalog, and Snowflake Database:
