@@ -23,13 +23,15 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
 + [**2.0 Now Let's Dive In!**](#20-now-lets-dive-in)
     - [**2.1 From Manual to Automated (DevOps in Action: Running Terraform Locally)**](#21-from-manual-to-automated-devops-in-action-running-terraform-locally)
     - [**2.2 Visualizing the Terraform Configuration**](#22-visualizing-the-terraform-configuration)
-+ [**3.0 Resources**](#30-resources)
-    - [**3.1 Confluent Cloud for Apache Kafka (CCAK)**](#31-confluent-cloud-for-apache-kafka-ccak)
-    - [**3.2 Confluent Cloud for Apache Flink (CCAF)**](#32-confluent-cloud-for-apache-flink-ccaf)
-    - [**3.3 Tableflow for Apache Iceberg**](#33-tableflow-for-apache-iceberg)
-    - [**3.4 AWS Glue Data Catalog**](#34-aws-glue-data-catalog)
-    - [**3.5 Snowflake**](#35-snowflake)
-+ [**4.0 Important Note(s)**](#40-important-notes)
++ [**3.0 Close-up of What Was Automated for You**](#30-close-up-of-what-was-automated-for-you)
+
++ [**4.0 Resources**](#40-resources)
+    - [**4.1 Confluent Cloud for Apache Kafka (CCAK)**](#41-confluent-cloud-for-apache-kafka-ccak)
+    - [**4.2 Confluent Cloud for Apache Flink (CCAF)**](#42-confluent-cloud-for-apache-flink-ccaf)
+    - [**4.3 Tableflow for Apache Iceberg**](#43-tableflow-for-apache-iceberg)
+    - [**4.4 AWS Glue Data Catalog**](#44-aws-glue-data-catalog)
+    - [**4.5 Snowflake**](#45-snowflake)
++ [**5.0 Important Note(s)**](#50-important-notes)
 <!-- tocstop -->
 
 ## 1.0 The Impetus
@@ -184,29 +186,38 @@ When you update the Terraform Configuration, to update the Terraform visualizati
 terraform graph | dot -Tpng > .blog/images/terraform-visualization.png
 ```
 
-## 3.0 Resources
+## 3.0 Close-up of What Was Automated for You
+The following sections provide a detailed overview of the resources and configurations that were automatically set up for you by the Terraform script. This includes the:
+* Confluent Cloud environment, 
+* Creating the Flink Statement, 
+* Enabling Tableflow, 
+* AWS S3 bucket, 
+* AWS Glue Data Catalog, and 
+* Snowflake Database.
+
+## 4.0 Resources
 * [Shift Left: Unifying Operations and Analytics With Data Products eBook](https://www.confluent.io/resources/ebook/unifying-operations-analytics-with-data-products/?utm_medium=sem&utm_source=google&utm_campaign=ch.sem_br.nonbrand_tp.prs_tgt.dsa_mt.dsa_rgn.namer_lng.eng_dv.all_con.resources&utm_term=&creative=&device=c&placement=&gad_source=1&gad_campaignid=12131734288&gbraid=0AAAAADRv2c3NnjtbB2EmbR4ZfsjGY1Uge&gclid=EAIaIQobChMIm5KUs7GhjQMVQDUIBR0YgAilEAAYASAAEgKu8_D_BwE)
 
-### 3.1 Confluent Cloud for Apache Kafka (CCAK)
+### 4.1 Confluent Cloud for Apache Kafka (CCAK)
 * [Datagen Source Connector for Confluent Cloud](https://docs.confluent.io/cloud/current/connectors/cc-datagen-source.html)
 
-### 3.2 Confluent Cloud for Apache Flink (CCAF)
+### 4.2 Confluent Cloud for Apache Flink (CCAF)
 * [Stream Processing with Confluent Cloud for Apache Flink](https://docs.confluent.io/cloud/current/flink/overview.html#stream-processing-with-af-long)
 
-### 3.3 Tableflow for Apache Iceberg
+### 4.3 Tableflow for Apache Iceberg
 * [Tableflow in Confluent Cloud](https://docs.confluent.io/cloud/current/topics/tableflow/overview.html#cloud-tableflow)
 * [Integrate Catalogs with Tableflow in Confluent Cloud](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/catalog-integration/overview.html)
 * [Terraforming Snowflake](https://quickstarts.snowflake.com/guide/terraforming_snowflake/index.html?index=..%2F..index&utm_cta=website-workload-cortex-timely-content-copilot-ama#0)
 * [Terraform Provider Confluent Tableflow Examples Configuration](https://github.com/confluentinc/terraform-provider-confluent/tree/master/examples/configurations/tableflow)
 * [Learn more about Apache Iceberg](https://iceberg.apache.org/docs/latest/)
 
-### 3.4 AWS Glue Data Catalog
+### 4.4 AWS Glue Data Catalog
 * [Data discovery and cataloging in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/catalog-and-crawler.html)
 
-### 3.5 Snowflake
+### 4.5 Snowflake
 * [Snowflake Create Storage Integration](https://docs.snowflake.com/en/sql-reference/sql/create-storage-integration)
 * [Snowflake Terraform Registry](https://registry.terraform.io/providers/snowflakedb/snowflake/2.1.0)
 * [Option 1: Configuring a Snowflake storage integration to access Amazon S3](https://docs.snowflake.com/en/user-guide/data-load-s3-config-storage-integration)
 
-## 4.0 Important Note(s)
+## 5.0 Important Note(s)
 * [Known Issue(s)](KNOWNISSUES.md)
