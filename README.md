@@ -97,8 +97,10 @@ Tableflow includes a built-in catalog engine (a.k.a., Iceberg RESTful catalog se
 #### 1.1.1.1 Benefits of the Tableflow Catalog
 The Tableflow Catalog offers several advantages beyond the typical catalog features, including:
 
-* **Type mapping and conversions**:  Tableflow Catalog automatically transforms incoming Kafka data (such as Avro, JSON Schema, and Protobuf formats) into structured Parquet files, which are then materialized as Iceberg tables.
+* **Type mapping and conversions**:  Tableflow Catalog automatically transforms incoming Kafka data (such as Avro, JSON Schema, and Protobuf formats) into structured _Parquet files_, which are then materialized as Iceberg tables.
+
 * **Schematization and Schema evolution**: Tableflow Catalog uses Confluent Schema Registry as the authoritative source for defining table schemas, ensuring structured and consistent data representation between Kafka topic records and Iceberg tables. Tableflow Catalog follows the Schema Registry’s schema compatibility modes, automatically evolving schemas while maintaining compatibility.
+
 * **Table maintenance and optimization**: The Tableflow Catalog automatically compacts small files into larger ones when the accumulated size of the small files exceeds **_128 MB_** or **_after 15 minutes_** have passed since the last compaction. This compaction process optimizes storage and improves query performance.
 
 ### 1.1.2 How Tableflow Catalog uses AWS Glue Data Catalog
@@ -237,6 +239,9 @@ Otherwise, if you didn’t use the automated Terraform script, you’ll have to 
 
 ### 3.8 Setup the Snowflake Database, Schema, External Stage and External Tables
 The [`setup-snowflake-objects.tf`](setup-snowflake-objects.tf) is responsible for creating the Snowflake Database, Schema, External Stage, and External Tables along with the [`setup-snowflake-grant_privileges.tf`](setup-snowflake-grant_privileges.tf) to grant all the required privileges for you to query the Apache Iceberg tables using SnowSQL.
+
+Otherwise, if you didn’t use the automated Terraform script, you’ll have to do the following manually by following the instructions on these web page(s):
+* [Query Iceberg Tables with Snowflake and Tableflow in Confluent Cloud](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/query-engines/query-with-snowflake.html)
 
 ## 4.0 Conclusion
 Using Terraform, you can **_reliably_** and **_consistently_** deploy automatically with just a few keystrokes. Leverage the fully managed open-source trio—**_Apache Kafka, Apache Flink, and Apache Iceberg_**—along with **Snowflake** to enhance your data lakehouse architecture.  For instance, you have:
