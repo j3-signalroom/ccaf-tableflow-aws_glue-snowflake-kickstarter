@@ -241,6 +241,7 @@ The [`setup-snowflake-objects.tf`](setup-snowflake-objects.tf) is responsible fo
 
 ## 4.0 Conclusion
 Using Terraform, you can **_reliably_** and **_consistently_** deploy automatically with just a few keystrokes. Leverage the fully managed open-source trio—**_Apache Kafka, Apache Flink, and Apache Iceberg_**—along with **Snowflake** to enhance your data lakehouse architecture.
+Using Terraform, you can **_reliably_** and **_consistently_** deploy automatically with just a few keystrokes. Leverage the fully managed open-source trio—Apache Kafka, Apache Flink, and Apache Iceberg—along with Snowflake to enhance your data lakehouse architecture.
 
 ## 5.0 Project Important Note(s)
 * [Known Issue(s)](KNOWNISSUES.md)
