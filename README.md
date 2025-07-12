@@ -220,10 +220,12 @@ Otherwise, if you didn’t use the automated Terraform script, you’ll have to 
 ### 3.5 Getting the Amazon S3 location of the Apache Iceberg Metedata and Data Files
 The [`setup-confluent-tableflow-restful_call.tf`](setup-confluent-tableflow-restful_call.tf) is responsible for making a RESTful API `GET` call to the Confluent Tableflow API to get the `table path` of the Apache Iceberg Metadata and Data files for the `stock_trades` enable Tableflow Kafka topic.
 
-> Later, the Snowflake Esternal Stage will need this information, in order to read in the data store in the `stock_trades` enable Tableflow Kafka topic.
+> Later, the Snowflake External Stage will need this information to read the data stored in the `stock_trades` enable Tableflow Kafka topic.
 
 ### 3.6 Store the Confluent Kafka Cluster, Schema Registry Cluster, and Service Accounts API Key Pairs in AWS Secrets Manager Secrets
 The [`setup-aws-secret_manager.tf`](setup-aws-secret_manager.tf) is responsible for storing all the Confluent Kafka Cluster, Schema Registry Cluster, and Service Accounts API Key Pairs in AWS Secrets Manager Secrets.
+
+> _Storing the API Key Pairs in AWS Secrets Manager offers the advantage of securely managing and accessing sensitive information, like API keys, without embedding them directly in your application code or configuration files. This improves security by lowering the chance of accidentally exposing sensitive credentials.
 
 ### 3.7 Setup the Snowflake User and Roles
 The [`setup-snowflake-user_roles.tf`](setup-snowflake-user_roles.tf) is responsible for setting up the Snowflake user and roles to access the Snowflake environment via the [`snowflake_user_rsa_key_pairs_rotation`](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module) module, and allow Snowflake to access AWS Glue Data Catalog and Amazon S3 bucket via the [`snowflake_glue_s3_access_role`](./modules/snowflake_glue_s3_access_role) module.
