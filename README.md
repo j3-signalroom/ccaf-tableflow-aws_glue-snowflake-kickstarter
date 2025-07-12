@@ -11,8 +11,6 @@ _Confluent Tableflow for Apache Iceberg enables you to turn a Kafka topic into a
 
 ![omg](.blog/images/omg.gif)
 
-Welcome to the forefront of the data revolution, where every challenge is an opportunity and innovation knows no bounds.
-
 <!-- toc -->
 + [**1.0 The Impetus**](#10-the-impetus)
     - [**1.1 What is Apache Iceberg?**](#11-what-is-apache-iceberg)
@@ -243,9 +241,15 @@ The [`setup-snowflake-objects.tf`](setup-snowflake-objects.tf) is responsible fo
 ## 4.0 Conclusion
 Using Terraform, you can **_reliably_** and **_consistently_** deploy automatically with just a few keystrokes. Leverage the fully managed open-source trio—**_Apache Kafka, Apache Flink, and Apache Iceberg_**—along with **Snowflake** to enhance your data lakehouse architecture.  For instance, you have:
 
-* A Confluent Cloud environment featuring a Standard Kafka Cluster, fully equipped with pre-configured example Kafka topics—ready to power your data streaming needs.
-* AWS Secrets Manager securely stores API Key Secrets for the Kafka Cluster.
-* Configure the Datagen Source Connector Kafka Topics for Tableflow.
-* An AWS S3 bucket with a dedicated folder, named after the Kafka Cluster ID, that serves as the landing zone for Apache Iceberg Tables populated by the Datagen Source Connector.
-* An AWS Glue Data Catalog ensures seamless integration with the S3 bucket and enables efficient data discovery.
-* A Snowflake Database, where the data from the S3 bucket will be ingested and transformed into a Snowflake Table.
+* A **Confluent Cloud environment** featuring a Standard Kafka Cluster, fully equipped with a pre-configured example Kafka topic called `stock_trades`.
+* Configure the **Datagen Source Connector** to provide continuous synthetic stock trades data to the example Kafka topic.
+* **AWS Secrets Manager** securely stores the project’s secrets.
+* Example of using **Confluent Cloud for Apache Flink** to aggregate stock trades in a Kafka topic, `stock_total_trades`, continuously.
+* Enable Tableflow on the `stock_trades` and `stock_total_trades` Kafka topics, which automatically creates an Apache Iceberg table in the background.
+* An **AWS S3 bucket** used for storing the metadata and data files of Apache Iceberg tables.
+* Integrate the Tableflow Catalog with **AWS Glue Data Catalog** to connect with **Snowflake**.
+* Use **Snowflake** to query the Kafka Topic Tableflow-enabled Apache Iceberg Tables with **SnowSQL**.
+
+
+
+**_Welcome to the forefront of the data revolution, where every challenge is an opportunity and innovation knows no bounds!_**
