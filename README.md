@@ -148,12 +148,12 @@ Then run the following command to set up the Terraform configuration locally. Th
 > **Note**: _The script and this project in general assumes your hyperscaler (i.e., cloud provider) is **AWS**.  Moreover, that it is expected the AWS account is configured with SSO (Single Sign On) support._
 
 ```bash
-deploy.sh <create | delete> --profile=<SSO_PROFILE_NAME> \
-                            --confluent-api-key=<CONFLUENT_API_KEY> \
-                            --confluent-api-secret=<CONFLUENT_API_SECRET> \
-                            --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> \
-                            --day-count=<DAY_COUNT> \
-                            --number-of-api-keys-to-retain=<NUMBER_OF_API_KEYS_TO_RETAIN>
+deploy.sh <create | delete> --profile <SSO_PROFILE_NAME> \
+                            --confluent-api-key <CONFLUENT_API_KEY> \
+                            --confluent-api-secret <CONFLUENT_API_SECRET> \
+                            --snowflake-warehouse <SNOWFLAKE_WAREHOUSE> \
+                            --day-count <DAY_COUNT> \
+                            --number-of-api-keys-to-retain <NUMBER_OF_API_KEYS_TO_RETAIN>
 ```
 > Argument placeholder|Replace with
 > -|-
