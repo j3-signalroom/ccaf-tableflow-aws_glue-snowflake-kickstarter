@@ -57,7 +57,7 @@ deploy.sh <create | delete> --profile <SSO-PROFILE-NAME> \
 
 - **create**: Deploy infrastructure using Terraform.
 - **delete**: Remove infrastructure managed by Terraform.
-- `--profile`: The AWS SSO profile to use.
+- `--profile`: Your AWS SSO profile.
 - `--confluent-api-key` and `--confluent-api-secret`: Credentials for Confluent API.
 - `--snowflake-warehouse`: The Snowflake warehouse to use.
 - `--day-count`: Number of days for some retention or lifecycle policy.
