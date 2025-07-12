@@ -32,8 +32,7 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
     - [**3.7 Setup the Snowflake User and Roles**](#37-setup-the-snowflake-user-and-roles)
     - [**3.8 Setup the Snowflake Database, Schema, External Stage and External Tables**](#38-setup-the-snowflake-database-schema-external-stage-and-external-tables)
 + [**4.0 Conclusion**](#40-conclusion)
-+ [**5.0 Resources**](#50-resources)
-+ [**6.0 Project Important Note(s)**](#60-project-important-notes)
++ [**5.0 Project Important Note(s)**](#50-project-important-notes)
 <!-- tocstop -->
 
 ## 1.0 The Impetus
@@ -241,10 +240,7 @@ Otherwise, if you didn’t use the automated Terraform script, you’ll have to 
 The [`setup-snowflake-objects.tf`](setup-snowflake-objects.tf) is responsible for creating the Snowflake Database, Schema, External Stage, and External Tables along with the [`setup-snowflake-grant_privileges.tf`](setup-snowflake-grant_privileges.tf) to grant all the required privileges for you to query the Apache Iceberg tables using SnowSQL.
 
 ## 4.0 Conclusion
-Using Terraform, you can **_reliably_** and **_consistently_** deploy automatically with just a few keystrokes. Leverage the fully managed open-source trio—**_Apache Kafka, Apache Flink, and Apache Iceberg_**—along with Snowflake to enhance your data lakehouse architecture.
+Using Terraform, you can **_reliably_** and **_consistently_** deploy automatically with just a few keystrokes. Leverage the fully managed open-source trio—**_Apache Kafka, Apache Flink, and Apache Iceberg_**—along with **Snowflake** to enhance your data lakehouse architecture.
 
-## 5.0 Resources
-* [Shift Left: Unifying Operations and Analytics With Data Products eBook](https://www.confluent.io/resources/ebook/unifying-operations-analytics-with-data-products/?utm_medium=sem&utm_source=google&utm_campaign=ch.sem_br.nonbrand_tp.prs_tgt.dsa_mt.dsa_rgn.namer_lng.eng_dv.all_con.resources&utm_term=&creative=&device=c&placement=&gad_source=1&gad_campaignid=12131734288&gbraid=0AAAAADRv2c3NnjtbB2EmbR4ZfsjGY1Uge&gclid=EAIaIQobChMIm5KUs7GhjQMVQDUIBR0YgAilEAAYASAAEgKu8_D_BwE)
-
-## 6.0 Project Important Note(s)
+## 5.0 Project Important Note(s)
 * [Known Issue(s)](KNOWNISSUES.md)
