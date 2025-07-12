@@ -44,5 +44,6 @@ The configuration leverages the [IaC Confluent Cloud Resource API Key Rotation T
 - [Schema Registry Cluster](https://registry.terraform.io/providers/confluentinc/confluent/latest/docs/resources/confluent_schema_registry_cluster)
 - [Kafka Cluster](https://registry.terraform.io/providers/confluentinc/confluent/latest/docs/resources/confluent_kafka_cluster)
 - [Kafka Topics](https://registry.terraform.io/providers/confluentinc/confluent/latest/docs/resources/confluent_kafka_topics)
+- [Flink Compute Pool](https://registry.terraform.io/providers/confluentinc/confluent/latest/docs/resources/confluent_flink_compute_pool)
 
-Along with the Schema Registry Cluster REST endpoint, and Kafka Cluster's Bootstrap URI are stored in the [AWS Secrets Manager](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) (click [here](aws-secrets.md) for a description of the secrets). 
+Along with the Schema Registry Cluster REST endpoint, Kafka Cluster’s Bootstrap URI, Flink Compute Pool ID, and Principal ID, these are stored in [AWS Secrets Manager](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) (click [here](aws-secrets.md) for a description of the secrets).
