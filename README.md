@@ -204,7 +204,7 @@ Otherwise, if you didn’t use the automated Terraform script, you’ll have to 
 ### 3.3 Setup Confluent Cloud for Apache Flink and Execute Flink SQL Statement
 The [`setup-confluent-flink.tf`](setup-confluent-flink.tf) is responsible for deploying a Confluent Cloud for the Apache Flink Compute Pool and executing a Flink SQL statement to create a sink Kafka topic called `stock_total_trades`, which summarizes the trades (price * quantity) by trade timestamp, user ID, side, and stock symbol.
 
-Otherwise, if you didn’t use the automated Terraform script, you’ll have to do the following manually by following the instructions on these web pages:
+Otherwise, if you didn’t use the automated Terraform script, you’ll have to do the following manually by following the instructions on these web page(s):
 * [Stream Processing with Confluent Cloud for Apache Flink](https://docs.confluent.io/cloud/current/flink/overview.html#stream-processing-with-af-long)
 
 ### 3.4 Enable Tableflow on the `stock_trades` Kafka topic and Create the Amazon S3 bucket for the Apache Iceberg Metadata and Data Files
