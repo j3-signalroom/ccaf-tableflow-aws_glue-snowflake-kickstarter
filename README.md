@@ -3,7 +3,7 @@ Data practitioners are entering a golden era-a time defined by groundbreaking po
 
 As we evolved to data lakes, many challenges persisted: maintenance overhead, slow adaptability to surging data demands, and the constant struggle to preserve context. With the burgeoning tide of ML and AI, the stakes have escalated even further. Yet, these challenges are paving the way for unprecedented opportunities for innovation and efficiency. Today, every obstacle is a stepping stone toward a more agile, insightful, and future-ready data landscape.
 
-On [March 19, 2025](https://docs.confluent.io/cloud/current/release-notes/index.html#march-19-2025), Confluent proudly announced the general availability of [Tableflow for Apache Iceberg](https://docs.confluent.io/cloud/current/topics/tableflow/overview.html#cloud-tableflow), marking a transformative milestone for data lakehouses. This monumental release redefines data management by seamlessly addressing the complexities of modern data infrastructures. Leveraging the unparalleled power of our **_fully managed open-source trifecta—Apache Kafka, Apache Flink, and Apache Iceberg_**—we now deliver a unified solution that adeptly serves both operational and analytical data needs.
+On [March 19, 2025](https://docs.confluent.io/cloud/current/release-notes/index.html#march-19-2025), Confluent proudly announced the general availability of [Tableflow for Apache Iceberg](https://docs.confluent.io/cloud/current/topics/tableflow/overview.html#cloud-tableflow), marking a transformative milestone for data lakehouses. This monumental release redefines data management by seamlessly addressing the complexities of modern data infrastructures. Leveraging the unparalleled power of Confluent's **_fully managed open-source trifecta—Apache Kafka, Apache Flink, and Apache Iceberg_**—they now deliver a unified solution that adeptly serves both operational and analytical data needs.
 
 ![this-is-us-sterling-k-brown](.blog/images/this-is-us-sterling-k-brown.gif)
 
@@ -241,7 +241,7 @@ Otherwise, if you didn’t use the automated Terraform script, you’ll have to 
 The [`setup-snowflake-objects.tf`](setup-snowflake-objects.tf) is responsible for creating the Snowflake Database, Schema, External Stage, and External Tables along with the [`setup-snowflake-grant_privileges.tf`](setup-snowflake-grant_privileges.tf) to grant all the required privileges for you to query the Apache Iceberg tables using SnowSQL.
 
 ## 4.0 Conclusion
-By using Terraform, you can **_consistently_** and **_repeatablely_** automatically deploy with a push of few keystrokes, have your Confluent Cloud environment ready to take advantage of all three powerful open-source technologies along side Snowflake to kickstart your data lakehouse platform.
+Using Terraform, you can **_reliably_** and **_consistently_** deploy automatically with just a few keystrokes. Leverage the fully managed open-source trio—Apache Kafka, Apache Flink, and Apache Iceberg—along with Snowflake to enhance your data lakehouse architecture.
 
 ## 5.0 Resources
 * [Shift Left: Unifying Operations and Analytics With Data Products eBook](https://www.confluent.io/resources/ebook/unifying-operations-analytics-with-data-products/?utm_medium=sem&utm_source=google&utm_campaign=ch.sem_br.nonbrand_tp.prs_tgt.dsa_mt.dsa_rgn.namer_lng.eng_dv.all_con.resources&utm_term=&creative=&device=c&placement=&gad_source=1&gad_campaignid=12131734288&gbraid=0AAAAADRv2c3NnjtbB2EmbR4ZfsjGY1Uge&gclid=EAIaIQobChMIm5KUs7GhjQMVQDUIBR0YgAilEAAYASAAEgKu8_D_BwE)
