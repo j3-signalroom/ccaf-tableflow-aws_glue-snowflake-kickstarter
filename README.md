@@ -33,7 +33,6 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
     - [**3.7 Setup the Snowflake User and Roles**](#37-setup-the-snowflake-user-and-roles)
     - [**3.8 Setup the Snowflake Database, Schema, External Stage and External Tables**](#38-setup-the-snowflake-database-schema-external-stage-and-external-tables)
 + [**4.0 Conclusion**](#40-conclusion)
-+ [**5.0 Project Important Note(s)**](#50-project-important-notes)
 <!-- tocstop -->
 
 ## 1.0 The Impetus
@@ -172,13 +171,7 @@ deploy.sh <create | delete> --profile <SSO-PROFILE-NAME> \
 
 To learn more about this script, click [here](.blog/deploy-script-explanation.md).
 
-After a successfuly run of the script, here's what you can expect:
-- A Confluent Cloud environment featuring a Standard Kafka Cluster, fully equipped with pre-configured example Kafka topics—ready to power your data streaming needs.
-- AWS Secrets Manager securely stores API Key Secrets for the Kafka Cluster.
-- Configure the Datagen Source Connector Kafka Topics for Tableflow.
-- An AWS S3 bucket with a dedicated folder, named after the Kafka Cluster ID, that serves as the landing zone for Apache Iceberg Tables populated by the Datagen Source Connector.
-- An AWS Glue Data Catalog ensures seamless integration with the S3 bucket and enables efficient data discovery.
-- A Snowflake Database, where the data from the S3 bucket will be ingested and transformed into a Snowflake Table.
+> **Note**: _Unfortunately, there are [two annoying issues](KNOWNISSUES.md) that yet to be resolved but are not hindrances to you fully enjoying the benefits of this project._
 
 ## 3.0 Close-up of What Was Automated for You
 The following sections provide a detailed overview of the resources and configurations that were automatically set up for you by the Terraform script. This includes the:
@@ -248,7 +241,11 @@ Otherwise, if you didn’t use the automated Terraform script, you’ll have to 
 The [`setup-snowflake-objects.tf`](setup-snowflake-objects.tf) is responsible for creating the Snowflake Database, Schema, External Stage, and External Tables along with the [`setup-snowflake-grant_privileges.tf`](setup-snowflake-grant_privileges.tf) to grant all the required privileges for you to query the Apache Iceberg tables using SnowSQL.
 
 ## 4.0 Conclusion
-Using Terraform, you can **_reliably_** and **_consistently_** deploy automatically with just a few keystrokes. Leverage the fully managed open-source trio—**_Apache Kafka, Apache Flink, and Apache Iceberg_**—along with **Snowflake** to enhance your data lakehouse architecture.
+Using Terraform, you can **_reliably_** and **_consistently_** deploy automatically with just a few keystrokes. Leverage the fully managed open-source trio—**_Apache Kafka, Apache Flink, and Apache Iceberg_**—along with **Snowflake** to enhance your data lakehouse architecture.  For instance, you have:
 
-## 5.0 Project Important Note(s)
-* [Known Issue(s)](KNOWNISSUES.md)
+* A Confluent Cloud environment featuring a Standard Kafka Cluster, fully equipped with pre-configured example Kafka topics—ready to power your data streaming needs.
+* AWS Secrets Manager securely stores API Key Secrets for the Kafka Cluster.
+* Configure the Datagen Source Connector Kafka Topics for Tableflow.
+* An AWS S3 bucket with a dedicated folder, named after the Kafka Cluster ID, that serves as the landing zone for Apache Iceberg Tables populated by the Datagen Source Connector.
+* An AWS Glue Data Catalog ensures seamless integration with the S3 bucket and enables efficient data discovery.
+* A Snowflake Database, where the data from the S3 bucket will be ingested and transformed into a Snowflake Table.
