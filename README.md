@@ -148,21 +148,19 @@ Then run the following command to set up the Terraform configuration locally. Th
 > **Note**: _The script and this project in general assumes your hyperscaler (i.e., cloud provider) is **AWS**.  Moreover, that it is expected the AWS account is configured with SSO (Single Sign On) support._
 
 ```bash
-deploy.sh <create | delete> --profile <SSO_PROFILE_NAME> \
-                            --confluent-api-key <CONFLUENT_API_KEY> \
-                            --confluent-api-secret <CONFLUENT_API_SECRET> \
-                            --snowflake-warehouse <SNOWFLAKE_WAREHOUSE> \
-                            --day-count <DAY_COUNT> \
-                            --number-of-api-keys-to-retain <NUMBER_OF_API_KEYS_TO_RETAIN>
+deploy.sh <create | delete> --profile <SSO-PROFILE-NAME> \
+                            --confluent-api-key <CONFLUENT-API-KEY> \
+                            --confluent-api-secret <CONFLUENT-API-SECRET> \
+                            --snowflake-warehouse <SNOWFLAKE-WAREHOUSE> \
+                            --day-count <DAY-COUNT>
 ```
 > Argument placeholder|Replace with
 > -|-
-> `<SSO_PROFILE_NAME>`|your AWS SSO profile name for your AWS infrastructue that host your AWS Secrets Manager.
-> `<CONFLUENT_API_KEY>`|your organization's Confluent Cloud API Key (also referred as Cloud API ID).
-> `<CONFLUENT_API_SECRET>`|your organization's Confluent Cloud API Secret.
-> `<SNOWFLAKE_WAREHOUSE>`|the Snowflake warehouse (or "virtual warehouse") you choose to run the resources in Snowflake.
-> `<DAY_COUNT>`|how many day(s) should the API Key be rotated for.
-> `<NUMBER_OF_API_KEYS_TO_RETAIN>`|specifies the number of API keys to create and retain.
+> `<SSO-PROFILE-NAME>`|your AWS SSO profile name for your AWS infrastructue that host your AWS Secrets Manager.
+> `<CONFLUENT-API-KEY>`|your organization's Confluent Cloud API Key (also referred as Cloud API ID).
+> `<CONFLUENT-API-SECRET>`|your organization's Confluent Cloud API Secret.
+> `<SNOWFLAKE-WAREHOUSE>`|the Snowflake warehouse (or "virtual warehouse") you choose to run the resources in Snowflake.
+> `<DAY-COUNT>`|how many day(s) should the API Key be rotated for.
 
 To learn more about this script, click [here](.blog/deploy-script-explanation.md).
 

@@ -23,7 +23,6 @@ The script helps you manage the lifecycle of Terraform-managed infrastructure re
      - `--confluent-api-key` and `--confluent-api-secret`: The API key and secret for connecting to Confluent (likely for Kafka integration).
      - `--snowflake-warehouse`: The Snowflake warehouse name.
      - `--day-count`: Number of days for some specific configuration.
-     - `--number-of-api-keys-to-retain`: Number of Confluent API keys to retain.
 
 3. **Validation Checks**:
    - Validates that all required arguments are supplied.
@@ -49,21 +48,19 @@ The script helps you manage the lifecycle of Terraform-managed infrastructure re
 The script should be run with the following syntax:
 
 ```bash
-deploy.sh <create | delete> --profile=<SSO_PROFILE_NAME> \
-                            --confluent-api-key=<CONFLUENT_API_KEY> \
-                            --confluent-api-secret=<CONFLUENT_API_SECRET> \
-                            --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> \
-                            --day-count=<DAY_COUNT> \
-                            --number-of-api-keys-to-retain=<NUMBER_OF_API_KEYS_TO_RETAIN>
+deploy.sh <create | delete> --profile <SSO-PROFILE-NAME> \
+                            --confluent-api-key <CONFLUENT-API-KEY> \
+                            --confluent-api-secret <CONFLUENT-API-SECRET> \
+                            --snowflake-warehouse <SNOWFLAKE-WAREHOUSE> \
+                            --day-count <DAY-COUNT>
 ```
 
 - **create**: Deploy infrastructure using Terraform.
 - **delete**: Remove infrastructure managed by Terraform.
-- `--profile=<SSO_PROFILE_NAME>`: The AWS SSO profile to use.
+- `--profile`: The AWS SSO profile to use.
 - `--confluent-api-key` and `--confluent-api-secret`: Credentials for Confluent API.
 - `--snowflake-warehouse`: The Snowflake warehouse to use.
 - `--day-count`: Number of days for some retention or lifecycle policy.
-- `--number-of-api-keys-to-retain`: Specify the number of API keys to retain.
 
 ## 4.0 Summary
 - **Lifecycle Management**: The script allows you to create and delete infrastructure with Terraform.
