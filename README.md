@@ -16,7 +16,8 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
 <!-- toc -->
 + [**1.0 The Impetus**](#10-the-impetus)
     - [**1.1 What is Apache Iceberg?**](#11-what-is-apache-iceberg)
-        - [**1.1.1 Apache Iceberg Secret Sauce**](#111-apache-iceberg-secret-sauce)
+        + [**1.1.1 Apache Iceberg Secret Sauce**](#111-apache-iceberg-secret-sauce)
+            - [**1.1.1.1 Benefits of the Tableflow Catalog**](#1111-benefits-of-the-tableflow-catalog)
         - [**1.1.2 How Tableflow Catalog uses AWS Glue Data Catalog**](#112-how-tableflow-catalog-uses-aws-glue-data-catalog)
         - [**1.1.3 Bring Your Own Storage (BYOS)**](#113-bring-your-own-storage-byos)
     - [**1.2 Why Apache Iceberg is a Game-changer?**](#12-why-apache-iceberg-is-a-game-changer)
@@ -95,6 +96,13 @@ Tableflow includes a built-in catalog engine (a.k.a., Iceberg RESTful catalog se
 ![tableflow-catalog-interaction](.blog/images/tableflow-catalog-interaction.png)
 
 > **Note**: _Although it is not depicted in the drawing above, AWS Glue Data Catalog also supports integration with other compute engines like **Snowflake** (which is showcased in this project), and **Apache Spark**._
+
+#### 1.1.1.1 Benefits of the Tableflow Catalog
+The Tableflow Catalog offers several advantages beyond the typical catalog features, including:
+
+* **Type mapping and conversions**:  Tableflow Catalog automatically transforms incoming Kafka data (such as Avro, JSON Schema, and Protobuf formats) into structured Parquet files, which are then materialized as Iceberg tables.
+* **Schematization and Schema evolution**: Tableflow Catalog uses Confluent Schema Registry as the authoritative source for defining table schemas, ensuring structured and consistent data representation between Kafka topic records and Iceberg tables. Tableflow Catalog follows the Schema Registry’s schema compatibility modes, automatically evolving schemas while maintaining compatibility.
+* **Table maintenance and optimization**: The Tableflow Catalog automatically compacts small files into larger ones when the accumulated size of the small files exceeds **_128 MB_** or **_after 15 minutes_** have passed since the last compaction. This compaction process optimizes storage and improves query performance.
 
 ### 1.1.2 How Tableflow Catalog uses AWS Glue Data Catalog
 Tableflow Catalog synchronizes the Iceberg table metadata with AWS Glue Data Catalog, allowing you to use the Iceberg tables in your compute engines. This synchronization is done through a process called [**catalog integration**](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/catalog-integration/integrate-with-aws-glue-catalog.html#cloud-tableflow-integrate-with-aws-glue-catalog), which enables the Tableflow Catalog to register Iceberg tables in AWS Glue Data Catalog. Once registered, these tables can be queried using SQL in various compute engines that support AWS Glue Data Catalog as a metadata store, such as **Snowflake** and **AWS Athena**.
