@@ -152,7 +152,7 @@ Install the [Terraform CLI](https://developer.hashicorp.com/terraform/tutorials
 
 Then run the following command to set up the Terraform configuration locally. This command will create a Confluent Cloud environment with a Kafka Cluster configured for Tableflow, AWS Secrets Manager, an AWS S3 bucket, AWS Glue Data Catalog, and Snowflake Database:
 
-> **Note**: _The script and this project in general assumes your hyperscaler (i.e., cloud provider) is **AWS**.  Moreover, that it is expected the AWS account is configured with SSO (Single Sign On) support._
+> **Note**: _The script and this project, in general, assume your hyperscaler is **AWS**. Additionally, it is expected that the AWS account is configured with SSO (Single Sign-On) support._
 
 ```bash
 deploy.sh <create | delete> --profile <SSO-PROFILE-NAME> \
