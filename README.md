@@ -26,11 +26,11 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
     - [**3.1 Setup Confluent Cloud Standard Kafka Cluster**](#31-setup-confluent-cloud-standard-kafka-cluster)
     - [**3.2 Setup Confluent Cloud Environment and Schema Registry Cluster**](#32-setup-confluent-cloud-environment-and-schema-registry-cluster)
     - [**3.3 Setup Confluent Cloud for Apache Flink and Execute Flink SQL Statement**](#33-setup-confluent-cloud-for-apache-flink-and-execute-flink-sql-statement)
-    - [**3.4 Enable Tableflow on the `stock_trades` Kafka topic**](#34-enable-tableflow-on-the-stock_trades-kafka-topic)
+    - [**3.4 Enable Tableflow on the `stock_trades` Kafka topic and Create the Amazon S3 bucket for the Apache Iceberg Metadata and Data Files**](#34-enable-tableflow-on-the-stock_trades-kafka-topic-and-create-the-amazon-s3-bucket-for-the-apache-iceberg-metadata-and-data-files)
     - [**3.5 Getting the Amazon S3 location of the Apache Iceberg Metedata and Data Files**](#35-getting-the-amazon-s3-location-of-the-apache-iceberg-metedata-and-data-files)
     - [**3.6 Store the Confluent Kafka Cluster, Schema Registry Cluster, and Service Accounts API Key Pairs in AWS Secrets Manager Secrets**](#36-store-the-confluent-kafka-cluster-schema-registry-cluster-and-service-accounts-api-key-pairs-in-aws-secrets-manager-secrets)
-    - [**3.7 Setup the Snowflake User and Roles**](#38-setup-the-snowflake-user-and-roles)
-    - [**3.8 Setup the Snowflake Database, Schema, External Stage and External Tables**](#39-setup-the-snowflake-database-schema-external-stage-and-external-tables)
+    - [**3.7 Setup the Snowflake User and Roles**](#37-setup-the-snowflake-user-and-roles)
+    - [**3.8 Setup the Snowflake Database, Schema, External Stage and External Tables**](#38-setup-the-snowflake-database-schema-external-stage-and-external-tables)
 + [**4.0 Conclusion**](#40-conclusion)
 + [**5.0 Resources**](#50-resources)
 + [**6.0 Project Important Note(s)**](#60-project-important-notes)
@@ -184,7 +184,7 @@ The following sections provide a detailed overview of the resources and configur
 * AWS Glue Data Catalog, and 
 * Snowflake Database.
 
-Below is the Terraform visualization of the Terraform configuration. It shows the resources and their dependencies, making the infrastructure setup easier to understand.
+Below is the Terraform visualization of the configuration. It displays the resources and their dependencies to help make the infrastructure easier to understand.
 
 ![Terraform Visulization](.blog/images/terraform-visualization.png)
 
