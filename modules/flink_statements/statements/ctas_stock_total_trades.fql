@@ -7,7 +7,7 @@ WITH (
     'value.fields-include' = 'all'
 ) AS
 SELECT 
-    $rowtime AS `activity_timestamp`, 
+    $rowtime AS `trade_timestamp`, 
     `userid`, 
     `side`, 
     `symbol`, 

@@ -22,16 +22,18 @@ Welcome to the forefront of the data revolution, where every challenge is an opp
     - [**1.2 Why Apache Iceberg is a Game-changer?**](#12-why-apache-iceberg-is-a-game-changer)
 + [**2.0 Now Let's Dive In!**](#20-now-lets-dive-in)
     - [**2.1 From Manual to Automated (DevOps in Action: Running Terraform Locally)**](#21-from-manual-to-automated-devops-in-action-running-terraform-locally)
-    - [**2.2 Visualizing the Terraform Configuration**](#22-visualizing-the-terraform-configuration)
 + [**3.0 Close-up of What Was Automated for You**](#30-close-up-of-what-was-automated-for-you)
-
-+ [**4.0 Resources**](#40-resources)
-    - [**4.1 Confluent Cloud for Apache Kafka (CCAK)**](#41-confluent-cloud-for-apache-kafka-ccak)
-    - [**4.2 Confluent Cloud for Apache Flink (CCAF)**](#42-confluent-cloud-for-apache-flink-ccaf)
-    - [**4.3 Tableflow for Apache Iceberg**](#43-tableflow-for-apache-iceberg)
-    - [**4.4 AWS Glue Data Catalog**](#44-aws-glue-data-catalog)
-    - [**4.5 Snowflake**](#45-snowflake)
-+ [**5.0 Important Note(s)**](#50-important-notes)
+    - [**3.1 Setup Confluent Cloud Standard Kafka Cluster**](#31-setup-confluent-cloud-standard-kafka-cluster)
+    - [**3.2 Setup Confluent Cloud Environment and Schema Registry Cluster**](#32-setup-confluent-cloud-environment-and-schema-registry-cluster)
+    - [**3.3 Setup Confluent Cloud for Apache Flink and Execute Flink SQL Statement**](#33-setup-confluent-cloud-for-apache-flink-and-execute-flink-sql-statement)
+    - [**3.4 Enable Tableflow on the `stock_trades` Kafka topic**](#34-enable-tableflow-on-the-stock_trades-kafka-topic)
+    - [**3.5 Getting the Amazon S3 location of the Apache Iceberg Metedata and Data Files**](#35-getting-the-amazon-s3-location-of-the-apache-iceberg-metedata-and-data-files)
+    - [**3.6 Store the Confluent Kafka Cluster, Schema Registry Cluster, and Service Accounts API Key Pairs in AWS Secrets Manager Secrets**](#36-store-the-confluent-kafka-cluster-schema-registry-cluster-and-service-accounts-api-key-pairs-in-aws-secrets-manager-secrets)
+    - [**3.7 Setup the Snowflake User and Roles**](#38-setup-the-snowflake-user-and-roles)
+    - [**3.8 Setup the Snowflake Database, Schema, External Stage and External Tables**](#39-setup-the-snowflake-database-schema-external-stage-and-external-tables)
++ [**4.0 Conclusion**](#40-conclusion)
++ [**5.0 Resources**](#50-resources)
++ [**6.0 Project Important Note(s)**](#60-project-important-notes)
 <!-- tocstop -->
 
 ## 1.0 The Impetus
@@ -173,19 +175,6 @@ After a successfuly run of the script, here's what you can expect:
 - An AWS Glue Data Catalog ensures seamless integration with the S3 bucket and enables efficient data discovery.
 - A Snowflake Database, where the data from the S3 bucket will be ingested and transformed into a Snowflake Table.
 
-### 2.2 Visualizing the Terraform Configuration
-Below is the Terraform visualization of the Terraform configuration. It shows the resources and their dependencies, making the infrastructure setup easier to understand.
-
-![Terraform Visulization](.blog/images/terraform-visualization.png)
-
-> **To fully view the image, open it in another tab on your browser to zoom in.**
-
-When you update the Terraform Configuration, to update the Terraform visualization, use the [`terraform graph`](https://developer.hashicorp.com/terraform/cli/commands/graph) command with [Graphviz](https://graphviz.org/) to generate a visual representation of the resources and their dependencies.  To do this, run the following command:
-
-```bash
-terraform graph | dot -Tpng > .blog/images/terraform-visualization.png
-```
-
 ## 3.0 Close-up of What Was Automated for You
 The following sections provide a detailed overview of the resources and configurations that were automatically set up for you by the Terraform script. This includes the:
 * Confluent Cloud environment, 
@@ -195,29 +184,67 @@ The following sections provide a detailed overview of the resources and configur
 * AWS Glue Data Catalog, and 
 * Snowflake Database.
 
-## 4.0 Resources
-* [Shift Left: Unifying Operations and Analytics With Data Products eBook](https://www.confluent.io/resources/ebook/unifying-operations-analytics-with-data-products/?utm_medium=sem&utm_source=google&utm_campaign=ch.sem_br.nonbrand_tp.prs_tgt.dsa_mt.dsa_rgn.namer_lng.eng_dv.all_con.resources&utm_term=&creative=&device=c&placement=&gad_source=1&gad_campaignid=12131734288&gbraid=0AAAAADRv2c3NnjtbB2EmbR4ZfsjGY1Uge&gclid=EAIaIQobChMIm5KUs7GhjQMVQDUIBR0YgAilEAAYASAAEgKu8_D_BwE)
+Below is the Terraform visualization of the Terraform configuration. It shows the resources and their dependencies, making the infrastructure setup easier to understand.
 
-### 4.1 Confluent Cloud for Apache Kafka (CCAK)
+![Terraform Visulization](.blog/images/terraform-visualization.png)
+
+> **To fully view the image, open it in another tab on your browser to zoom in.**
+
+### 3.1 Setup Confluent Cloud Standard Kafka Cluster
+The [`setup-confluent-kafka.tf`](setup-confluent-kafka.tf) is responsible for deploying a Confluent Cloud Standard Kafka Cluster with Consumer and Producer service accounts that have the appropriate RBAC (Role-Based Access Control) privileges, along with a DataGen Source Connector to generate sample stock trade records in a Kafka topic called `stock_trades` that will be used to demonstrate Tableflow.
+
+Otherwise, if you didn’t use the automated Terraform script, you’ll have to do the following manually by following the instructions on these web pages:
+* [Manage Kafka Clusters on Confluent Cloud](https://docs.confluent.io/cloud/current/clusters/create-cluster.html)
 * [Datagen Source Connector for Confluent Cloud](https://docs.confluent.io/cloud/current/connectors/cc-datagen-source.html)
 
-### 4.2 Confluent Cloud for Apache Flink (CCAF)
+### 3.2 Setup Confluent Cloud Environment and Schema Registry Cluster
+The [`setup-confluent-schema_registry.tf`](setup-confluent-schema_registry.tf) is responsible for deploying a Confluent Cloud Environment and its Schema Registry Cluster with a service account that has the appropriate RBAC (Role-Based Access Control) privileges.
+
+Otherwise, if you didn’t use the automated Terraform script, you’ll have to do the following manually by following the instructions on these web page(s):
+* [Quick Start for Schema Management on Confluent Cloud](https://docs.confluent.io/cloud/current/get-started/schema-registry.html)
+
+### 3.3 Setup Confluent Cloud for Apache Flink and Execute Flink SQL Statement
+The [`setup-confluent-flink.tf`](setup-confluent-flink.tf) is responsible for deploying a Confluent Cloud for the Apache Flink Compute Pool and executing a Flink SQL statement to create a sink Kafka topic called `stock_total_trades`, which summarizes the trades (price * quantity) by trade timestamp, user ID, side, and stock symbol.
+
+Otherwise, if you didn’t use the automated Terraform script, you’ll have to do the following manually by following the instructions on these web pages:
 * [Stream Processing with Confluent Cloud for Apache Flink](https://docs.confluent.io/cloud/current/flink/overview.html#stream-processing-with-af-long)
 
-### 4.3 Tableflow for Apache Iceberg
-* [Tableflow in Confluent Cloud](https://docs.confluent.io/cloud/current/topics/tableflow/overview.html#cloud-tableflow)
-* [Integrate Catalogs with Tableflow in Confluent Cloud](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/catalog-integration/overview.html)
-* [Terraforming Snowflake](https://quickstarts.snowflake.com/guide/terraforming_snowflake/index.html?index=..%2F..index&utm_cta=website-workload-cortex-timely-content-copilot-ama#0)
-* [Terraform Provider Confluent Tableflow Examples Configuration](https://github.com/confluentinc/terraform-provider-confluent/tree/master/examples/configurations/tableflow)
-* [Learn more about Apache Iceberg](https://iceberg.apache.org/docs/latest/)
+### 3.4 Enable Tableflow on the `stock_trades` Kafka topic and Create the Amazon S3 bucket for the Apache Iceberg Metadata and Data Files
+The [`setup-confluent-tableflow.tf`](setup-confluent-tableflow.tf) is responsible for configuring Tableflow integration support for AWS Glue Data Catalog, enabling AWS Glue Data Catalog and Amazon S3 permissions to each other and the Confluent Cloud Kafka Cluster via the [`tableflow_glue_s3_access_role`](./modules/tableflow_glue_s3_access_role/) module, and enabling Tableflow on the `stock_trades` Kafka topic.  Along with the [`setup-aws-s3.tf`](setup-aws-s3.tf) that is responsible for creating the Amazon S3 bucket for Tableflow.
 
-### 4.4 AWS Glue Data Catalog
-* [Data discovery and cataloging in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/catalog-and-crawler.html)
+Otherwise, if you didn’t use the automated Terraform script, you’ll have to do the following manually by following the instructions on these web pages:
 
-### 4.5 Snowflake
-* [Snowflake Create Storage Integration](https://docs.snowflake.com/en/sql-reference/sql/create-storage-integration)
-* [Snowflake Terraform Registry](https://registry.terraform.io/providers/snowflakedb/snowflake/2.1.0)
+* [Configure AWS Glue Catalog integration](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/catalog-integration/integrate-with-aws-glue-catalog.html#cloud-tableflow-integrate-with-aws-glue-catalog)
+
+* [Bring Your Own Storage (BYOS)](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/configure-storage.html#cloud-tableflow-storage-byos)
+
+### 3.5 Getting the Amazon S3 location of the Apache Iceberg Metedata and Data Files
+The [`setup-confluent-tableflow-restful_call.tf`](setup-confluent-tableflow-restful_call.tf) is responsible for making a RESTful API `GET` call to the Confluent Tableflow API to get the `table path` of the Apache Iceberg Metadata and Data files for the `stock_trades` enable Tableflow Kafka topic.
+
+> Later, the Snowflake Esternal Stage will need this information, in order to read in the data store in the `stock_trades` enable Tableflow Kafka topic.
+
+### 3.6 Store the Confluent Kafka Cluster, Schema Registry Cluster, and Service Accounts API Key Pairs in AWS Secrets Manager Secrets
+The [`setup-aws-secret_manager.tf`](setup-aws-secret_manager.tf) is responsible for storing all the Confluent Kafka Cluster, Schema Registry Cluster, and Service Accounts API Key Pairs in AWS Secrets Manager Secrets.
+
+### 3.7 Setup the Snowflake User and Roles
+The [`setup-snowflake-user_roles.tf`](setup-snowflake-user_roles.tf) is responsible for setting up the Snowflake user and roles to access the Snowflake environment via the [`snowflake_user_rsa_key_pairs_rotation`](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module) module, and allow Snowflake to access AWS Glue Data Catalog and Amazon S3 bucket via the [`snowflake_glue_s3_access_role`](./modules/snowflake_glue_s3_access_role) module.
+
+Otherwise, if you didn’t use the automated Terraform script, you’ll have to do the following manually by following the instructions on these web pages:
+
+* [CREATE STORAGE INTEGRATION](https://docs.snowflake.com/en/sql-reference/sql/create-storage-integration)
+
 * [Option 1: Configuring a Snowflake storage integration to access Amazon S3](https://docs.snowflake.com/en/user-guide/data-load-s3-config-storage-integration)
 
-## 5.0 Important Note(s)
+* [Option 3: Configuring AWS IAM user credentials to access Amazon S3](https://docs.snowflake.com/en/user-guide/data-load-s3-config-aws-iam-user)
+
+### 3.8 Setup the Snowflake Database, Schema, External Stage and External Tables
+The [`setup-snowflake-objects.tf`](setup-snowflake-objects.tf) is responsible for creating the Snowflake Database, Schema, External Stage, and External Tables along with the [`setup-snowflake-grant_privileges.tf`](setup-snowflake-grant_privileges.tf) to grant all the required privileges for you to query the Apache Iceberg tables using SnowSQL.
+
+## 4.0 Conclusion
+By using Terraform, you can **_consistently_** and **_repeatablely_** automatically deploy with a push of few keystrokes, have your Confluent Cloud environment ready to take advantage of all three powerful open-source technologies along side Snowflake to kickstart your data lakehouse platform.
+
+## 5.0 Resources
+* [Shift Left: Unifying Operations and Analytics With Data Products eBook](https://www.confluent.io/resources/ebook/unifying-operations-analytics-with-data-products/?utm_medium=sem&utm_source=google&utm_campaign=ch.sem_br.nonbrand_tp.prs_tgt.dsa_mt.dsa_rgn.namer_lng.eng_dv.all_con.resources&utm_term=&creative=&device=c&placement=&gad_source=1&gad_campaignid=12131734288&gbraid=0AAAAADRv2c3NnjtbB2EmbR4ZfsjGY1Uge&gclid=EAIaIQobChMIm5KUs7GhjQMVQDUIBR0YgAilEAAYASAAEgKu8_D_BwE)
+
+## 6.0 Project Important Note(s)
 * [Known Issue(s)](KNOWNISSUES.md)

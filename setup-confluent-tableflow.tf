@@ -98,3 +98,27 @@ resource "confluent_tableflow_topic" "stock_trades" {
     confluent_connector.source
   ]
 }
+
+resource "confluent_tableflow_topic" "stock_total_trades" {
+  environment {
+    id = confluent_environment.tableflow_kickstarter.id
+  }
+  kafka_cluster {
+    id = confluent_kafka_cluster.kafka_cluster.id
+  }
+  display_name = "stock_total_trades"
+
+  byob_aws {
+    bucket_name             = aws_s3_bucket.iceberg_bucket.bucket
+    provider_integration_id = confluent_provider_integration.tableflow.id
+  }
+
+  credentials {
+    key    = module.tableflow_api_key.active_api_key.id
+    secret = module.tableflow_api_key.active_api_key.secret
+  }
+
+  depends_on = [
+    module.create_set_1
+  ]
+}
