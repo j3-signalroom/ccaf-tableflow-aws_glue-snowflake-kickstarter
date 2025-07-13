@@ -99,14 +99,14 @@ resource "confluent_tableflow_topic" "stock_trades" {
   ]
 }
 
-resource "confluent_tableflow_topic" "stock_total_trades" {
+resource "confluent_tableflow_topic" "stock_trades_with_totals" {
   environment {
     id = confluent_environment.tableflow_kickstarter.id
   }
   kafka_cluster {
     id = confluent_kafka_cluster.kafka_cluster.id
   }
-  display_name = "stock_total_trades"
+  display_name = "stock_trades_with_totals"
 
   byob_aws {
     bucket_name             = aws_s3_bucket.iceberg_bucket.bucket

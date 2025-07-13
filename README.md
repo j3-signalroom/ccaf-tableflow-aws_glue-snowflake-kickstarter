@@ -202,7 +202,7 @@ Otherwise, if you didn’t use the automated Terraform script, you’ll have to 
 * [Quick Start for Schema Management on Confluent Cloud](https://docs.confluent.io/cloud/current/get-started/schema-registry.html)
 
 ### 3.3 Setup Confluent Cloud for Apache Flink and Execute Flink SQL Statement
-The [`setup-confluent-flink.tf`](setup-confluent-flink.tf) is responsible for deploying a Confluent Cloud for the Apache Flink Compute Pool and executing a Flink SQL statement to create a sink Kafka topic called `stock_total_trades`, which summarizes the trades (price * quantity) by trade timestamp, user ID, side, and stock symbol.
+The [`setup-confluent-flink.tf`](setup-confluent-flink.tf) is responsible for deploying a Confluent Cloud for the Apache Flink Compute Pool and executing a Flink SQL statement to create a sink Kafka topic called `stock_trades_with_totals`, which summarizes the trades (price * quantity) by trade timestamp, user ID, side, and stock symbol.
 
 Otherwise, if you didn’t use the automated Terraform script, you’ll have to do the following manually by following the instructions on these web page(s):
 * [Stream Processing with Confluent Cloud for Apache Flink](https://docs.confluent.io/cloud/current/flink/overview.html#stream-processing-with-af-long)
@@ -249,8 +249,8 @@ Using Terraform, you can **_reliably_** and **_consistently_** deploy automatica
 * A **Confluent Cloud environment** featuring a Standard Kafka Cluster, fully equipped with a pre-configured example Kafka topic called `stock_trades`.
 * Configure the **Datagen Source Connector** to provide continuous synthetic stock trades data to the example Kafka topic.
 * **AWS Secrets Manager** securely stores the project’s secrets.
-* Example of using **Confluent Cloud for Apache Flink** to aggregate stock trades in a Kafka topic, `stock_total_trades`, continuously.
-* Enable Tableflow on the `stock_trades` and `stock_total_trades` Kafka topics, which automatically creates an Apache Iceberg table in the background.
+* Example of using **Confluent Cloud for Apache Flink** to aggregate stock trades in a Kafka topic, `stock_trades_with_totals`, continuously.
+* Enable Tableflow on the `stock_trades` and `stock_trades_with_totals` Kafka topics, which automatically creates an Apache Iceberg table in the background.
 * An **AWS S3 bucket** used for storing the metadata and data files of Apache Iceberg tables.
 * Integrate the Tableflow Catalog with **AWS Glue Data Catalog** to connect with **Snowflake**.
 * Use **Snowflake** to query the Kafka Topic Tableflow-enabled Apache Iceberg Tables with **SnowSQL**.

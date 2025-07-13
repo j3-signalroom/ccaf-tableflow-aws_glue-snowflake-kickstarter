@@ -1,0 +1,17 @@
+CREATE TABLE IF NOT EXISTS `stock_trades_with_totals`
+WITH (
+    'changelog.mode' = 'append',
+    'kafka.cleanup-policy' = 'delete',
+    'kafka.producer.compression.type' = 'zstd',
+    'value.fields-include' = 'all'
+) AS
+SELECT 
+    $rowtime AS `trade_timestamp`, 
+    `userid`, 
+    `side`, 
+    `symbol`,
+    `quantity`,
+    `price`, 
+    (`quantity` * `price`) AS total_price 
+FROM 
+    `stock_trades`;

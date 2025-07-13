@@ -27,7 +27,7 @@ resource "confluent_flink_statement" "statement" {
 
   statement_name = "${replace(each.value.file, "_", "-")}-${random_uuid.flink_statement.result}"
 
-  statement = templatefile("${path.module}/statements/${each.value.file}.fql")
+  statement = file("${path.module}/statements/${each.value.file}.fql")
 
   properties = {
     "sql.current-catalog"  = data.confluent_environment.catalog.display_name
