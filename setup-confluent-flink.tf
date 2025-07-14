@@ -149,6 +149,7 @@ module "drop" {
 	depends_on = [ 
 		confluent_tableflow_topic.stock_trades,
     confluent_flink_compute_pool.env,
+    confluent_service_account.flink_sql_runner,
     module.flink_api_key_rotation
 	]
 }
@@ -169,8 +170,6 @@ module "create_set_1" {
 	}
 
 	depends_on = [
-		module.drop,
-    confluent_flink_compute_pool.env,
-    module.flink_api_key_rotation
+		module.drop
 	]
 }
