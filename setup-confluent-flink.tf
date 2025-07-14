@@ -73,7 +73,6 @@ resource "confluent_flink_compute_pool" "env" {
 # Create the Environment API Key Pairs, rotate them in accordance to a time schedule, and provide the current
 # acitve API Key Pair to use
 module "flink_api_key_rotation" {
-    
     source  = "github.com/j3-signalroom/iac-confluent-api_key_rotation-tf_module"
 
     # Required Input(s)
@@ -136,19 +135,21 @@ module "drop" {
 	source                               = "./modules/flink_statements"
 	catalog_name                         = confluent_environment.tableflow_kickstarter.display_name
 	database_name                        = confluent_kafka_cluster.kafka_cluster.display_name
-	statements						     = var.drop_flink_statements
+	statements						               = var.drop_flink_statements
 	confluent_flink_compute_pool_name    = confluent_flink_compute_pool.env.display_name
-	confluent_flink_rest_endpoint        = confluent_flink_compute_pool.env.rest_endpoint
-	confluent_flink_api_key              = confluent_api_key.flink_api_key.id
-	confluent_flink_api_secret           = confluent_api_key.flink_api_key.secret
-	confluent_flink_service_account_name = local.service_account_name
+	confluent_flink_rest_endpoint        = local.flink_rest_endpoint
+	confluent_flink_api_key              = module.flink_api_key_rotation.active_api_key.id
+	confluent_flink_api_secret           = module.flink_api_key_rotation.active_api_key.secret
+	confluent_flink_service_account_name = confluent_service_account.flink_sql_runner.display_name
 
 	providers = {
 	  confluent = confluent
 	}
 
 	depends_on = [ 
-		confluent_tableflow_topic.stock_trades
+		confluent_tableflow_topic.stock_trades,
+    confluent_flink_compute_pool.env,
+    module.flink_api_key_rotation
 	]
 }
 
@@ -156,18 +157,20 @@ module "create_set_1" {
 	source                               = "./modules/flink_statements"
 	catalog_name                         = confluent_environment.tableflow_kickstarter.display_name
 	database_name                        = confluent_kafka_cluster.kafka_cluster.display_name
-	statements						     = var.drop_flink_statements
+	statements						               = var.drop_flink_statements
 	confluent_flink_compute_pool_name    = confluent_flink_compute_pool.env.display_name
-	confluent_flink_rest_endpoint        = confluent_flink_compute_pool.env.rest_endpoint
-	confluent_flink_api_key              = confluent_api_key.flink_api_key.id
-	confluent_flink_api_secret           = confluent_api_key.flink_api_key.secret
-	confluent_flink_service_account_name = local.service_account_name
+	confluent_flink_rest_endpoint        = local.flink_rest_endpoint
+	confluent_flink_api_key              = module.flink_api_key_rotation.active_api_key.id
+	confluent_flink_api_secret           = module.flink_api_key_rotation.active_api_key.secret
+	confluent_flink_service_account_name = confluent_service_account.flink_sql_runner.display_name
 
 	providers = {
 	  confluent = confluent
 	}
 
 	depends_on = [
-		module.drop 
+		module.drop,
+    confluent_flink_compute_pool.env,
+    module.flink_api_key_rotation
 	]
 }

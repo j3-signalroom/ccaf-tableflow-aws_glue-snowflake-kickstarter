@@ -97,7 +97,7 @@ variable "drop_flink_statements" {
         file = string
     }))
     default     = [
-        {id = 1, file = "dt_stock_total_trades"}
+        {id = 1, file = "dt_stock_trades_with_totals"}
     ]
 }
 
@@ -108,6 +108,6 @@ variable "create_set_1_flink_statements" {
         file = string
     }))
     default     = [
-        {id = 1, file = "ctas_stock_total_trades"}
+        {id = 1, file = "ctas_stock_trades_with_totals"}
     ]
 }
