@@ -99,7 +99,7 @@ resource "confluent_tableflow_topic" "stock_trades" {
   ]
 }
 
-resource "confluent_tableflow_topic" "stock_trades" {
+resource "confluent_tableflow_topic" "stock_trades_with_totals" {
   environment {
     id = confluent_environment.tableflow_kickstarter.id
   }
@@ -119,7 +119,7 @@ resource "confluent_tableflow_topic" "stock_trades" {
   }
 
   depends_on = [
-    confluent_tableflow_topic.source,
+    confluent_tableflow_topic.stock_trades,
     module.create_set_1
   ]
 }
