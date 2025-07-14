@@ -140,7 +140,7 @@ module "drop" {
 	confluent_flink_rest_endpoint        = local.flink_rest_endpoint
 	confluent_flink_api_key              = module.flink_api_key_rotation.active_api_key.id
 	confluent_flink_api_secret           = module.flink_api_key_rotation.active_api_key.secret
-	confluent_flink_service_account_name = local.service_account_name
+	confluent_flink_service_account_name = confluent_service_account.flink_sql_runner.display_name
 
 	providers = {
 	  confluent = confluent
@@ -162,7 +162,7 @@ module "create_set_1" {
 	confluent_flink_rest_endpoint        = local.flink_rest_endpoint
 	confluent_flink_api_key              = module.flink_api_key_rotation.active_api_key.id
 	confluent_flink_api_secret           = module.flink_api_key_rotation.active_api_key.secret
-	confluent_flink_service_account_name = local.service_account_name
+	confluent_flink_service_account_name = confluent_service_account.flink_sql_runner.display_name
 
 	providers = {
 	  confluent = confluent
