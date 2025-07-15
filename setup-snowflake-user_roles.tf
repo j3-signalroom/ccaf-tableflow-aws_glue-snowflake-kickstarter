@@ -51,13 +51,13 @@ module "snowflake_user_rsa_key_pairs_rotation" {
   aws_log_retention_in_days = var.aws_log_retention_in_days
 }
 
-module "snowflake_glue_s3_access_role" {
-  source                       = "./modules/snowflake_glue_s3_access_role"
+module "snowflake_s3_access_role" {
+  source                       = "./modules/snowflake_s3_access_role"
   s3_bucket_arn                = aws_s3_bucket.iceberg_bucket.arn
   snowflake_glue_s3_role_name  = local.snowflake_aws_role_name
   security_admin_role_name     = local.security_admin_role
   snowflake_aws_role_arn       = local.snowflake_aws_role_arn
-  aws_s3_integration_name      = local.aws_s3_integration_name
+  volume_name                  = local.volume_name
   tableflow_topic_s3_base_path = local.tableflow_topic_s3_base_path
   organization_name            = local.snowflake_organization_name
   account_name                 = local.snowflake_account_name

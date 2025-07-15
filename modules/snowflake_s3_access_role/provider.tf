@@ -9,7 +9,7 @@ provider "snowflake" {
 
   # Enable preview features
   preview_features_enabled = [
-    "snowflake_storage_integration_resource",
+    "snowflake_external_volume_resource",
   ]
 }
 
@@ -26,6 +26,6 @@ provider "snowflake" {
 
   # Enable preview features
   preview_features_enabled = [
-    "snowflake_storage_integration_resource",
+    "snowflake_external_volume_resource",
   ]
 }

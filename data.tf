@@ -12,7 +12,7 @@ locals {
   snowflake_secrets_path_prefix = "/snowflake_resource/${local.secrets_insert}"
   snowflake_aws_role_name       = "snowflake_glue_s3_role"
   snowflake_aws_role_arn        = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.snowflake_aws_role_name}"
-  aws_s3_integration_name       = "${upper(local.secrets_insert)}_STORAGE_INTEGRATION"
+  volume_name                   = "${upper(local.secrets_insert)}_VOLUME"
   user_name                     = "${upper(local.secrets_insert)}"
   warehouse_name                = "${upper(local.secrets_insert)}"
   database_name                 = "${upper(local.secrets_insert)}"

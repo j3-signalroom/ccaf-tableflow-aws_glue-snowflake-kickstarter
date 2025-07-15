@@ -1,4 +1,4 @@
-data "aws_iam_policy_document" "snowflake_glue_s3_access_policy" {
+data "aws_iam_policy_document" "snowflake_s3_access_policy" {
   statement {
     effect = "Allow"
     actions = [
@@ -29,26 +29,20 @@ data "aws_iam_policy_document" "snowflake_glue_s3_access_policy" {
   }
 }
 
-data "aws_iam_policy_document" "snowflake_glue_s3_policy" {  
+data "aws_caller_identity" "current" {}
+
+data "aws_iam_policy_document" "snowflake_s3_policy" {  
   statement {
     effect = "Allow"
     principals {
       type        = "AWS"
-      identifiers = [snowflake_storage_integration.aws_s3_integration.storage_aws_iam_user_arn]
+      identifiers = [var.snowflake_aws_role_arn]
     }
     actions = ["sts:AssumeRole"]
     condition {
       test     = "StringEquals"
       variable = "sts:ExternalId"
-      values   = [snowflake_storage_integration.aws_s3_integration.storage_aws_external_id]
+      values   = [snowflake_external_volume.external_volume.storage_location.storage_aws_external_id]
     }
-  }
-  statement {
-    effect = "Allow"
-    principals {
-      type        = "Service"
-      identifiers = ["glue.amazonaws.com"]
-    }
-    actions = ["sts:AssumeRole"]
   }
 }

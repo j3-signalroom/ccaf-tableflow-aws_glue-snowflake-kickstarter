@@ -18,8 +18,8 @@ variable "s3_bucket_arn" {
   type        = string
 }
 
-variable "aws_s3_integration_name" {
-  description = "The name of the Snowflake Storage Integration for S3."
+variable "volume_name" {
+  description = "The name of the Snowflake External Volume for S3."
   type        = string
 }
 
