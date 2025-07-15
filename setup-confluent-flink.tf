@@ -1,6 +1,6 @@
 # Service account to perform the task within Confluent Cloud to execute the Flink SQL statements
 resource "confluent_service_account" "flink_sql_runner" {
-  display_name = "tableflow_flink_statements_runner"
+  display_name = local.service_account_name
   description  = "Service account for running Flink SQL Statements in the Kafka cluster"
 }
 
@@ -149,6 +149,7 @@ module "drop" {
 	depends_on = [ 
 		confluent_tableflow_topic.stock_trades,
     confluent_flink_compute_pool.env,
+    confluent_service_account.flink_sql_runner,
     module.flink_api_key_rotation
 	]
 }
@@ -157,7 +158,7 @@ module "create_set_1" {
 	source                               = "./modules/flink_statements"
 	catalog_name                         = confluent_environment.tableflow_kickstarter.display_name
 	database_name                        = confluent_kafka_cluster.kafka_cluster.display_name
-	statements						               = var.drop_flink_statements
+	statements						               = var.create_set_1_flink_statements
 	confluent_flink_compute_pool_name    = confluent_flink_compute_pool.env.display_name
 	confluent_flink_rest_endpoint        = local.flink_rest_endpoint
 	confluent_flink_api_key              = module.flink_api_key_rotation.active_api_key.id
@@ -169,8 +170,6 @@ module "create_set_1" {
 	}
 
 	depends_on = [
-		module.drop,
-    confluent_flink_compute_pool.env,
-    module.flink_api_key_rotation
+		module.drop
 	]
 }

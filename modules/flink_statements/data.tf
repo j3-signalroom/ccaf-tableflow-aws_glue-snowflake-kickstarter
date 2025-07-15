@@ -1,4 +1,4 @@
-data "confluent_organization" "bcp" {}
+data "confluent_organization" "signalroom" {}
 
 data "confluent_environment" "catalog" {
   display_name = var.catalog_name

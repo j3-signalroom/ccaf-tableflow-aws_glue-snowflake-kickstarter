@@ -13,7 +13,7 @@ resource "confluent_flink_statement" "statement" {
   for_each = local.sorted_map
 
   organization {
-    id = data.confluent_organization.bcp.id
+    id = data.confluent_organization.signalroom.id
   }
   environment {
     id = data.confluent_environment.catalog.id
