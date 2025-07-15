@@ -4,9 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is base on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [0.01.10.000] - 2025-07-14
+## [0.01.10.000] - TBD
 ### Added
 - Issue [#261](https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter/issues/261)
+
+### Fixed
+- Issue [#262](https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter/issues/262)
 
 ## [0.01.09.000] - 2025-07-12
 ### Changed
