@@ -29,8 +29,6 @@ data "aws_iam_policy_document" "snowflake_s3_access_policy" {
   }
 }
 
-data "aws_caller_identity" "current" {}
-
 data "aws_iam_policy_document" "snowflake_s3_policy" {  
   statement {
     effect = "Allow"
