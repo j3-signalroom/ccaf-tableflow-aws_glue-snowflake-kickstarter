@@ -1,4 +1,4 @@
-variable "snowflake_glue_s3_role_name" {
+variable "snowflake_role_name" {
   description = "The name of the Snowflake AWS S3 role."
   type        = string
 }
@@ -20,6 +20,11 @@ variable "s3_bucket_arn" {
 
 variable "volume_name" {
   description = "The name of the Snowflake External Volume for S3."
+  type        = string
+}
+
+variable "catalog_integration_name" {
+  description = "The name of the Snowflake Catalog Integration for Glue."
   type        = string
 }
 
@@ -49,4 +54,9 @@ variable "active_private_key" {
   description = "The active private key for Snowflake."
   type        = string
   sensitive   = true
+}
+
+variable "kafka_cluster_id" {
+  description = "The ID of the Kafka cluster for which the Glue Data Catalog is being configured."
+  type        = string
 }

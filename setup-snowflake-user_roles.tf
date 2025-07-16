@@ -51,10 +51,11 @@ module "snowflake_user_rsa_key_pairs_rotation" {
   aws_log_retention_in_days = var.aws_log_retention_in_days
 }
 
-module "snowflake_s3_access_role" {
-  source                       = "./modules/snowflake_s3_access_role"
+module "snowflake_aws_glue_s3_access" {
+  source                       = "./modules/snowflake_aws_glue_s3_access"
   s3_bucket_arn                = aws_s3_bucket.iceberg_bucket.arn
-  snowflake_glue_s3_role_name  = local.snowflake_aws_role_name
+  snowflake_role_name          = local.snowflake_aws_role_name
+  catalog_integration_name     = ""
   security_admin_role_name     = local.security_admin_role
   snowflake_aws_role_arn       = local.snowflake_aws_role_arn
   volume_name                  = local.volume_name
@@ -64,6 +65,7 @@ module "snowflake_s3_access_role" {
   admin_user                   = local.snowflake_admin_user
   authenticator                = local.snowflake_authenticator
   active_private_key           = local.snowflake_active_private_key
+  kafka_cluster_id             = confluent_kafka_cluster.kafka_cluster.id
 }
 
 # Emits CREATE USER <user_name> DEFAULT_WAREHOUSE = <warehouse_name> DEFAULT_ROLE = <system_admin_role> DEFAULT_NAMESPACE = <database_name>.<schema_name> RSA_PUBLIC_KEY = <rsa_public_key> RSA_PUBLIC_KEY_2 = NULL;
