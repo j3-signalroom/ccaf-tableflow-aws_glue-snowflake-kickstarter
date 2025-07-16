@@ -1,4 +1,4 @@
-variable "snowflake_glue_s3_role_name" {
+variable "snowflake_role_name" {
   description = "The name of the Snowflake AWS S3 role."
   type        = string
 }
@@ -18,8 +18,13 @@ variable "s3_bucket_arn" {
   type        = string
 }
 
+variable "volume_name" {
+  description = "The name of the Snowflake External Volume for S3."
+  type        = string
+}
+
 variable "catalog_integration_name" {
-  description = "The name of the Snowflake Catalog Integration for AWS Glue Data Catalog."
+  description = "The name of the Snowflake Catalog Integration for Glue."
   type        = string
 }
 

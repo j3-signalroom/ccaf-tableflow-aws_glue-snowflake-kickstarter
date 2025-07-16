@@ -1,0 +1,184 @@
+terraform {
+  required_providers {
+        aws = {
+            source  = "hashicorp/aws"
+            version = "6.3.0"
+        }
+        snowflake = {
+            source = "snowflakedb/snowflake"
+            version = "2.3.0"
+        }
+    }
+}
+
+resource "aws_iam_role" "snowflake_s3_role" {
+  name               = "${var.snowflake_role_name}_s3"
+  description        = "IAM role for Snowflake S3 access"
+  assume_role_policy = data.aws_iam_policy_document.snowflake_s3_policy.json
+}
+
+resource "aws_iam_policy" "snowflake_s3_access_policy" {
+  name   = "${var.snowflake_role_name}_s3_access_policy"
+  policy = data.aws_iam_policy_document.snowflake_s3_access_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "snowflake_s3_policy_attachment" {
+  role       = aws_iam_role.snowflake_s3_role.name
+  policy_arn = aws_iam_policy.snowflake_s3_access_policy.arn
+}
+
+resource "aws_iam_role" "snowflake_glue_role" {
+  name               = "${var.snowflake_role_name}_glue"
+  description        = "IAM role for Snowflake Glue access"
+  assume_role_policy = data.aws_iam_policy_document.snowflake_glue_policy.json
+}
+
+resource "aws_iam_policy" "snowflake_glue_access_policy" {
+  name   = "${var.snowflake_role_name}_glue_access_policy"
+  policy = data.aws_iam_policy_document.snowflake_glue_access_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "snowflake_glue_policy_attachment" {
+  role       = aws_iam_role.snowflake_glue_role.name
+  policy_arn = aws_iam_policy.snowflake_glue_access_policy.arn
+}
+
+locals {
+  base_url = "https://${var.account_name}.snowflakecomputing.com"
+  jwt      = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1  ? jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["public_key_1_jwt"] : jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["public_key_2_jwt"]
+}
+
+# https://docs.snowflake.com/en/developer-guide/snowflake-rest-api/reference/external-volume
+data "http" "create_external_volume" {
+  url    = "${local.base_url}/api/v2/external-volumes?createMode=orReplace"
+  method = "POST"
+
+  request_headers = {
+    "Content-Type"                         = "application/json"
+    "Authorization"                        = "Bearer ${local.jwt}"
+    "Accept"                               = "application/json"
+    "User-Agent"                           = "Tableflow-AWS-Glue-Kickstarter-External-Volume"
+    "X-Snowflake-Authorization-Token-Type" = "KEYPAIR_JWT"
+  }
+
+  request_body = jsonencode({
+    name      = var.volume_name
+    storage_locations = [{
+      storage_provider     = "S3"
+      encryption           = "NONE"
+      name                 = "${var.volume_name}-LOCATION"
+      storage_base_url     = var.tableflow_topic_s3_base_path
+      storage_aws_role_arn = var.snowflake_aws_role_arn
+    }]
+    allow_writes = true
+  })
+
+  retry {
+    attempts     = 5
+    min_delay_ms = 5000
+    max_delay_ms = 9000 
+  }
+}
+
+resource "null_resource" "after_create_external_volume" {
+  triggers = {
+    response = data.http.create_external_volume.response_body
+  }
+}
+
+locals {
+  volume_response_body    = jsondecode(null_resource.after_create_external_volume.triggers["response"])
+  storage_aws_role_arn    = local.volume_response_body["storage_locations"][0]["storage_aws_role_arn"]
+  storage_aws_external_id = local.volume_response_body["storage_locations"][0]["storage_aws_external_id"]
+}
+
+# https://docs.snowflake.com/en/developer-guide/snowflake-rest-api/reference/catalog-integration#post--api-v2-catalog-integrations
+data "http" "create_catalog_integration" {
+  url    = "${local.base_url}/api/v2/catalog-integrations?createMode=orReplace"
+  method = "POST"
+
+  request_headers = {
+    "Content-Type"                         = "application/json"
+    "Authorization"                        = "Bearer ${local.jwt}"
+    "Accept"                               = "application/json"
+    "User-Agent"                           = "Tableflow-AWS-Glue-Kickstarter-Catalog-Integration"
+    "X-Snowflake-Authorization-Token-Type" = "KEYPAIR_JWT"
+  }
+
+  request_body = jsonencode({
+    name      = var.catalog_integration_name
+    catalog = {
+      catalog_source = "GLUE"
+    }
+    table_format = "ICEBERG"
+    enabled      = true
+  })
+
+  retry {
+    attempts     = 5
+    min_delay_ms = 5000
+    max_delay_ms = 9000 
+  }
+}
+
+resource "null_resource" "after_create_catalog_integration" {
+  triggers = {
+    response = data.http.create_catalog_integration.response_body
+  }
+}
+
+# https://docs.snowflake.com/en/developer-guide/snowflake-rest-api/reference/catalog-integration#get--api-v2-catalog-integrations-name
+data "http" "get_catalog_integration" {
+  url    = "${local.base_url}/api/v2/catalog-integrations/${var.catalog_integration_name}"
+  method = "GET"
+
+  request_headers = {
+    "Content-Type"                         = "application/json"
+    "Authorization"                        = "Bearer ${local.jwt}"
+    "Accept"                               = "application/json"
+    "User-Agent"                           = "Tableflow-AWS-Glue-Kickstarter-Get-Catalog-Integration"
+    "X-Snowflake-Authorization-Token-Type" = "KEYPAIR_JWT"
+  }
+
+  request_body = jsonencode({
+    name      = var.catalog_integration_name
+    catalog = {
+      catalog_source = "GLUE"
+    }
+    table_format = "ICEBERG"
+    enabled      = true
+  })
+
+  retry {
+    attempts     = 5
+    min_delay_ms = 5000
+    max_delay_ms = 9000 
+  }
+}
+
+resource "null_resource" "after_get_catalog_integration" {
+  triggers = {
+    response = data.http.get_catalog_integration.response_body
+  }
+}
+
+locals {
+  catalog_response_body = jsondecode(null_resource.after_get_catalog_integration.triggers["response"])
+  glue_aws_role_arn     = local.catalog_response_body["catalog"]["glue_aws_role_arn"]
+}
+
+# Emits GRANT USAGE ON EXTERNAL VOLUME <volume_name> TO ROLE <security_admin_role>;
+resource "snowflake_grant_privileges_to_account_role" "volume_name" {
+  provider          = snowflake.security_admin
+  privileges        = ["USAGE"]
+  account_role_name = var.security_admin_role_name
+  on_account_object {
+    object_type = "EXTERNAL VOLUME"
+    object_name = var.volume_name
+  }
+
+  depends_on = [
+    snowflake_external_volume.external_volume,
+    aws_iam_role_policy_attachment.snowflake_s3_policy_attachment
+  ]
+}
