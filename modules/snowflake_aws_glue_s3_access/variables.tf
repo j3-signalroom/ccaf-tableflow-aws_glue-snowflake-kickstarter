@@ -33,30 +33,27 @@ variable "tableflow_topic_s3_base_path" {
   type        = string
 }
 
-variable "organization_name" {
-  description = "The name of the Snowflake organization."
-  type        = string
-}
-
-variable "account_name" {
-  description = "The name of the Snowflake account."
-  type        = string
-}
-variable "admin_user" {
-  description = "The admin user for Snowflake."
-  type        = string
-}
-variable "authenticator" {
-  description = "The authenticator for Snowflake."
-  type        = string
-}
-variable "active_private_key" {
-  description = "The active private key for Snowflake."
-  type        = string
-  sensitive   = true
-}
-
 variable "kafka_cluster_id" {
   description = "The ID of the Kafka cluster for which the Glue Data Catalog is being configured."
+  type        = string
+}
+
+variable "account_identifier" {
+  description = "The account identifier for Snowflake API authentication."
+  type        = string
+}
+
+variable "snowflake_user" {
+  description = "The Snowflake user for which the AWS Glue S3 access is being configured."
+  type        = string
+}
+
+variable "rsa_private_key" {
+  description = "The RSA private key for Snowflake user authentication."
+  type        = bytes
+}
+
+variable "rsa_private_key_pem" {
+  description = "The RSA private key PEM for Snowflake user authentication."
   type        = string
 }

@@ -34,6 +34,39 @@ data "aws_secretsmanager_secret_version" "svc_public_keys" {
   secret_id = data.aws_secretsmanager_secret.svc_public_keys.id
 }
 
+data "aws_secretsmanager_secret" "rsa_private_key_1" {
+  name = "${local.snowflake_secrets_path_prefix}/rsa_private_key_1"
+}
+
+data "aws_secretsmanager_secret_version" "rsa_private_key_1" {
+  secret_id = data.aws_secretsmanager_secret.rsa_private_key_1.id
+}
+
+data "aws_secretsmanager_secret" "rsa_private_key_2" {
+  name = "${local.snowflake_secrets_path_prefix}/rsa_private_key_2"
+}
+
+data "aws_secretsmanager_secret_version" "rsa_private_key_2" {
+  secret_id = data.aws_secretsmanager_secret.rsa_private_key_2.id
+}
+
+data "aws_secretsmanager_secret" "rsa_private_key_pem_1" {
+  name = "${local.snowflake_secrets_path_prefix}/rsa_private_key_pem_1"
+}
+
+data "aws_secretsmanager_secret_version" "rsa_private_key_pem_1" {
+  secret_id = data.aws_secretsmanager_secret.rsa_private_key_pem_1.id
+}
+
+data "aws_secretsmanager_secret" "rsa_private_key_pem_2" {
+  name = "${local.snowflake_secrets_path_prefix}/rsa_private_key_pem_2"
+}
+
+data "aws_secretsmanager_secret_version" "rsa_private_key_pem_2" {
+  secret_id = data.aws_secretsmanager_secret.rsa_private_key_pem_2.id
+}
+
+
 # Create the Snowflake user RSA keys pairs
 module "snowflake_user_rsa_key_pairs_rotation" {   
   source  = "github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module"
@@ -60,12 +93,11 @@ module "snowflake_aws_glue_s3_access" {
   snowflake_aws_role_arn       = local.snowflake_aws_role_arn
   volume_name                  = local.volume_name
   tableflow_topic_s3_base_path = local.tableflow_topic_s3_base_path
-  organization_name            = local.snowflake_organization_name
-  account_name                 = local.snowflake_account_name
-  admin_user                   = local.snowflake_admin_user
-  authenticator                = local.snowflake_authenticator
-  active_private_key           = local.snowflake_active_private_key
+  account_identifier           = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"]
+  snowflake_user               = local.user_name
   kafka_cluster_id             = confluent_kafka_cluster.kafka_cluster.id
+  rsa_private_key              = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1  ? data.aws_secretsmanager_secret_version.rsa_private_key_1.secret_binary : data.aws_secretsmanager_secret_version.rsa_private_key_2.secret_binary
+  rsa_private_key_pem          = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1 ? data.aws_secretsmanager_secret_version.rsa_private_key_pem_1.secret_string : data.aws_secretsmanager_secret_version.rsa_private_key_pem_2.secret_string
 }
 
 # Emits CREATE USER <user_name> DEFAULT_WAREHOUSE = <warehouse_name> DEFAULT_ROLE = <system_admin_role> DEFAULT_NAMESPACE = <database_name>.<schema_name> RSA_PUBLIC_KEY = <rsa_public_key> RSA_PUBLIC_KEY_2 = NULL;
