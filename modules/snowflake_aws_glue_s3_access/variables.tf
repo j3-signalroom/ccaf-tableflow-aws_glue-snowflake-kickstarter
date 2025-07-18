@@ -47,13 +47,3 @@ variable "snowflake_user" {
   description = "The Snowflake user for which the AWS Glue S3 access is being configured."
   type        = string
 }
-
-variable "rsa_private_key" {
-  description = "The RSA private key for Snowflake user authentication."
-  type        = bytes
-}
-
-variable "rsa_private_key_pem" {
-  description = "The RSA private key PEM for Snowflake user authentication."
-  type        = string
-}
