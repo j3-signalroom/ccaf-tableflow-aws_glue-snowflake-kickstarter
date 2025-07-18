@@ -60,3 +60,9 @@ variable "kafka_cluster_id" {
   description = "The ID of the Kafka cluster for which the Glue Data Catalog is being configured."
   type        = string
 }
+
+variable "jwt" {
+  description = "The JWT token for Snowflake API authentication."
+  type        = string
+  sensitive   = true
+}

@@ -66,6 +66,7 @@ module "snowflake_aws_glue_s3_access" {
   authenticator                = local.snowflake_authenticator
   active_private_key           = local.snowflake_active_private_key
   kafka_cluster_id             = confluent_kafka_cluster.kafka_cluster.id
+  jwt                          = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1  ? jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["public_key_1_jwt"] : jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["public_key_2_jwt"]
 }
 
 # Emits CREATE USER <user_name> DEFAULT_WAREHOUSE = <warehouse_name> DEFAULT_ROLE = <system_admin_role> DEFAULT_NAMESPACE = <database_name>.<schema_name> RSA_PUBLIC_KEY = <rsa_public_key> RSA_PUBLIC_KEY_2 = NULL;

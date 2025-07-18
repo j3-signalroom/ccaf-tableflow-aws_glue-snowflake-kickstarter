@@ -45,7 +45,6 @@ resource "aws_iam_role_policy_attachment" "snowflake_glue_policy_attachment" {
 
 locals {
   base_url = "https://${var.account_name}.snowflakecomputing.com"
-  jwt      = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1  ? jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["public_key_1_jwt"] : jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["public_key_2_jwt"]
 }
 
 # https://docs.snowflake.com/en/developer-guide/snowflake-rest-api/reference/external-volume
@@ -55,7 +54,7 @@ data "http" "create_external_volume" {
 
   request_headers = {
     "Content-Type"                         = "application/json"
-    "Authorization"                        = "Bearer ${local.jwt}"
+    "Authorization"                        = "Bearer ${var.jwt}"
     "Accept"                               = "application/json"
     "User-Agent"                           = "Tableflow-AWS-Glue-Kickstarter-External-Volume"
     "X-Snowflake-Authorization-Token-Type" = "KEYPAIR_JWT"
@@ -70,7 +69,7 @@ data "http" "create_external_volume" {
       storage_base_url     = var.tableflow_topic_s3_base_path
       storage_aws_role_arn = var.snowflake_aws_role_arn
     }]
-    allow_writes = true
+    allow_writes = false
   })
 
   retry {
@@ -99,7 +98,7 @@ data "http" "create_catalog_integration" {
 
   request_headers = {
     "Content-Type"                         = "application/json"
-    "Authorization"                        = "Bearer ${local.jwt}"
+    "Authorization"                        = "Bearer ${var.jwt}"
     "Accept"                               = "application/json"
     "User-Agent"                           = "Tableflow-AWS-Glue-Kickstarter-Catalog-Integration"
     "X-Snowflake-Authorization-Token-Type" = "KEYPAIR_JWT"
@@ -134,7 +133,7 @@ data "http" "get_catalog_integration" {
 
   request_headers = {
     "Content-Type"                         = "application/json"
-    "Authorization"                        = "Bearer ${local.jwt}"
+    "Authorization"                        = "Bearer ${var.jwt}"
     "Accept"                               = "application/json"
     "User-Agent"                           = "Tableflow-AWS-Glue-Kickstarter-Get-Catalog-Integration"
     "X-Snowflake-Authorization-Token-Type" = "KEYPAIR_JWT"
@@ -178,7 +177,7 @@ resource "snowflake_grant_privileges_to_account_role" "volume_name" {
   }
 
   depends_on = [
-    snowflake_external_volume.external_volume,
+    null_resource.after_create_external_volume,
     aws_iam_role_policy_attachment.snowflake_s3_policy_attachment
   ]
 }
