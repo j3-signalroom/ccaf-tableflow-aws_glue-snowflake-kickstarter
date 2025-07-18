@@ -47,10 +47,6 @@ locals {
   base_url = "https://${var.account_identifier}.snowflakecomputing.com"
 }
 
-data "external" "jwt_token_python" {
-  program = ["python3", "${path.module}/generate_jwt.py", "${var.account_identifier}.${var.snowflake_user}", var.rsa_private_key_pem, var.rsa_private_key]
-}
-
 # https://docs.snowflake.com/en/developer-guide/snowflake-rest-api/reference/external-volume
 data "http" "create_external_volume" {
   url    = "${local.base_url}/api/v2/external-volumes?createMode=orReplace"
