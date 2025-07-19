@@ -8,10 +8,11 @@ The format is base on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), 
 ### Added
 - Issue [#267](https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter/issues/267)
 - Issue [#272](https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter/issues/272)
-- Issue [#274](https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter/issues/274)
 
 ### Changed
 - Issue [#260](https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter/issues/260)
+- Issue [#274](https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter/issues/274)
+- Issue [#276](https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter/issues/276)
 
 ### Fixed
 - Issue [#262](https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter/issues/262)
