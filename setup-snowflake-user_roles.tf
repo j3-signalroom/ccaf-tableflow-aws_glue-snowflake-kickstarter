@@ -22,13 +22,17 @@ data "aws_secretsmanager_secret_version" "admin_private_key_2" {
   secret_id = data.aws_secretsmanager_secret.admin_private_key_2.id
 }
 
+locals {
+  account_identifier = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"]
+}
+
 # Create the Snowflake user RSA keys pairs
 module "snowflake_user_rsa_key_pairs_rotation" {   
   source  = "github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module"
 
   # Required Input(s)
   aws_region                = var.aws_region
-  account_identifier        = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"]
+  account_identifier        = account_identifier
   service_account_user      = local.secrets_insert
 
   # Optional Input(s)
@@ -37,21 +41,6 @@ module "snowflake_user_rsa_key_pairs_rotation" {
   aws_lambda_memory_size    = var.aws_lambda_memory_size
   aws_lambda_timeout        = var.aws_lambda_timeout
   aws_log_retention_in_days = var.aws_log_retention_in_days
-}
-
-module "snowflake_aws_glue_s3_access" {
-  source                       = "./modules/snowflake_aws_glue_s3_access"
-  s3_bucket_arn                = aws_s3_bucket.iceberg_bucket.arn
-  snowflake_role_name          = local.snowflake_aws_role_name
-  catalog_integration_name     = ""
-  security_admin_role_name     = local.security_admin_role
-  snowflake_aws_role_arn       = local.snowflake_aws_role_arn
-  volume_name                  = local.volume_name
-  tableflow_topic_s3_base_path = local.tableflow_topic_s3_base_path
-  account_identifier           = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"]
-  snowflake_user               = local.user_name
-  kafka_cluster_id             = confluent_kafka_cluster.kafka_cluster.id
-  active_rsa_public_key_jwt    = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1 ? module.snowflake_user_rsa_key_pairs_rotation.rsa_public_key_jwt_1 : module.snowflake_user_rsa_key_pairs_rotation.rsa_public_key_jwt_2
 }
 
 # Emits CREATE USER <user_name> DEFAULT_WAREHOUSE = <warehouse_name> DEFAULT_ROLE = <system_admin_role> DEFAULT_NAMESPACE = <database_name>.<schema_name> RSA_PUBLIC_KEY = <rsa_public_key> RSA_PUBLIC_KEY_2 = NULL;
@@ -67,6 +56,14 @@ resource "snowflake_user" "user" {
   # for more information
   rsa_public_key    = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1 ? module.snowflake_user_rsa_key_pairs_rotation.rsa_public_key_pem_1 : null
   rsa_public_key_2  = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 2 ? module.snowflake_user_rsa_key_pairs_rotation.rsa_public_key_pem_2 : null
+
+  depends_on = [ 
+    module.snowflake_user_rsa_key_pairs_rotation
+  ]
+}
+
+locals {
+  active_rsa_public_key_jwt    = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1 ? module.snowflake_user_rsa_key_pairs_rotation.rsa_public_key_jwt_1 : module.snowflake_user_rsa_key_pairs_rotation.rsa_public_key_jwt_2
 }
 
 # Emits CREATE ROLE <security_admin_role> COMMENT = 'Security Admin role for <user_name>';
