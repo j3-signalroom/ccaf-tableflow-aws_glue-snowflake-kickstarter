@@ -22,58 +22,13 @@ data "aws_secretsmanager_secret_version" "admin_private_key_2" {
   secret_id = data.aws_secretsmanager_secret.admin_private_key_2.id
 }
 
-data "aws_secretsmanager_secret" "svc_public_keys" {
-  name = local.snowflake_secrets_path_prefix
-
-  depends_on = [ 
-    module.snowflake_user_rsa_key_pairs_rotation 
-  ]
-}
-
-data "aws_secretsmanager_secret_version" "svc_public_keys" {
-  secret_id = data.aws_secretsmanager_secret.svc_public_keys.id
-}
-
-data "aws_secretsmanager_secret" "rsa_private_key_1" {
-  name = "${local.snowflake_secrets_path_prefix}/rsa_private_key_1"
-}
-
-data "aws_secretsmanager_secret_version" "rsa_private_key_1" {
-  secret_id = data.aws_secretsmanager_secret.rsa_private_key_1.id
-}
-
-data "aws_secretsmanager_secret" "rsa_private_key_2" {
-  name = "${local.snowflake_secrets_path_prefix}/rsa_private_key_2"
-}
-
-data "aws_secretsmanager_secret_version" "rsa_private_key_2" {
-  secret_id = data.aws_secretsmanager_secret.rsa_private_key_2.id
-}
-
-data "aws_secretsmanager_secret" "rsa_private_key_pem_1" {
-  name = "${local.snowflake_secrets_path_prefix}/rsa_private_key_pem_1"
-}
-
-data "aws_secretsmanager_secret_version" "rsa_private_key_pem_1" {
-  secret_id = data.aws_secretsmanager_secret.rsa_private_key_pem_1.id
-}
-
-data "aws_secretsmanager_secret" "rsa_private_key_pem_2" {
-  name = "${local.snowflake_secrets_path_prefix}/rsa_private_key_pem_2"
-}
-
-data "aws_secretsmanager_secret_version" "rsa_private_key_pem_2" {
-  secret_id = data.aws_secretsmanager_secret.rsa_private_key_pem_2.id
-}
-
-
 # Create the Snowflake user RSA keys pairs
 module "snowflake_user_rsa_key_pairs_rotation" {   
   source  = "github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module"
 
   # Required Input(s)
   aws_region                = var.aws_region
-  snowflake_account         = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"]
+  account_identifier        = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"]
   service_account_user      = local.secrets_insert
 
   # Optional Input(s)
@@ -96,8 +51,7 @@ module "snowflake_aws_glue_s3_access" {
   account_identifier           = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"]
   snowflake_user               = local.user_name
   kafka_cluster_id             = confluent_kafka_cluster.kafka_cluster.id
-  rsa_private_key              = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1  ? data.aws_secretsmanager_secret_version.rsa_private_key_1.secret_binary : data.aws_secretsmanager_secret_version.rsa_private_key_2.secret_binary
-  rsa_private_key_pem          = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1 ? data.aws_secretsmanager_secret_version.rsa_private_key_pem_1.secret_string : data.aws_secretsmanager_secret_version.rsa_private_key_pem_2.secret_string
+  active_rsa_public_key_jwt    = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1 ? module.snowflake_user_rsa_key_pairs_rotation.rsa_public_key_jwt_1 : module.snowflake_user_rsa_key_pairs_rotation.rsa_public_key_jwt_2
 }
 
 # Emits CREATE USER <user_name> DEFAULT_WAREHOUSE = <warehouse_name> DEFAULT_ROLE = <system_admin_role> DEFAULT_NAMESPACE = <database_name>.<schema_name> RSA_PUBLIC_KEY = <rsa_public_key> RSA_PUBLIC_KEY_2 = NULL;
@@ -111,8 +65,8 @@ resource "snowflake_user" "user" {
   # Setting the attributes to `null`, effectively unsets the attribute.  Refer to the 
   # `https://docs.snowflake.com/en/user-guide/key-pair-auth#configuring-key-pair-rotation`
   # for more information
-  rsa_public_key    = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1 ? jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_1"] : null
-  rsa_public_key_2  = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 2 ? jsondecode(data.aws_secretsmanager_secret_version.svc_public_keys.secret_string)["rsa_public_key_2"] : null
+  rsa_public_key    = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1 ? module.snowflake_user_rsa_key_pairs_rotation.rsa_public_key_pem_1 : null
+  rsa_public_key_2  = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 2 ? module.snowflake_user_rsa_key_pairs_rotation.rsa_public_key_pem_2 : null
 }
 
 # Emits CREATE ROLE <security_admin_role> COMMENT = 'Security Admin role for <user_name>';

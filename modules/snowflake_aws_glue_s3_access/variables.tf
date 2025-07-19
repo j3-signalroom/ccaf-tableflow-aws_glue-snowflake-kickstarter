@@ -47,3 +47,8 @@ variable "snowflake_user" {
   description = "The Snowflake user for which the AWS Glue S3 access is being configured."
   type        = string
 }
+
+variable "active_rsa_public_key_jwt" {
+  description = "The active RSA public key JWT for Snowflake user authentication."
+  type        = string
+}

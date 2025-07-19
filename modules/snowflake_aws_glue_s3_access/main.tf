@@ -54,7 +54,7 @@ data "http" "create_external_volume" {
 
   request_headers = {
     "Content-Type"                         = "application/json"
-    "Authorization"                        = "Bearer ${data.external.jwt_token_python.result.jwt}"
+    "Authorization"                        = "Bearer ${var.active_rsa_public_key_jwt}"
     "Accept"                               = "application/json"
     "User-Agent"                           = "Tableflow-AWS-Glue-Kickstarter-External-Volume"
     "X-Snowflake-Authorization-Token-Type" = "KEYPAIR_JWT"
@@ -98,7 +98,7 @@ data "http" "create_catalog_integration" {
 
   request_headers = {
     "Content-Type"                         = "application/json"
-    "Authorization"                        = "Bearer ${data.external.jwt_token_python.result.jwt}"
+    "Authorization"                        = "Bearer ${var.active_rsa_public_key_jwt}"
     "Accept"                               = "application/json"
     "User-Agent"                           = "Tableflow-AWS-Glue-Kickstarter-Catalog-Integration"
     "X-Snowflake-Authorization-Token-Type" = "KEYPAIR_JWT"
@@ -133,7 +133,7 @@ data "http" "get_catalog_integration" {
 
   request_headers = {
     "Content-Type"                         = "application/json"
-    "Authorization"                        = "Bearer ${data.external.jwt_token_python.result.jwt}"
+    "Authorization"                        = "Bearer ${var.active_rsa_public_key_jwt}"
     "Accept"                               = "application/json"
     "User-Agent"                           = "Tableflow-AWS-Glue-Kickstarter-Get-Catalog-Integration"
     "X-Snowflake-Authorization-Token-Type" = "KEYPAIR_JWT"
