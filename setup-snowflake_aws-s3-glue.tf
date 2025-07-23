@@ -68,7 +68,7 @@ data "aws_iam_policy_document" "snowflake_glue_access_policy" {
     resources = [
       "arn:aws:glue:*:<accountid>:table/*/*",
       "arn:aws:glue:*:<accountid>:catalog",
-      "arn:aws:glue:*:<accountid>:database/${confluent_kafka_cluster.kafka_cluster_id}"
+      "arn:aws:glue:*:<accountid>:database/${confluent_kafka_cluster.kafka_cluster.id}"
     ]
   }
 }

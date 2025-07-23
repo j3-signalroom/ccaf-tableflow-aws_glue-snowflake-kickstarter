@@ -22,21 +22,18 @@ data "aws_secretsmanager_secret_version" "admin_private_key_2" {
   secret_id = data.aws_secretsmanager_secret.admin_private_key_2.id
 }
 
-locals {
-  account_identifier = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"]
-}
-
 # Create the Snowflake user RSA keys pairs
 module "snowflake_user_rsa_key_pairs_rotation" {   
   source  = "github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module"
 
   # Required Input(s)
   aws_region                = var.aws_region
-  account_identifier        = account_identifier
-  service_account_user      = local.secrets_insert
+  account_identifier        = local.account_identifier
+  snowflake_user            = local.secrets_insert
+  secrets_path              = "/snowflake_resource/${local.secrets_insert}"
+  lambda_function_name      = local.secrets_insert
 
   # Optional Input(s)
-  secret_insert             = local.secrets_insert
   day_count                 = var.day_count
   aws_lambda_memory_size    = var.aws_lambda_memory_size
   aws_lambda_timeout        = var.aws_lambda_timeout
@@ -54,8 +51,8 @@ resource "snowflake_user" "user" {
   # Setting the attributes to `null`, effectively unsets the attribute.  Refer to the 
   # `https://docs.snowflake.com/en/user-guide/key-pair-auth#configuring-key-pair-rotation`
   # for more information
-  rsa_public_key    = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1 ? module.snowflake_user_rsa_key_pairs_rotation.rsa_public_key_pem_1 : null
-  rsa_public_key_2  = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 2 ? module.snowflake_user_rsa_key_pairs_rotation.rsa_public_key_pem_2 : null
+  rsa_public_key    = module.snowflake_user_rsa_key_pairs_rotation.key_number == 1 ? module.snowflake_user_rsa_key_pairs_rotation.snowflake_rsa_public_key_1_pem : null
+  rsa_public_key_2  = module.snowflake_user_rsa_key_pairs_rotation.key_number == 2 ? module.snowflake_user_rsa_key_pairs_rotation.snowflake_rsa_public_key_2_pem : null
 
   depends_on = [ 
     module.snowflake_user_rsa_key_pairs_rotation
@@ -63,7 +60,7 @@ resource "snowflake_user" "user" {
 }
 
 locals {
-  active_rsa_public_key_jwt    = module.snowflake_user_rsa_key_pairs_rotation.active_rsa_public_key_number == 1 ? module.snowflake_user_rsa_key_pairs_rotation.rsa_public_key_jwt_1 : module.snowflake_user_rsa_key_pairs_rotation.rsa_public_key_jwt_2
+  active_rsa_public_key_jwt    = module.snowflake_user_rsa_key_pairs_rotation.key_number == 1 ? module.snowflake_user_rsa_key_pairs_rotation.rsa_jwt_1 : module.snowflake_user_rsa_key_pairs_rotation.rsa_jwt_3
 }
 
 # Emits CREATE ROLE <security_admin_role> COMMENT = 'Security Admin role for <user_name>';

@@ -24,4 +24,5 @@ locals {
   tableflow_glue_s3_role_arn    = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.tableflow_glue_s3_role_name}"
   service_account_name          = "${local.secrets_insert}_flink_sql_statements_runner"
   flink_rest_endpoint           = "https://flink.${var.aws_region}.${lower(local.cloud)}.confluent.cloud"
+  account_identifier            = jsondecode(data.aws_secretsmanager_secret_version.admin_public_keys.secret_string)["account"]
 }
