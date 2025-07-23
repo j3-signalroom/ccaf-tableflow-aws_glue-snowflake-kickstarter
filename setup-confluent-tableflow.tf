@@ -61,7 +61,7 @@ resource "confluent_catalog_integration" "tableflow" {
 
   depends_on = [ 
     confluent_role_binding.app_manager_provider_integration_resource_owner,
-    module.tableflow_glue_s3_access_role
+    aws_iam_role_policy_attachment.tableflow_glue_s3_policy_attachment
   ]
 }
 
@@ -85,7 +85,7 @@ resource "confluent_tableflow_topic" "stock_trades" {
   }
 
   depends_on = [
-    module.tableflow_glue_s3_access_role,
+    aws_iam_role_policy_attachment.tableflow_glue_s3_policy_attachment,
     confluent_connector.source
   ]
 }
