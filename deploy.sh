@@ -157,6 +157,4 @@ else
     aws secretsmanager delete-secret --secret-id ${confluent_base_path}/flink --force-delete-without-recovery || true
     aws secretsmanager delete-secret --secret-id ${confluent_base_path}/tableflow --force-delete-without-recovery || true
     aws secretsmanager delete-secret --secret-id ${snowflake_base_path} --force-delete-without-recovery || true
-    aws secretsmanager delete-secret --secret-id ${snowflake_base_path}/rsa_private_key_pem_1 --force-delete-without-recovery || true
-    aws secretsmanager delete-secret --secret-id ${snowflake_base_path}/rsa_private_key_pem_2 --force-delete-without-recovery || true
 fi

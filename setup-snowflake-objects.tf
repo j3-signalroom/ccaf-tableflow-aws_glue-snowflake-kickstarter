@@ -94,7 +94,7 @@ data "http" "create_external_volume" {
   }
 
   depends_on = [ 
-    snowflake_grant_account_role.user_system_admin
+    module.snowflake_user_rsa_key_pairs_rotation
    ]
 }
 
@@ -137,6 +137,9 @@ data "http" "create_catalog_integration" {
     min_delay_ms = 5000
     max_delay_ms = 9000 
   }
+  depends_on = [
+    module.snowflake_user_rsa_key_pairs_rotation
+  ]
 }
 
 resource "null_resource" "after_create_catalog_integration" {
@@ -172,6 +175,10 @@ data "http" "get_catalog_integration" {
     min_delay_ms = 5000
     max_delay_ms = 9000 
   }
+
+  depends_on = [
+    module.snowflake_user_rsa_key_pairs_rotation
+  ]
 }
 
 resource "null_resource" "after_get_catalog_integration" {
