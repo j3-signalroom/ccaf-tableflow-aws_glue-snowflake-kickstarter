@@ -43,13 +43,13 @@ data "aws_iam_policy_document" "snowflake_s3_policy" {
     effect = "Allow"
     principals {
       type        = "AWS"
-      identifiers = [local.storage_aws_role_arn]
+      identifiers = [jsondecode(null_resource.after_create_external_volume.triggers["response"])["storage_locations"][0]["storage_aws_role_arn"]]
     }
     actions = ["sts:AssumeRole"]
     condition {
       test     = "StringEquals"
       variable = "sts:ExternalId"
-      values   = [local.storage_aws_external_id]
+      values   = [jsondecode(null_resource.after_create_external_volume.triggers["response"])["storage_locations"][0]["storage_aws_external_id"]]
     }
   }
 }
@@ -66,9 +66,9 @@ data "aws_iam_policy_document" "snowflake_glue_access_policy" {
       "glue:GetTables"
     ]
     resources = [
-      "arn:aws:glue:*:<accountid>:table/*/*",
-      "arn:aws:glue:*:<accountid>:catalog",
-      "arn:aws:glue:*:<accountid>:database/${confluent_kafka_cluster.kafka_cluster.id}"
+      "arn:aws:glue:*:${data.aws_caller_identity.current.account_id}:table/*/*",
+      "arn:aws:glue:*:${data.aws_caller_identity.current.account_id}:catalog",
+      "arn:aws:glue:*:${data.aws_caller_identity.current.account_id}:database/${confluent_kafka_cluster.kafka_cluster.id}"
     ]
   }
 }
@@ -78,13 +78,13 @@ data "aws_iam_policy_document" "snowflake_glue_policy" {
     effect = "Allow"
     principals {
       type        = "AWS"
-      identifiers = [local.glue_aws_role_arn]
+      identifiers = [jsondecode(null_resource.after_get_catalog_integration.triggers["response"])["catalog"]["glue_aws_role_arn"]]
     }
     actions = ["sts:AssumeRole"]
     condition {
       test     = "StringEquals"
       variable = "sts:ExternalId"
-      values   = [local.storage_aws_external_id]
+      values   = [jsondecode(null_resource.after_create_external_volume.triggers["response"])["storage_locations"][0]["storage_aws_external_id"]]
     }
   }
 }

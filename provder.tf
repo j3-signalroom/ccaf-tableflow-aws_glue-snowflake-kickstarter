@@ -18,6 +18,10 @@ provider "snowflake" {
   user              = local.snowflake_admin_user
   authenticator     = local.snowflake_authenticator
   private_key       = local.snowflake_active_private_key
+
+  preview_features_enabled = [
+    "snowflake_user_programmatic_access_token_resource"
+  ]
 }
 
 # The SECURITYADMIN (Security Administrator) is responsible for users, roles and privileges.
@@ -30,4 +34,8 @@ provider "snowflake" {
   user              = local.snowflake_admin_user
   authenticator     = local.snowflake_authenticator
   private_key       = local.snowflake_active_private_key
+
+  preview_features_enabled = [
+    "snowflake_user_programmatic_access_token_resource"
+  ]
 }

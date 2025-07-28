@@ -69,10 +69,10 @@ data "http" "create_external_volume" {
 
   request_headers = {
     "Content-Type"                         = "application/json"
-    "Authorization"                        = "Bearer ${local.active_rsa_public_key_jwt}"
+    "Authorization"                        = "Bearer ${snowflake_user_programmatic_access_token.pat.token}"
     "Accept"                               = "application/json"
     "User-Agent"                           = "Tableflow-AWS-Glue-Kickstarter-External-Volume"
-    "X-Snowflake-Authorization-Token-Type" = "KEYPAIR_JWT"
+    "X-Snowflake-Authorization-Token-Type" = "PROGRAMMATIC_ACCESS_TOKEN"
   }
 
   request_body = jsonencode({
@@ -80,7 +80,7 @@ data "http" "create_external_volume" {
     storage_locations = [{
       storage_provider     = "S3"
       encryption           = "NONE"
-      name                 = "${local.volume_name}-LOCATION"
+      name                 = "${local.volume_name}_LOCATION"
       storage_base_url     = local.tableflow_topic_s3_base_path
       storage_aws_role_arn = local.snowflake_aws_role_arn
     }]
@@ -105,8 +105,7 @@ resource "null_resource" "after_create_external_volume" {
 }
 
 locals {
-  volume_response_body    = jsondecode(null_resource.after_create_external_volume.triggers["response"])
-  storage_aws_role_arn    = local.volume_response_body["storage_locations"][0]["storage_aws_role_arn"]
+  volume_response_body    = jsondecode(null_resource.after_create_external_volume.triggers["response"])["storage_locations"][0]["storage_aws_external_id"]
   storage_aws_external_id = local.volume_response_body["storage_locations"][0]["storage_aws_external_id"]
 }
 
@@ -117,10 +116,10 @@ data "http" "create_catalog_integration" {
 
   request_headers = {
     "Content-Type"                         = "application/json"
-    "Authorization"                        = "Bearer ${local.active_rsa_public_key_jwt}"
+    "Authorization"                        = "Bearer ${snowflake_user_programmatic_access_token.pat.token}"
     "Accept"                               = "application/json"
     "User-Agent"                           = "Tableflow-AWS-Glue-Kickstarter-Catalog-Integration"
-    "X-Snowflake-Authorization-Token-Type" = "KEYPAIR_JWT"
+    "X-Snowflake-Authorization-Token-Type" = "PROGRAMMATIC_ACCESS_TOKEN"
   }
 
   request_body = jsonencode({
@@ -142,10 +141,29 @@ data "http" "create_catalog_integration" {
   ]
 }
 
+
+resource "snowflake_grant_privileges_to_account_role" "integration_usage" {
+  provider          = snowflake.security_admin
+  privileges        = ["USAGE"]
+  account_role_name = snowflake_account_role.security_admin_role.name
+  on_account_object {
+    object_type = "INTEGRATION"
+    object_name = local.catalog_integration_name
+  }
+
+  depends_on = [ 
+    snowflake_grant_account_role.user_security_admin
+  ]
+}
+
 resource "null_resource" "after_create_catalog_integration" {
   triggers = {
     response = data.http.create_catalog_integration.response_body
   }
+
+  depends_on = [ 
+    snowflake_grant_privileges_to_account_role.integration_usage
+  ]
 }
 
 # https://docs.snowflake.com/en/developer-guide/snowflake-rest-api/reference/catalog-integration#get--api-v2-catalog-integrations-name
@@ -155,10 +173,10 @@ data "http" "get_catalog_integration" {
 
   request_headers = {
     "Content-Type"                         = "application/json"
-    "Authorization"                        = "Bearer ${local.active_rsa_public_key_jwt}"
+    "Authorization"                        = "Bearer ${snowflake_user_programmatic_access_token.pat.token}"
     "Accept"                               = "application/json"
     "User-Agent"                           = "Tableflow-AWS-Glue-Kickstarter-Get-Catalog-Integration"
-    "X-Snowflake-Authorization-Token-Type" = "KEYPAIR_JWT"
+    "X-Snowflake-Authorization-Token-Type" = "PROGRAMMATIC_ACCESS_TOKEN"
   }
 
   request_body = jsonencode({
@@ -185,9 +203,4 @@ resource "null_resource" "after_get_catalog_integration" {
   triggers = {
     response = data.http.get_catalog_integration.response_body
   }
-}
-
-locals {
-  catalog_response_body = jsondecode(null_resource.after_get_catalog_integration.triggers["response"])
-  glue_aws_role_arn     = local.catalog_response_body["catalog"]["glue_aws_role_arn"]
 }
