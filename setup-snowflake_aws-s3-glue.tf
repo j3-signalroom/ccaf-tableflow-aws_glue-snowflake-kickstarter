@@ -43,13 +43,13 @@ data "aws_iam_policy_document" "snowflake_s3_policy" {
     effect = "Allow"
     principals {
       type        = "AWS"
-      identifiers = [jsondecode(null_resource.after_create_external_volume.triggers["response"])["storage_locations"][0]["storage_aws_role_arn"]]
+      identifiers = [snowflake_external_volume.volume.storage_location[0].storage_aws_role_arn]
     }
     actions = ["sts:AssumeRole"]
     condition {
       test     = "StringEquals"
       variable = "sts:ExternalId"
-      values   = [jsondecode(null_resource.after_create_external_volume.triggers["response"])["storage_locations"][0]["storage_aws_external_id"]]
+      values = [snowflake_external_volume.volume.storage_location[0].storage_aws_external_id]
     }
   }
 }
@@ -84,7 +84,7 @@ data "aws_iam_policy_document" "snowflake_glue_policy" {
     condition {
       test     = "StringEquals"
       variable = "sts:ExternalId"
-      values   = [jsondecode(null_resource.after_create_external_volume.triggers["response"])["storage_locations"][0]["storage_aws_external_id"]]
+      values = [snowflake_external_volume.volume.storage_location[0].storage_aws_external_id]
     }
   }
 }

@@ -20,6 +20,7 @@ provider "snowflake" {
   private_key       = local.snowflake_active_private_key
 
   preview_features_enabled = [
+    "snowflake_external_volume_resource",
     "snowflake_user_programmatic_access_token_resource"
   ]
 }
@@ -36,6 +37,7 @@ provider "snowflake" {
   private_key       = local.snowflake_active_private_key
 
   preview_features_enabled = [
+    "snowflake_external_volume_resource",
     "snowflake_user_programmatic_access_token_resource"
   ]
 }
