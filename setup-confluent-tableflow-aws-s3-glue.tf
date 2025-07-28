@@ -3,7 +3,7 @@ data "aws_iam_policy_document" "tableflow_glue_s3_policy" {
     effect = "Allow"
     principals {
       type        = "AWS"
-      identifiers = [local.tableflow_glue_s3_role_name]
+      identifiers = [confluent_provider_integration.tableflow.aws[0].iam_role_arn]
     }
     actions = ["sts:AssumeRole"]
     condition {
@@ -16,7 +16,7 @@ data "aws_iam_policy_document" "tableflow_glue_s3_policy" {
     effect = "Allow"
     principals {
       type        = "AWS"
-      identifiers = [local.tableflow_glue_s3_role_name]
+      identifiers = [confluent_provider_integration.tableflow.aws[0].iam_role_arn]
     }
     actions = ["sts:TagSession"]
   }
@@ -75,11 +75,19 @@ data "aws_iam_policy_document" "tableflow_glue_s3_access_policy" {
 resource "aws_iam_role" "tableflow_glue_s3_role" {
   name               = local.tableflow_glue_s3_role_name
   assume_role_policy = data.aws_iam_policy_document.tableflow_glue_s3_policy.json
+
+  depends_on = [
+    confluent_provider_integration.tableflow
+  ]
 }
 
 resource "aws_iam_policy" "tableflow_glue_s3_access_policy" {
   name   = "tableflow_glue_s3_access_policy"
   policy = data.aws_iam_policy_document.tableflow_glue_s3_access_policy.json
+
+  depends_on = [
+    confluent_provider_integration.tableflow
+  ]
 }
 
 resource "aws_iam_role_policy_attachment" "tableflow_glue_s3_policy_attachment" {

@@ -38,6 +38,10 @@ module "snowflake_user_rsa_key_pairs_rotation" {
   aws_lambda_memory_size    = var.aws_lambda_memory_size
   aws_lambda_timeout        = var.aws_lambda_timeout
   aws_log_retention_in_days = var.aws_log_retention_in_days
+
+  depends_on = [ 
+    null_resource.after_tableflow_topic
+  ]
 }
 
 # Emits CREATE USER <user_name> DEFAULT_WAREHOUSE = <warehouse_name> DEFAULT_ROLE = <system_admin_role> DEFAULT_NAMESPACE = <database_name>.<schema_name> RSA_PUBLIC_KEY = <rsa_public_key> RSA_PUBLIC_KEY_2 = NULL;
@@ -59,8 +63,17 @@ resource "snowflake_user" "user" {
   ]
 }
 
-locals {
-  active_rsa_public_key_jwt    = module.snowflake_user_rsa_key_pairs_rotation.key_number == 1 ? module.snowflake_user_rsa_key_pairs_rotation.rsa_jwt_1 : module.snowflake_user_rsa_key_pairs_rotation.rsa_jwt_3
+
+resource "snowflake_user_programmatic_access_token" "pat" {
+  user             = local.user_name
+  name             = upper("${local.user_name}_PAT")
+  role_restriction = snowflake_account_role.system_admin_role.name
+
+  depends_on = [ 
+    snowflake_user.user,
+    snowflake_account_role.system_admin_role,
+    snowflake_grant_account_role.user_system_admin
+  ]
 }
 
 # Emits CREATE ROLE <security_admin_role> COMMENT = 'Security Admin role for <user_name>';
