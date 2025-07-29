@@ -64,7 +64,6 @@ resource "snowflake_external_volume" "volume" {
     storage_location_name = "${local.volume_name}_LOCATION"
     storage_base_url     = local.tableflow_topic_s3_base_path
     storage_provider     = "S3"
-    storage_aws_role_arn = local.snowflake_aws_role_arn
   }
 }
 
@@ -100,7 +99,8 @@ data "http" "create_catalog_integration" {
     max_delay_ms = 9000 
   }
   depends_on = [
-    module.snowflake_user_rsa_key_pairs_rotation
+    module.snowflake_user_rsa_key_pairs_rotation,
+    snowflake_external_volume.volume
   ]
 }
 
@@ -115,7 +115,8 @@ resource "snowflake_grant_privileges_to_account_role" "integration_usage" {
   }
 
   depends_on = [ 
-    snowflake_grant_account_role.user_security_admin
+    snowflake_grant_account_role.user_security_admin,
+    data.http.create_catalog_integration
   ]
 }
 
