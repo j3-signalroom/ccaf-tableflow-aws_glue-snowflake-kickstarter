@@ -114,3 +114,12 @@ resource "confluent_tableflow_topic" "stock_trades_with_totals" {
     module.create_set_1
   ]
 }
+
+# Local that now "depends on" the null-resource via its trigger to get the 
+# Tableflow Topic's tableflow_topic_s3_table_path and 
+# tableflow_topic_s3_base_path from the response body.
+locals {
+  tableflow_topic_s3_table_path = confluent_tableflow_topic.stock_trades.table_path
+  part_before_v1                = split("/v1/", local.tableflow_topic_s3_table_path)
+  tableflow_topic_s3_base_path  = "${local.part_before_v1[0]}/v1/"
+}
