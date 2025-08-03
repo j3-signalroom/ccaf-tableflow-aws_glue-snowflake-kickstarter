@@ -67,104 +67,205 @@ resource "snowflake_external_volume" "volume" {
   }
 }
 
+resource "snowflake_file_format" "parquet" {
+  provider    = snowflake
+  name        = "PARQUET_FORMAT"
+  database    = local.database_name
+  schema      = local.schema_name
+  format_type = "PARQUET"
+  comment     = "File format for Parquet files used in Tableflow Kafka Topic"
+
+  depends_on = [
+    snowflake_schema.tableflow_kickstarter
+  ]
+}
+
+
+# Create a Snowflake Stage that points to the S3 bucket where the Tableflow Kafka
+# Topic is writing the data to.  This stage will be used to load data into Snowflake.
+resource "snowflake_stage" "stock_trades" {
+  provider            = snowflake
+  name                = local.stage_name
+  url                 = "${local.tableflow_topic_s3_table_path}/data/"
+  database            = local.database_name
+  schema              = local.schema_name
+  storage_integration = local.aws_s3_integration_name
+  file_format         = "FORMAT_NAME = ${snowflake_file_format.parquet.fully_qualified_name}"
+  comment             = "Stage for stock trades data from Tableflow Kafka Topic"
+
+  depends_on = [
+    confluent_tableflow_topic.stock_trades,
+    snowflake_schema.tableflow_kickstarter,
+    snowflake_file_format.parquet
+  ]
+}
+
 locals {
-  base_url = "https://${local.account_identifier}.snowflakecomputing.com"
+  double_dollar_signs = "_x24_x24"
+  dash                = "_x2D"
 }
 
-# https://docs.snowflake.com/en/developer-guide/snowflake-rest-api/reference/catalog-integration#post--api-v2-catalog-integrations
-data "http" "create_catalog_integration" {
-  url    = "${local.base_url}/api/v2/catalog-integrations?createMode=orReplace"
-  method = "POST"
 
-  request_headers = {
-    "Content-Type"                         = "application/json"
-    "Authorization"                        = "Bearer ${snowflake_user_programmatic_access_token.pat.token}"
-    "Accept"                               = "application/json"
-    "User-Agent"                           = "Tableflow-AWS-Glue-Kickstarter-Catalog-Integration"
-    "X-Snowflake-Authorization-Token-Type" = "PROGRAMMATIC_ACCESS_TOKEN"
+# Create an external table in Snowflake that references the data in the S3 bucket
+# that is being populated by the Tableflow Kafka Topic.  This external table will
+# allow querying the data directly from Snowflake.
+resource "snowflake_external_table" "stock_trades_with_metadata" {
+  provider     = snowflake
+  database     = local.database_name
+  schema       = local.schema_name
+  name         = "${upper(confluent_kafka_topic.stock_trades.topic_name)}_WITH_METADATA"
+  file_format  = "FORMAT_NAME = ${snowflake_file_format.parquet.fully_qualified_name}"
+  pattern      = ".*\\.parquet"
+  location     = "@${snowflake_stage.stock_trades.fully_qualified_name}"
+  auto_refresh = true
+  comment      = "External table for stock trades data from Tableflow Kafka Topic.  Along with metadata, key and value columns are included."
+
+  column {
+    as   = "(value:key::binary)"
+    name = "key"
+    type = "binary"
   }
 
-  request_body = jsonencode({
-    name      = local.catalog_integration_name
-    catalog = {
-      catalog_source = "GLUE"
-    }
-    table_format = "ICEBERG"
-    enabled      = true
-  })
-
-  retry {
-    attempts     = 5
-    min_delay_ms = 5000
-    max_delay_ms = 9000 
+  column {
+    as   = "(value:side::varchar)"
+    name = "side"
+    type = "varchar"
   }
+
+  column {
+    as   = "(value:quantity::int)"
+    name = "quantity"
+    type = "int"
+  }
+
+  column {
+    as   = "(value:symbol::varchar)"
+    name = "symbol"
+    type = "varchar"
+  }
+
+  column {
+    as   = "(value:price::int)"
+    name = "price"
+    type = "int"
+  }
+
+  column {
+    as   = "(value:account::varchar)"
+    name = "account"
+    type = "varchar"
+  }
+
+  column {
+    as   = "(value:userid::varchar)"
+    name = "userid"
+    type = "varchar"
+  }
+
+  column {
+    as   = "(value:${local.double_dollar_signs}topic::varchar)"
+    name = "${local.double_dollar_signs}topic"
+    type = "varchar"
+  }
+
+  column {
+    as   = "(value:${local.double_dollar_signs}partition::int)"
+    name = "${local.double_dollar_signs}partition"
+    type = "int"
+  }
+
+  column {
+    as   = "(value:${local.double_dollar_signs}headers::variant)"
+    name = "${local.double_dollar_signs}headers"
+    type = "variant"
+  }
+
+  column {
+    as   = "(value:${local.double_dollar_signs}leader${local.dash}epoch::int)"
+    name = "${local.double_dollar_signs}leader${local.dash}epoch"
+    type = "int"
+  }
+
+  column {
+    as   = "(value:${local.double_dollar_signs}offset::bigint)"
+    name = "${local.double_dollar_signs}offset"
+    type = "bigint"
+  }
+
+  column {
+    as   = "to_timestamp_ltz(value:${local.double_dollar_signs}timestamp::varchar)"
+    name = "${local.double_dollar_signs}timestamp"
+    type = "timestamp_ltz"
+  }
+
+  column {
+    as   = "(value:${local.double_dollar_signs}timestamp${local.dash}type::varchar)"
+    name = "${local.double_dollar_signs}timestamp${local.dash}type"
+    type = "varchar"
+  }
+
+  column {
+    as   = "(value:${local.double_dollar_signs}raw${local.dash}key::binary)"
+    name = "${local.double_dollar_signs}raw${local.dash}key"
+    type = "binary"
+  }
+
+  column {
+    as   = "(value:${local.double_dollar_signs}raw${local.dash}value::binary)"
+    name = "${local.double_dollar_signs}raw${local.dash}value"
+    type = "binary"
+  }
+  
   depends_on = [
-    module.snowflake_user_rsa_key_pairs_rotation,
-    snowflake_external_volume.volume
+    snowflake_stage.stock_trades
   ]
 }
 
+# Create an external table in Snowflake that references the data in the S3 bucket
+# that is being populated by the Tableflow Kafka Topic.  This external table will
+# allow querying the data directly from Snowflake.
+resource "snowflake_external_table" "stock_trades_without_metadata" {
+  provider     = snowflake
+  database     = local.database_name
+  schema       = local.schema_name
+  name         = "${upper(confluent_kafka_topic.stock_trades.topic_name)}"
+  file_format  = "FORMAT_NAME = ${snowflake_file_format.parquet.fully_qualified_name}"
+  pattern      = ".*\\.parquet"
+  location     = "@${snowflake_stage.stock_trades.fully_qualified_name}"
+  auto_refresh = true
+  comment      = "External table for stock trades data from Tableflow Kafka Topic"
 
-resource "snowflake_grant_privileges_to_account_role" "integration_usage" {
-  provider          = snowflake.security_admin
-  privileges        = ["USAGE"]
-  account_role_name = snowflake_account_role.security_admin_role.name
-  on_account_object {
-    object_type = "INTEGRATION"
-    object_name = local.catalog_integration_name
+  column {
+    as   = "(value:quantity::int)"
+    name = "quantity"
+    type = "int"
   }
 
-  depends_on = [ 
-    snowflake_grant_account_role.user_security_admin,
-    data.http.create_catalog_integration
-  ]
-}
-
-resource "null_resource" "after_create_catalog_integration" {
-  triggers = {
-    response = data.http.create_catalog_integration.response_body
+  column {
+    as   = "(value:symbol::varchar)"
+    name = "symbol"
+    type = "varchar"
   }
 
-  depends_on = [ 
-    snowflake_grant_privileges_to_account_role.integration_usage
-  ]
-}
-
-# https://docs.snowflake.com/en/developer-guide/snowflake-rest-api/reference/catalog-integration#get--api-v2-catalog-integrations-name
-data "http" "get_catalog_integration" {
-  url    = "${local.base_url}/api/v2/catalog-integrations/${local.catalog_integration_name}"
-  method = "GET"
-
-  request_headers = {
-    "Content-Type"                         = "application/json"
-    "Authorization"                        = "Bearer ${snowflake_user_programmatic_access_token.pat.token}"
-    "Accept"                               = "application/json"
-    "User-Agent"                           = "Tableflow-AWS-Glue-Kickstarter-Get-Catalog-Integration"
-    "X-Snowflake-Authorization-Token-Type" = "PROGRAMMATIC_ACCESS_TOKEN"
+  column {
+    as   = "(value:price::int)"
+    name = "price"
+    type = "int"
   }
 
-  request_body = jsonencode({
-    name      = local.catalog_integration_name
-    catalog = {
-      catalog_source = "GLUE"
-    }
-    table_format = "ICEBERG"
-    enabled      = true
-  })
+  column {
+    as   = "(value:account::varchar)"
+    name = "account"
+    type = "varchar"
+  }
 
-  retry {
-    attempts     = 5
-    min_delay_ms = 5000
-    max_delay_ms = 9000 
+  column {
+    as   = "(value:userid::varchar)"
+    name = "userid"
+    type = "varchar"
   }
 
   depends_on = [
-    module.snowflake_user_rsa_key_pairs_rotation
+    snowflake_stage.stock_trades
   ]
-}
-
-resource "null_resource" "after_get_catalog_integration" {
-  triggers = {
-    response = data.http.get_catalog_integration.response_body
-  }
 }

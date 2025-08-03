@@ -18,6 +18,8 @@ locals {
   warehouse_name                = "${upper(local.secrets_insert)}"
   database_name                 = "${upper(local.secrets_insert)}"
   schema_name                   = "${upper(local.secrets_insert)}"
+  aws_s3_integration_name       = "${upper(local.secrets_insert)}_STORAGE_INTEGRATION"
+  stage_name                    = "${upper(local.secrets_insert)}_STAGE"
   security_admin_role           = "${local.user_name}_SECURITY_ADMIN_ROLE"
   system_admin_role             = "${local.user_name}_SYSTEM_ADMIN_ROLE"
   tableflow_glue_s3_role_name   = "tableflow_glue_s3_role"

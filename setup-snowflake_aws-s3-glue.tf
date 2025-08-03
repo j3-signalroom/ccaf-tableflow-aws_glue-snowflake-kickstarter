@@ -78,13 +78,43 @@ data "aws_iam_policy_document" "snowflake_glue_policy" {
     effect = "Allow"
     principals {
       type        = "AWS"
-      identifiers = [jsondecode(null_resource.after_get_catalog_integration.triggers["response"])["catalog"]["glue_aws_role_arn"]]
+      identifiers = [snowflake_storage_integration.aws_s3_integration.storage_aws_iam_user_arn]
     }
     actions = ["sts:AssumeRole"]
     condition {
       test     = "StringEquals"
       variable = "sts:ExternalId"
-      values = [snowflake_external_volume.volume.storage_location[0].storage_aws_external_id]
+      values   = [snowflake_storage_integration.aws_s3_integration.storage_aws_external_id]
     }
   }
+
+  depends_on = [ 
+    snowflake_storage_integration.aws_s3_integration
+  ]
+}
+
+resource "snowflake_storage_integration" "aws_s3_integration" {
+  provider                  = snowflake
+  name                      = local.aws_s3_integration_name
+  storage_allowed_locations = ["${local.tableflow_topic_s3_base_path}"]
+  storage_provider          = "S3"
+  storage_aws_object_acl    = "bucket-owner-full-control"
+  storage_aws_role_arn      = local.snowflake_aws_role_arn
+  enabled                   = true
+  type                      = "EXTERNAL_STAGE"
+}
+
+# Emits GRANT USAGE ON INTEGRATION <integration_name> TO ROLE <security_admin_role>;
+resource "snowflake_grant_privileges_to_account_role" "integration_usage" {
+  provider          = snowflake.security_admin
+  privileges        = ["USAGE"]
+  account_role_name = local.security_admin_role
+  on_account_object {
+    object_type = "INTEGRATION"
+    object_name = local.aws_s3_integration_name
+  }
+
+  depends_on = [
+    snowflake_storage_integration.aws_s3_integration
+  ]
 }
