@@ -21,7 +21,8 @@ provider "snowflake" {
 
   preview_features_enabled = [
     "snowflake_external_volume_resource",
-    "snowflake_user_programmatic_access_token_resource"
+    "snowflake_storage_integration_resource",
+    "snowflake_file_format_resource"
   ]
 }
 
@@ -38,6 +39,7 @@ provider "snowflake" {
 
   preview_features_enabled = [
     "snowflake_external_volume_resource",
-    "snowflake_user_programmatic_access_token_resource"
+    "snowflake_storage_integration_resource",
+    "snowflake_file_format_resource"
   ]
 }
