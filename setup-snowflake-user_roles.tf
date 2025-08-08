@@ -1,25 +1,9 @@
-data "aws_secretsmanager_secret" "admin_public_keys" {
-  name = "/snowflake_admin_credentials"
+data "aws_secretsmanager_secret" "admin_user" {
+  name = var.admin_user_secrets_root_path
 }
 
-data "aws_secretsmanager_secret_version" "admin_public_keys" {
-  secret_id = data.aws_secretsmanager_secret.admin_public_keys.id
-}
-
-data "aws_secretsmanager_secret" "admin_private_key_1" {
-  name = "/snowflake_admin_credentials/rsa_private_key_pem_1"
-}
-
-data "aws_secretsmanager_secret_version" "admin_private_key_1" {
-  secret_id = data.aws_secretsmanager_secret.admin_private_key_1.id
-}
-
-data "aws_secretsmanager_secret" "admin_private_key_2" {
-  name = "/snowflake_admin_credentials/rsa_private_key_pem_2"
-}
-
-data "aws_secretsmanager_secret_version" "admin_private_key_2" {
-  secret_id = data.aws_secretsmanager_secret.admin_private_key_2.id
+data "aws_secretsmanager_secret_version" "admin_user" {
+  secret_id = data.aws_secretsmanager_secret.admin_user.id
 }
 
 # Create the Snowflake user RSA keys pairs
@@ -27,17 +11,17 @@ module "snowflake_user_rsa_key_pairs_rotation" {
   source  = "github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module"
 
   # Required Input(s)
-  aws_region                = var.aws_region
-  account_identifier        = local.account_identifier
-  snowflake_user            = local.secrets_insert
-  secrets_path              = "/snowflake_resource/${local.secrets_insert}"
-  lambda_function_name      = local.secrets_insert
+  aws_region                    = var.aws_region
+  snowflake_account_identifier  = local.snowflake_account_identifier
+  snowflake_user                = local.secrets_insert
+  secrets_path                  = "/snowflake_resource/${local.secrets_insert}"
+  lambda_function_name          = local.secrets_insert
 
   # Optional Input(s)
-  day_count                 = var.day_count
-  aws_lambda_memory_size    = var.aws_lambda_memory_size
-  aws_lambda_timeout        = var.aws_lambda_timeout
-  aws_log_retention_in_days = var.aws_log_retention_in_days
+  day_count                     = var.day_count
+  aws_lambda_memory_size        = var.aws_lambda_memory_size
+  aws_lambda_timeout            = var.aws_lambda_timeout
+  aws_log_retention_in_days     = var.aws_log_retention_in_days
 }
 
 # Emits CREATE USER <user_name> DEFAULT_WAREHOUSE = <warehouse_name> DEFAULT_ROLE = <system_admin_role> DEFAULT_NAMESPACE = <database_name>.<schema_name> RSA_PUBLIC_KEY = <rsa_public_key> RSA_PUBLIC_KEY_2 = NULL;

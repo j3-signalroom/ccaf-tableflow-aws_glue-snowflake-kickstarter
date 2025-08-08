@@ -111,3 +111,8 @@ variable "create_set_1_flink_statements" {
         {id = 1, file = "ctas_stock_trades_with_totals"}
     ]
 }
+
+variable "admin_user_secrets_root_path" {
+  description = "The root path for the admin user secrets in AWS Secrets Manager."
+  type        = string
+}
