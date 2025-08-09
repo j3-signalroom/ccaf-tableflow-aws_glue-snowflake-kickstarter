@@ -20,9 +20,7 @@ provider "snowflake" {
   private_key       = local.snowflake_active_private_key
 
   preview_features_enabled = [
-    "snowflake_external_volume_resource",
-    "snowflake_storage_integration_resource",
-    "snowflake_file_format_resource"
+    "snowflake_external_volume_resource"
   ]
 }
 
@@ -38,8 +36,6 @@ provider "snowflake" {
   private_key       = local.snowflake_active_private_key
 
   preview_features_enabled = [
-    "snowflake_external_volume_resource",
-    "snowflake_storage_integration_resource",
-    "snowflake_file_format_resource"
+    "snowflake_external_volume_resource"
   ]
 }

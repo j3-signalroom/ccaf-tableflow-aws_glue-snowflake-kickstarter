@@ -159,15 +159,17 @@ deploy.sh <create | delete> --profile <SSO-PROFILE-NAME> \
                             --confluent-api-key <CONFLUENT-API-KEY> \
                             --confluent-api-secret <CONFLUENT-API-SECRET> \
                             --snowflake-warehouse <SNOWFLAKE-WAREHOUSE> \
+                            --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> \
                             --day-count <DAY-COUNT>
 ```
 > Argument placeholder|Replace with
 > -|-
-> `<SSO-PROFILE-NAME>`|your AWS SSO profile name for your AWS infrastructue that host your AWS Secrets Manager.
-> `<CONFLUENT-API-KEY>`|your organization's Confluent Cloud API Key (also referred as Cloud API ID).
-> `<CONFLUENT-API-SECRET>`|your organization's Confluent Cloud API Secret.
-> `<SNOWFLAKE-WAREHOUSE>`|the Snowflake warehouse (or "virtual warehouse") you choose to run the resources in Snowflake.
-> `<DAY-COUNT>`|how many day(s) should the API Key be rotated for.
+> `<SSO-PROFILE-NAME>`|Your AWS SSO profile name for your AWS infrastructue that host your AWS Secrets Manager.
+> `<CONFLUENT-API-KEY>`|Your organization's Confluent Cloud API Key (also referred as Cloud API ID).
+> `<CONFLUENT-API-SECRET>`|Your organization's Confluent Cloud API Secret.
+> `<SNOWFLAKE-WAREHOUSE>`|The Snowflake warehouse (or "virtual warehouse") you choose to run the resources in Snowflake.
+> `<ADMIN_USER_SECRETS_ROOT_PATH>`|The root path in AWS Secrets Manager where the admin user secrets are stored.
+> `<DAY-COUNT>`|How many day(s) should the API Key be rotated for.
 
 To learn more about this script, click [here](.blog/deploy-script-explanation.md).
 
