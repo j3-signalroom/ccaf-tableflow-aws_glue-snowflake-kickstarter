@@ -98,7 +98,7 @@ then
 fi
 
 # Check required --admin-user-secrets-root-path argument was supplied
-if [ -z $admin_user_secrets_root_path ]
+if [ -z $admin_user_secrets_root_path ] && [ create_action = true ]
 then
     echo
     echo "(Error Message 006)  You did not include the proper use of the --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> argument in the call."
@@ -125,7 +125,7 @@ eval $(aws2-wrap $AWS_PROFILE --export)
 export AWS_REGION=$(aws configure get region $AWS_PROFILE)
 
 # Create terraform.tfvars file
-if [ create_action = true ]
+if [ "$create_action" = true ]
 then
     printf "aws_region=\"${AWS_REGION}\"\
     \naws_access_key_id=\"${AWS_ACCESS_KEY_ID}\"\
