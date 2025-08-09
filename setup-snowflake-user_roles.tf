@@ -1,11 +1,3 @@
-data "aws_secretsmanager_secret" "admin_user" {
-  name = var.admin_user_secrets_root_path
-}
-
-data "aws_secretsmanager_secret_version" "admin_user" {
-  secret_id = data.aws_secretsmanager_secret.admin_user.id
-}
-
 # Create the Snowflake user RSA keys pairs
 module "snowflake_user_rsa_key_pairs_rotation" {   
   source  = "github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module"
@@ -35,8 +27,8 @@ resource "snowflake_user" "user" {
   # Setting the attributes to `null`, effectively unsets the attribute.  Refer to the 
   # `https://docs.snowflake.com/en/user-guide/key-pair-auth#configuring-key-pair-rotation`
   # for more information
-  rsa_public_key    = module.snowflake_user_rsa_key_pairs_rotation.key_number == 1 ? module.snowflake_user_rsa_key_pairs_rotation.snowflake_rsa_public_key_1_pem : null
-  rsa_public_key_2  = module.snowflake_user_rsa_key_pairs_rotation.key_number == 2 ? module.snowflake_user_rsa_key_pairs_rotation.snowflake_rsa_public_key_2_pem : null
+  rsa_public_key    = module.snowflake_user_rsa_key_pairs_rotation.active_key_number == 1 ? module.snowflake_user_rsa_key_pairs_rotation.snowflake_rsa_public_key_1_pem : null
+  rsa_public_key_2  = module.snowflake_user_rsa_key_pairs_rotation.active_key_number == 2 ? module.snowflake_user_rsa_key_pairs_rotation.snowflake_rsa_public_key_2_pem : null
 
   depends_on = [ 
     module.snowflake_user_rsa_key_pairs_rotation

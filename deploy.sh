@@ -97,7 +97,7 @@ then
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
 fi
 
-# Check required --admin_user_secrets_root_path argument was supplied
+# Check required --admin-user-secrets-root-path argument was supplied
 if [ -z $admin_user_secrets_root_path ]
 then
     echo
