@@ -32,6 +32,16 @@ resource "aws_iam_role" "snowflake_s3_role" {
   assume_role_policy = data.aws_iam_policy_document.snowflake_s3_policy.json
 }
 
+resource "snowflake_external_volume" "volume" {
+  name = local.volume_name
+  storage_location {
+    storage_location_name = "${local.volume_name}_LOCATION"
+    storage_base_url      = local.tableflow_topic_s3_base_path
+    storage_provider      = "S3"
+    storage_aws_role_arn  = local.snowflake_aws_role_arn
+  }
+}
+
 resource "aws_iam_policy" "snowflake_s3_access_policy" {
   name   = "${local.snowflake_aws_role_name}_s3_access_policy"
   policy = data.aws_iam_policy_document.snowflake_s3_access_policy.json
@@ -57,15 +67,6 @@ resource "aws_iam_role_policy_attachment" "snowflake_s3_policy_attachment" {
 #   role       = aws_iam_role.snowflake_glue_role.name
 #   policy_arn = aws_iam_policy.snowflake_glue_access_policy.arn
 # }
-
-resource "snowflake_external_volume" "volume" {
-  name = local.volume_name
-  storage_location {
-    storage_location_name = "${local.volume_name}_LOCATION"
-    storage_base_url     = local.tableflow_topic_s3_base_path
-    storage_provider     = "S3"
-  }
-}
 
 # resource "snowflake_file_format" "parquet" {
 #   provider    = snowflake
