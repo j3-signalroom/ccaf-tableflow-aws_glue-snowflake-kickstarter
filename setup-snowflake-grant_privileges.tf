@@ -93,3 +93,18 @@ resource "snowflake_grant_privileges_to_account_role" "future_stage_usage" {
     snowflake_grant_account_role.user_security_admin
   ]
 }
+
+# Emits GRANT USAGE ON EXTERNAL VOLUME <volume_name> TO ROLE <security_admin_role>;
+resource "snowflake_grant_privileges_to_account_role" "external_volume_usage" {
+  provider          = snowflake.security_admin
+  privileges        = ["USAGE"]
+  account_role_name = snowflake_account_role.security_admin_role.name
+  on_account_object {
+      object_type = "EXTERNAL VOLUME"
+      object_name = local.volume_name
+  }
+
+  depends_on = [
+    snowflake_external_volume.volume
+  ]
+}
