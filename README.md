@@ -229,7 +229,7 @@ The [`setup-aws-secret_manager.tf`](setup-aws-secret_manager.tf) is responsible 
 > _Storing the API Key Pairs in AWS Secrets Manager offers the advantage of securely managing and accessing sensitive information, like API keys, without embedding them directly in your application code or configuration files. This improves security by lowering the chance of accidentally exposing sensitive credentials.
 
 ### 3.7 Setup the Snowflake User and Roles
-The [`setup-snowflake-user_roles.tf`](setup-snowflake-user_roles.tf) is responsible for setting up the Snowflake user and roles to access the Snowflake environment via the [`snowflake_user_rsa_key_pairs_rotation`](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module) module, and allow Snowflake to access AWS Glue Data Catalog and Amazon S3 bucket via the [`snowflake_glue_s3_access_role`](./modules/snowflake_glue_s3_access_role) module.
+The [`setup-snowflake-user_roles.tf`](setup-snowflake-user_roles.tf) is responsible for setting up the Snowflake user and roles to access the Snowflake environment via the [`snowflake_user_rsa_key_pairs_rotation`](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module) module, and allow Snowflake to access Amazon S3 bucket.
 
 Otherwise, if you didn’t use the automated Terraform script, you’ll have to do the following manually by following the instructions on these web pages:
 
