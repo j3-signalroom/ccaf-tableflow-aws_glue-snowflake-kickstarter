@@ -31,6 +31,8 @@ _Confluent Tableflow for Apache Iceberg enables you to turn a Kafka topic into a
     - [**3.7 Setup the Snowflake User and Roles**](#37-setup-the-snowflake-user-and-roles)
     - [**3.8 Setup the Snowflake Database, Schema, External Stage and External Tables**](#38-setup-the-snowflake-database-schema-external-stage-and-external-tables)
 + [**4.0 Conclusion**](#40-conclusion)
++ [**Resources**](#resources)
+    - [**AWS Glue**](#aws-glue)
 <!-- tocstop -->
 
 ## 1.0 The Impetus
@@ -257,6 +259,9 @@ Using Terraform, you can **_reliably_** and **_consistently_** deploy automatica
 * Integrate the Tableflow Catalog with **AWS Glue Data Catalog** to connect with **Snowflake**.
 * Use **Snowflake** to query the Kafka Topic Tableflow-enabled Apache Iceberg Tables with **SnowSQL**.
 
-
-
 **_Welcome to the forefront of the data revolution, where every challenge is an opportunity and innovation knows no bounds!_**
+
+## Resources
+### AWS Glue
+- [Connecting to the Data Catalog using AWS Glue Iceberg REST endpoint](https://docs.aws.amazon.com/glue/latest/dg/connect-glu-iceberg-rest.html)
+- [AWS Signature Version 4 for API requests](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv.html)
