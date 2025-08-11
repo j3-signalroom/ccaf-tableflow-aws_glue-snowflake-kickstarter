@@ -26,26 +26,6 @@ resource "snowflake_schema" "tableflow_kickstarter" {
   ]
 }
 
-resource "aws_iam_role" "snowflake_s3_role" {
-  name               = local.snowflake_aws_s3_role_name
-  description        = "IAM role for Snowflake S3 access"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Effect = "Allow"
-      Principal = {
-        AWS = local.snowflake_external_volume_aws_role_arn
-      }
-      Action = "sts:AssumeRole",
-      Condition = {
-        StringEquals = {
-          "sts:ExternalId" = local.snowflake_external_volume_external_id
-        }
-      }
-    }]
-  })
-}
-
 resource "snowflake_external_volume" "volume" {
   provider = snowflake.account_admin
   name     = local.volume_name
@@ -62,67 +42,72 @@ resource "snowflake_external_volume" "volume" {
   ]
 }
 
-resource "aws_iam_policy" "snowflake_s3_role_access_policy" {
-  name   = "${local.snowflake_aws_s3_role_name}_access_policy"
+resource "snowflake_execute" "catalog_integration" {
+  execute = <<EOT
+CREATE CATALOG INTEGRATION glue_rest_catalog_int
+  CATALOG_SOURCE = ICEBERG_REST
+  TABLE_FORMAT = ICEBERG
+  CATALOG_NAMESPACE = 'rest_catalog_integration'
+  REST_CONFIG = (
+    CATALOG_URI = 'https://glue.${data.aws_region.current.name}.amazonaws.com/iceberg'
+    CATALOG_API_TYPE = AWS_GLUE
+    CATALOG_NAME = '${data.aws_caller_identity.current.account_id}'
+  )
+  REST_AUTHENTICATION = (
+    TYPE = SIGV4
+    SIGV4_IAM_ROLE = '${local.snowflake_external_volume_aws_role_arn}'
+    SIGV4_EXTERNAL_ID = '${local.snowflake_external_volume_external_id}'
+    SIGV4_SIGNING_REGION = '${data.aws_region.current.name}'
+  )
+  ENABLED = FALSE;
+EOT
+  revert = <<EOT
+DROP CATALOG INTEGRATION glue_rest_catalog_int
+EOT
+}
+
+resource "aws_iam_policy" "snowflake_glue_access_policy" {
+  name   = "${local.snowflake_aws_glue_role_name}_access_policy"
   policy = jsonencode(({
     Version = "2012-10-17"
     Statement = [
       {
         Effect = "Allow",
         Action = [
-          "s3:PutObject",
-          "s3:PutObjectTagging",
-          "s3:GetObject",
-          "s3:GetObjectVersion",
-          "s3:DeleteObject",
-          "s3:DeleteObjectVersion",
-          "s3:AbortMultipartUpload",
-          "s3:ListMultipartUploadParts"
+          "glue:GetCatalog",
+          "glue:GetDatabase",
+          "glue:GetDatabases",
+          "glue:GetTable",
+          "glue:GetTables"
         ],
-        Resource = "arn:aws:s3:::${local.tableflow_topic_s3_base_path}/*"
-      },
-      {
-        Effect = "Allow",
-        Action = [
-          "s3:GetBucketLocation",
-          "s3:ListBucketMultipartUploads",
-          "s3:ListBucket"
-        ],
-        Resource = aws_s3_bucket.iceberg_bucket.arn,
-        Condition = {
-          StringLike = {
-            "s3:prefix" = ["*"]
-          }
-        }
+        Resource = [
+          "arn:aws:glue:*:${data.aws_caller_identity.current.account_id}:table/*/*",
+          "arn:aws:glue:*:${data.aws_caller_identity.current.account_id}:catalog",
+          "arn:aws:glue:*:${data.aws_caller_identity.current.account_id}:database/${confluent_kafka_cluster.kafka_cluster.id}"
+        ]
       }
     ]
   }))
 }
 
-resource "aws_iam_role_policy_attachment" "snowflake_s3_policy_attachment" {
-  role       = aws_iam_role.snowflake_s3_role.name
-  policy_arn = aws_iam_policy.snowflake_s3_role_access_policy.arn
-}
-
-
-
-# data "aws_iam_policy_document" "snowflake_glue_access_policy" {
-#   statement {
-#     sid     = "AllowGlueCatalogTableAccess"
-#     effect  = "Allow"
-#     actions = [
-#       "glue:GetCatalog",
-#       "glue:GetDatabase",
-#       "glue:GetDatabases",
-#       "glue:GetTable",
-#       "glue:GetTables"
-#     ]
-#     resources = [
-#       "arn:aws:glue:*:${data.aws_caller_identity.current.account_id}:table/*/*",
-#       "arn:aws:glue:*:${data.aws_caller_identity.current.account_id}:catalog",
-#       "arn:aws:glue:*:${data.aws_caller_identity.current.account_id}:database/${confluent_kafka_cluster.kafka_cluster.id}"
-#     ]
-#   }
+# resource "aws_iam_role" "snowflake_glue_role" {
+#   name               = local.snowflake_aws_glue_role_name
+#   description        = "IAM role for Snowflake Glue access"
+#   assume_role_policy = jsonencode({
+#     Version = "2012-10-17",
+#     Statement = [{
+#       Effect = "Allow"
+#       Principal = {
+#         AWS = local.snowflake_external_volume_aws_role_arn
+#       }
+#       Action = "sts:AssumeRole",
+#       Condition = {
+#         StringEquals = {
+#           "sts:ExternalId" = local.snowflake_external_volume_external_id
+#         }
+#       }
+#     }]
+#   })
 # }
 
 # data "aws_iam_policy_document" "snowflake_glue_policy" {  
@@ -145,33 +130,10 @@ resource "aws_iam_role_policy_attachment" "snowflake_s3_policy_attachment" {
 #   ]
 # }
 
-# resource "aws_iam_role" "snowflake_glue_role" {
-#   name               = "${local.snowflake_aws_role_name}_glue"
-#   description        = "IAM role for Snowflake Glue access"
-#   assume_role_policy = data.aws_iam_policy_document.snowflake_glue_policy.json
-# }
-
-# resource "aws_iam_policy" "snowflake_glue_access_policy" {
-#   name   = "${local.snowflake_aws_role_name}_glue_access_policy"
-#   policy = data.aws_iam_policy_document.snowflake_glue_access_policy.json
-# }
 
 # resource "aws_iam_role_policy_attachment" "snowflake_glue_policy_attachment" {
 #   role       = aws_iam_role.snowflake_glue_role.name
 #   policy_arn = aws_iam_policy.snowflake_glue_access_policy.arn
-# }
-
-# resource "snowflake_file_format" "parquet" {
-#   provider    = snowflake
-#   name        = "PARQUET_FORMAT"
-#   database    = local.database_name
-#   schema      = local.schema_name
-#   format_type = "PARQUET"
-#   comment     = "File format for Parquet files used in Tableflow Kafka Topic"
-
-#   depends_on = [
-#     snowflake_schema.tableflow_kickstarter
-#   ]
 # }
 
 

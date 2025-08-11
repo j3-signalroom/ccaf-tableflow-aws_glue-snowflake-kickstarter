@@ -45,7 +45,6 @@ resource "snowflake_grant_privileges_to_account_role" "database_usage" {
   ]
 }
 
-
 # Emits GRANT CREATE STAGE, CREATE FILE FORMAT, CREATE EXTERNAL TABLE, USAGE ON SCHEMA <schema_fully_qualified_name> TO ROLE <security_admin_role>;
 resource "snowflake_grant_privileges_to_account_role" "schema_multiple_grants" {
   provider          = snowflake.security_admin
@@ -53,40 +52,6 @@ resource "snowflake_grant_privileges_to_account_role" "schema_multiple_grants" {
   account_role_name = snowflake_account_role.security_admin_role.name
   on_schema {
     schema_name = "${local.database_name}.${local.schema_name}"
-  }
-
-  depends_on = [
-    snowflake_grant_account_role.user_security_admin
-  ]
-}
-
-# Emits GRANT USAGE ON FUTURE FILE FORMATS IN SCHEMA <schema_fully_qualified_name> TO ROLE <security_admin_role>;
-resource "snowflake_grant_privileges_to_account_role" "future_file_format_usage" {
-  provider          = snowflake.security_admin
-  privileges        = ["USAGE"]
-  account_role_name = snowflake_account_role.security_admin_role.name
-  on_schema_object {
-    future {
-        object_type_plural = "FILE FORMATS"
-        in_schema = "${local.database_name}.${local.schema_name}"
-    }
-  }
-
-  depends_on = [
-    snowflake_grant_account_role.user_security_admin
-  ]
-}
-
-# Emits GRANT USAGE ON FUTURE STAGES IN SCHEMA <schema_name> TO ROLE <security_admin_role>;
-resource "snowflake_grant_privileges_to_account_role" "future_stage_usage" {
-  provider          = snowflake.security_admin
-  privileges        = ["USAGE"]
-  account_role_name = snowflake_account_role.security_admin_role.name
-  on_schema_object {
-    future {
-        object_type_plural = "STAGES"
-        in_schema = "${local.database_name}.${local.schema_name}"
-    }
   }
 
   depends_on = [
