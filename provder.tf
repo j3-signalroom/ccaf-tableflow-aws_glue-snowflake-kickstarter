@@ -18,10 +18,6 @@ provider "snowflake" {
   user              = local.snowflake_admin_user
   authenticator     = local.snowflake_authenticator
   private_key       = local.snowflake_active_private_key
-
-  preview_features_enabled = [
-    "snowflake_external_volume_resource"
-  ]
 }
 
 # The SECURITYADMIN (Security Administrator) is responsible for users, roles and privileges.
@@ -29,6 +25,17 @@ provider "snowflake" {
 provider "snowflake" {
   alias             = "security_admin"
   role              = "SECURITYADMIN"
+  organization_name = local.snowflake_organization_name
+  account_name      = local.snowflake_account_name
+  user              = local.snowflake_admin_user
+  authenticator     = local.snowflake_authenticator
+  private_key       = local.snowflake_active_private_key
+}
+
+# `ACCOUNTADMIN` role is required to create the external volume.
+provider "snowflake" {
+  alias             = "account_admin"
+  role              = "ACCOUNTADMIN"
   organization_name = local.snowflake_organization_name
   account_name      = local.snowflake_account_name
   user              = local.snowflake_admin_user

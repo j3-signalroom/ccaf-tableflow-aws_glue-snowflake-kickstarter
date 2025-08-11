@@ -20,8 +20,8 @@ locals {
   catalog_integration_name       = "${local.secrets_insert}_catalog_integration"
   confluent_secrets_path_prefix = "/confluent_cloud_resource/${local.secrets_insert}"
   snowflake_secrets_path_prefix = "/snowflake_resource/${local.secrets_insert}"
-  snowflake_aws_role_name       = "snowflake_glue_s3_role"
-  snowflake_aws_role_arn        = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.snowflake_aws_role_name}"
+  snowflake_aws_s3_role_name    = "snowflake_s3_role"
+  snowflake_aws_s3_role_arn     = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.snowflake_aws_s3_role_name}"
   volume_name                   = "${upper(local.secrets_insert)}_VOLUME"
   user_name                     = "${upper(local.secrets_insert)}"
   warehouse_name                = "${upper(local.secrets_insert)}"
@@ -35,4 +35,6 @@ locals {
   tableflow_glue_s3_role_arn    = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.tableflow_glue_s3_role_name}"
   service_account_name          = "${local.secrets_insert}_flink_sql_statements_runner"
   flink_rest_endpoint           = "https://flink.${var.aws_region}.${lower(local.cloud)}.confluent.cloud"
+  snowflake_external_volume_aws_role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+  snowflake_external_volume_external_id = snowflake_external_volume.volume.storage_location[0].storage_aws_external_id
 }
