@@ -1,8 +1,3 @@
-provider "confluent" {
-  cloud_api_key    = var.confluent_api_key
-  cloud_api_secret = var.confluent_api_secret
-}
-
 provider "aws" {
     region     = var.aws_region
     access_key = var.aws_access_key_id
@@ -10,27 +5,11 @@ provider "aws" {
     token      = var.aws_session_token
 }
 
-# The SYSADMIN (Systems Admin) oversees creating objects inside Snowflake.
-provider "snowflake" {
-  role              = "SYSADMIN"
-  organization_name = local.snowflake_organization_name
-  account_name      = local.snowflake_account_name
-  user              = local.snowflake_admin_user
-  authenticator     = local.snowflake_authenticator
-  private_key       = local.snowflake_active_private_key
+provider "confluent" {
+  cloud_api_key    = var.confluent_api_key
+  cloud_api_secret = var.confluent_api_secret
 }
 
-# The SECURITYADMIN (Security Administrator) is responsible for users, roles and privileges.
-# All roles, users and privileges should be owned and created by the security administrator.
-provider "snowflake" {
-  alias             = "security_admin"
-  role              = "SECURITYADMIN"
-  organization_name = local.snowflake_organization_name
-  account_name      = local.snowflake_account_name
-  user              = local.snowflake_admin_user
-  authenticator     = local.snowflake_authenticator
-  private_key       = local.snowflake_active_private_key
-}
 
 # `ACCOUNTADMIN` role is required to create the external volume.
 provider "snowflake" {
@@ -45,4 +24,25 @@ provider "snowflake" {
   preview_features_enabled = [
     "snowflake_external_volume_resource"
   ]
+}
+# The SECURITYADMIN (Security Administrator) is responsible for users, roles and privileges.
+# All roles, users and privileges should be owned and created by the security administrator.
+provider "snowflake" {
+  alias             = "security_admin"
+  role              = "SECURITYADMIN"
+  organization_name = local.snowflake_organization_name
+  account_name      = local.snowflake_account_name
+  user              = local.snowflake_admin_user
+  authenticator     = local.snowflake_authenticator
+  private_key       = local.snowflake_active_private_key
+}
+
+# The SYSADMIN (Systems Admin) oversees creating objects inside Snowflake.
+provider "snowflake" {
+  role              = "SYSADMIN"
+  organization_name = local.snowflake_organization_name
+  account_name      = local.snowflake_account_name
+  user              = local.snowflake_admin_user
+  authenticator     = local.snowflake_authenticator
+  private_key       = local.snowflake_active_private_key
 }
