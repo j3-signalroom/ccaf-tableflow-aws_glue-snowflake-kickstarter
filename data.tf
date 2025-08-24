@@ -40,6 +40,6 @@ locals {
   service_account_name          = "${local.secrets_insert}_flink_sql_statements_runner"
   flink_rest_endpoint           = "https://flink.${var.aws_region}.${lower(local.cloud)}.confluent.cloud"
   snowflake_external_volume_aws_role_arn     = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
-  snowflake_external_volume_aws_iam_user_arn = snowflake_external_volume.volume.storage_location[0].storage_aws_iam_user_arn
+  //snowflake_external_volume_aws_iam_user_arn = snowflake_external_volume.volume.storage_location[0].storage_aws_iam_user_arn
   snowflake_external_volume_external_id      = snowflake_external_volume.volume.storage_location[0].storage_aws_external_id
 }
