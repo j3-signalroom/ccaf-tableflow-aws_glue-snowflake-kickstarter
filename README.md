@@ -150,32 +150,45 @@ The true power of Apache Iceberg is that it allows for the separation of storage
 4. Apart of the Terraform configurations, is the `snowflake_user_rsa_key_pairs_rotation`, the [`iac-snowflake-user-rsa_key_pairs_rotation-tf_module`](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module) Terraform [module](https://developer.hashicorp.com/terraform/language/modules) to automate the creation and rotation of [RSA key pairs](https://github.com/j3-signalroom/j3-techstack-lexicon/blob/main/cryptographic-glossary.md#rsa-key-pair) for a Snowflake service account user.  It leverages a specialized AWS Lambda function, known as the [`iac-snowflake-user-rsa_key_pairs_generator-lambda`](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_generator-lambda), to automate the generation and rotation of RSA key pairs. The module allows users to define rotation intervals (e.g., every 30 days since the last key generation) to enhance security by regularly renewing cryptographic credentials. Additionally, it integrates seamlessly with AWS Secrets Manager to securely store and manage the generated key pairs, ensuring that the keys remain protected and easily accessible for Snowflake authentication without manual intervention.
 
 ### 2.1 From Manual to Automated (DevOps in Action: Running Terraform Locally)
-Install the [Terraform CLI](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) on your local machine, and make sure you have an [HCP Terraform account](https://app.terraform.io/session) to run the Terraform configuration.  Learn how to set up Terraform Cloud for local use by clicking [here](.blog/setup-terraform-cloud.md).
+To run the Terraform deployment configuration locally on your machine, you need to first have the following installed:
 
-Then run the following command to set up the Terraform configuration locally. This command will create a Confluent Cloud environment with a Kafka Cluster configured for Tableflow, AWS Secrets Manager, an AWS S3 bucket, AWS Glue Data Catalog, and Snowflake Database:
+1. Take care of the local environment prequisities listed below:
+    > You need to have the following installed on your local machine:
+    > - [Confluent CLI version 4 or higher](https://docs.confluent.io/confluent-cli/4.0/overview.html)
+    > - [Terraform CLI version 1.12 or higher](https://developer.hashicorp.com/terraform/install).  To learn how to set up Terraform Cloud for local use by clicking [here](.blog/setup-terraform-cloud.md).
 
-> **Note**: _The script and this project, in general, assume your hyperscaler is **AWS**. Additionally, it is expected that the AWS account is configured with SSO (Single Sign-On) support._
+2. Get your Confluent Cloud API key pair, by execute the following Confluent CLI command to generate the Cloud API Key:
 
-```bash
-deploy.sh <create | delete> --profile <SSO-PROFILE-NAME> \
-                            --confluent-api-key <CONFLUENT-API-KEY> \
-                            --confluent-api-secret <CONFLUENT-API-SECRET> \
-                            --snowflake-warehouse <SNOWFLAKE-WAREHOUSE> \
-                            --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> \
-                            --day-count <DAY-COUNT>
-```
-> Argument placeholder|Replace with
-> -|-
-> `<SSO-PROFILE-NAME>`|Your AWS SSO profile name for your AWS infrastructue that host your AWS Secrets Manager.
-> `<CONFLUENT-API-KEY>`|Your organization's Confluent Cloud API Key (also referred as Cloud API ID).
-> `<CONFLUENT-API-SECRET>`|Your organization's Confluent Cloud API Secret.
-> `<SNOWFLAKE-WAREHOUSE>`|The Snowflake warehouse (or "virtual warehouse") you choose to run the resources in Snowflake.
-> `<ADMIN_USER_SECRETS_ROOT_PATH>`|The root path in AWS Secrets Manager where the admin user secrets are stored.
-> `<DAY-COUNT>`|How many day(s) should the API Key be rotated for.
+    > Click [here](.blog/why-do-you-need-the-confluent-cloud-api-key.md#2-integration-with-cicd-pipelines) to learn why you need it.
 
-To learn more about this script, click [here](.blog/deploy-script-explanation.md).
+    ```shell
+    confluent api-key create --resource "cloud" 
+    ```
 
-> **Note**: _Unfortunately, there are [two annoying issues](KNOWNISSUES.md) that yet to be resolved but are not hindrances to you fully enjoying the benefits of this project._
+    > You will then supply the created Cloud API Key and Cloud API Secret to the `deploy.sh` script below.
+
+3. Then run the following command to set up the Terraform configuration locally. This command will create a Confluent Cloud environment with a Kafka Cluster configured for Tableflow, AWS Secrets Manager, an AWS S3 bucket, AWS Glue Data Catalog, and Snowflake Database:
+
+    > **Note**: _The script and this project, in general, assume your hyperscaler is **AWS**. Additionally, it is expected that the AWS account is configured with SSO (Single Sign-On) support._
+
+    ```bash
+    deploy.sh <create | delete> --profile <SSO-PROFILE-NAME> \
+                                --confluent-api-key <CONFLUENT-API-KEY> \
+                                --confluent-api-secret <CONFLUENT-API-SECRET> \
+                                --snowflake-warehouse <SNOWFLAKE-WAREHOUSE> \
+                                --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> \
+                                --day-count <DAY-COUNT>
+    ```
+    > Argument placeholder|Replace with
+    > -|-
+    > `<SSO-PROFILE-NAME>`|Your AWS SSO profile name for your AWS infrastructue that host your AWS Secrets Manager.
+    > `<CONFLUENT-API-KEY>`|Your organization's Confluent Cloud API Key (also referred as Cloud API ID).
+    > `<CONFLUENT-API-SECRET>`|Your organization's Confluent Cloud API Secret.
+    > `<SNOWFLAKE-WAREHOUSE>`|The Snowflake warehouse (or "virtual warehouse") you choose to run the resources in Snowflake.
+    > `<ADMIN_USER_SECRETS_ROOT_PATH>`|The root path in AWS Secrets Manager where the admin user secrets are stored.
+    > `<DAY-COUNT>`|How many day(s) should the API Key be rotated for.
+
+    To learn more about this script, click [here](.blog/deploy-script-explanation.md).
 
 ## 3.0 Close-up of What Was Automated for You
 The following sections provide a detailed overview of the resources and configurations that were automatically set up for you by the Terraform script. This includes the:
