@@ -145,6 +145,6 @@ resource "snowflake_grant_privileges_to_account_role" "external_volume_usage" {
   }
 
   depends_on = [
-    snowflake_external_volume.volume
+    snowflake_external_volume.tableflow_kickstarter_volume
   ]
 }
