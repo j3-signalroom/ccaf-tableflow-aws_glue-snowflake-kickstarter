@@ -51,10 +51,9 @@ locals {
   storage_aws_external_id = lookup(local.external_volume_properties, "STORAGE_AWS_EXTERNAL_ID", null)
   storage_aws_iam_user_arn = lookup(local.external_volume_properties, "STORAGE_AWS_IAM_USER_ARN", null)
   storage_aws_role_arn = lookup(local.external_volume_properties, "STORAGE_AWS_ROLE_ARN", null)
-
 }
 
-# 2025-08-24:  Snowflake Terraform Provider 2.5.0 does not support the creation of catalog integrations
+# Snowflake Terraform Provider 2.5.0 does not support the creation of catalog integrations
 resource "snowflake_execute" "catalog_integration" {
   provider = snowflake.account_admin
   depends_on = [ 

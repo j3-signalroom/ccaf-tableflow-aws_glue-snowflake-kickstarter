@@ -3,7 +3,7 @@ resource "confluent_provider_integration" "tableflow" {
     id = confluent_environment.tableflow_kickstarter.id
   }
   aws {
-    customer_role_arn = local.tableflow_glue_s3_role_arn
+    customer_role_arn = local.tableflow_s3_glue_role_arn
   }
   display_name = "tableflow_aws_integration"
 }
@@ -61,7 +61,7 @@ resource "confluent_catalog_integration" "tableflow" {
 
   depends_on = [ 
     confluent_role_binding.app_manager_provider_integration_resource_owner,
-    aws_iam_role_policy_attachment.tableflow_glue_s3_policy_attachment
+    aws_iam_role_policy_attachment.tableflow_s3_glue_policy_attachment
   ]
 }
 
@@ -85,7 +85,7 @@ resource "confluent_tableflow_topic" "stock_trades" {
   }
 
   depends_on = [
-    aws_iam_role_policy_attachment.tableflow_glue_s3_policy_attachment,
+    aws_iam_role_policy_attachment.tableflow_s3_glue_policy_attachment,
     confluent_connector.source
   ]
 }
