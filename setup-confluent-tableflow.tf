@@ -3,7 +3,7 @@ resource "confluent_provider_integration" "tableflow" {
     id = confluent_environment.tableflow_kickstarter.id
   }
   aws {
-    customer_role_arn = local.tableflow_glue_s3_role_arn
+    customer_role_arn = local.tableflow_s3_glue_role_arn
   }
   display_name = "tableflow_aws_integration"
 }
@@ -61,7 +61,7 @@ resource "confluent_catalog_integration" "tableflow" {
 
   depends_on = [ 
     confluent_role_binding.app_manager_provider_integration_resource_owner,
-    aws_iam_role_policy_attachment.tableflow_glue_s3_policy_attachment
+    aws_iam_role_policy_attachment.tableflow_s3_glue_policy_attachment
   ]
 }
 
@@ -85,7 +85,7 @@ resource "confluent_tableflow_topic" "stock_trades" {
   }
 
   depends_on = [
-    aws_iam_role_policy_attachment.tableflow_glue_s3_policy_attachment,
+    aws_iam_role_policy_attachment.tableflow_s3_glue_policy_attachment,
     confluent_connector.source
   ]
 }
@@ -115,11 +115,7 @@ resource "confluent_tableflow_topic" "stock_trades_with_totals" {
   ]
 }
 
-# Local that now "depends on" the null-resource via its trigger to get the 
-# Tableflow Topic's tableflow_topic_s3_table_path and 
-# tableflow_topic_s3_base_path from the response body.
 locals {
-  tableflow_topic_s3_table_path = confluent_tableflow_topic.stock_trades.table_path
-  part_before_v1                = split("/v1/", local.tableflow_topic_s3_table_path)
+  part_before_v1                = split("/v1/", confluent_tableflow_topic.stock_trades.table_path)
   tableflow_topic_s3_base_path  = "${local.part_before_v1[0]}/v1/"
 }

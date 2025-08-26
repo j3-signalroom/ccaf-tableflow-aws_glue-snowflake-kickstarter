@@ -26,9 +26,10 @@ resource "snowflake_schema" "tableflow_kickstarter" {
   ]
 }
 
-resource "snowflake_external_volume" "volume" {
-  provider = snowflake.account_admin
-  name     = local.volume_name
+resource "snowflake_external_volume" "tableflow_kickstarter_volume" {
+  provider     = snowflake.account_admin
+  name         = local.volume_name
+  allow_writes = false
   storage_location {
     storage_location_name = "${local.volume_name}_LOCATION"
     storage_base_url      = local.tableflow_topic_s3_base_path
@@ -42,118 +43,238 @@ resource "snowflake_external_volume" "volume" {
   ]
 }
 
-# 2025-08-24:  Snowflake Terraform Provider 2.5.0 does not support the creation of catalog integrations
-# resource "snowflake_execute" "catalog_integration" {
-#   depends_on = [ 
-#     snowflake_external_volume.volume 
-#   ]
+locals {
+  external_volume_properties = {
+    for describe_record in snowflake_external_volume.tableflow_kickstarter_volume.describe_output : describe_record.name => describe_record.value
+  }
 
-#   execute = <<EOT
-#     CREATE CATALOG INTEGRATION glue_rest_catalog_integration
-#       CATALOG_SOURCE = ICEBERG_REST
-#       TABLE_FORMAT = ICEBERG
-#       CATALOG_NAMESPACE = 'rest_catalog_integration'
-#       REST_CONFIG = (
-#         CATALOG_URI = 'https://glue.${data.aws_region.current.id}.amazonaws.com/iceberg'
-#         CATALOG_API_TYPE = AWS_GLUE
-#         CATALOG_NAME = '${data.aws_caller_identity.current.account_id}'
-#       )
-#       REST_AUTHENTICATION = (
-#         TYPE = SIGV4
-#         SIGV4_IAM_ROLE = '${local.snowflake_external_volume_aws_role_arn}'
-#         SIGV4_EXTERNAL_ID = '${local.snowflake_external_volume_external_id}'
-#         SIGV4_SIGNING_REGION = '${data.aws_region.current.id}'
-#       )
-#       ENABLED = FALSE;
-#   EOT
+  storage_aws_external_id = lookup(local.external_volume_properties, "STORAGE_AWS_EXTERNAL_ID", null)
+  storage_aws_iam_user_arn = lookup(local.external_volume_properties, "STORAGE_AWS_IAM_USER_ARN", null)
+  storage_aws_role_arn = lookup(local.external_volume_properties, "STORAGE_AWS_ROLE_ARN", null)
+}
 
-#   revert = <<EOT
-#     DROP CATALOG INTEGRATION glue_rest_catalog_integration
-#   EOT
-# }
+resource "aws_s3_bucket_policy" "example" {
+  bucket = aws_s3_bucket.iceberg_bucket.id
 
-# resource "aws_iam_policy" "snowflake_glue_access_policy" {
-#   name   = "${local.snowflake_aws_glue_role_name}_access_policy"
-#   policy = jsonencode(({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Effect = "Allow",
-#         Action = [
-#           "glue:GetCatalog",
-#           "glue:GetDatabase",
-#           "glue:GetDatabases",
-#           "glue:GetTable",
-#           "glue:GetTables"
-#         ],
-#         Resource = [
-#           "arn:aws:glue:*:${data.aws_caller_identity.current.account_id}:table/*/*",
-#           "arn:aws:glue:*:${data.aws_caller_identity.current.account_id}:catalog",
-#           "arn:aws:glue:*:${data.aws_caller_identity.current.account_id}:database/${confluent_kafka_cluster.kafka_cluster.id}"
-#         ]
-#       }
-#     ]
-#   }))
-# }
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid = "AllowSpecificRoleAccess"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::123456789012:role/MyTrustedRole"
+        }
+        Action = "s3:*"
+        Resource = [
+          "arn:aws:s3:::${aws_s3_bucket.iceberg_bucket.id}",
+          "arn:aws:s3:::${aws_s3_bucket.iceberg_bucket.id}/*"
+        ]
+      }
+    ]
+  })
+}
 
-# # resource "aws_iam_role" "snowflake_glue_role" {
-# #   name               = local.snowflake_aws_glue_role_name
-# #   description        = "IAM role for Snowflake Glue access"
-# #   assume_role_policy = jsonencode({
-# #     Version = "2012-10-17",
-# #     Statement = [{
-# #       Effect = "Allow"
-# #       Principal = {
-# #         AWS = local.snowflake_external_volume_aws_role_arn
-# #       }
-# #       Action = "sts:AssumeRole",
-# #       Condition = {
-# #         StringEquals = {
-# #           "sts:ExternalId" = local.snowflake_external_volume_external_id
-# #         }
-# #       }
-# #     }]
-# #   })
-# # }
+# Snowflake Terraform Provider 2.5.0 does not support the creation of catalog integrations
+resource "snowflake_execute" "catalog_integration" {
+  provider = snowflake.account_admin
+  depends_on = [ 
+    snowflake_external_volume.tableflow_kickstarter_volume 
+  ]
 
-# # data "aws_iam_policy_document" "snowflake_glue_policy" {  
-# #   statement {
-# #     effect = "Allow"
-# #     principals {
-# #       type        = "AWS"
-# #       identifiers = [snowflake_storage_integration.aws_s3_integration.storage_aws_iam_user_arn]
-# #     }
-# #     actions = ["sts:AssumeRole"]
-# #     condition {
-# #       test     = "StringEquals"
-# #       variable = "sts:ExternalId"
-# #       values   = [snowflake_storage_integration.aws_s3_integration.storage_aws_external_id]
-# #     }
-# #   }
+  execute = <<EOT
+    CREATE CATALOG INTEGRATION tableflow_kickstarter_catalog_integration
+      CATALOG_SOURCE = GLUE
+      CATALOG_NAMESPACE = 'tableflow_external_catalog'
+      TABLE_FORMAT = ICEBERG
+      GLUE_AWS_ROLE_ARN = '${local.snowflake_aws_glue_role_arn}'
+      GLUE_CATALOG_ID = '${data.aws_caller_identity.current.account_id}'
+      GLUE_REGION = '${var.aws_region}'
+      ENABLED = TRUE;
+  EOT
 
-# #   depends_on = [ 
-# #     snowflake_storage_integration.aws_s3_integration
-# #   ]
-# # }
+  revert = <<EOT
+    DROP CATALOG INTEGRATION tableflow_kickstarter_catalog_integration;
+  EOT
+}
+
+resource "snowflake_execute" "describe_catalog_integration" {
+  provider = snowflake.account_admin
+  
+  depends_on = [ 
+    snowflake_execute.catalog_integration 
+  ]
+
+  execute = <<EOT
+    DESCRIBE CATALOG INTEGRATION tableflow_kickstarter_catalog_integration;
+  EOT
+
+  revert = <<EOT
+    DESCRIBE CATALOG INTEGRATION tableflow_kickstarter_catalog_integration;
+  EOT
+
+  query = <<EOT
+    DESCRIBE CATALOG INTEGRATION tableflow_kickstarter_catalog_integration;
+  EOT
+}
+
+locals {
+  result_map = {
+    for result in snowflake_execute.describe_catalog_integration.query_results : result["property"] => result
+  }
+}
+
+resource "aws_iam_policy" "snowflake_glue_access_policy" {
+  name   = "${local.snowflake_aws_glue_role_name}_access_policy"
+  policy = jsonencode(({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "glue:GetCatalog",
+          "glue:GetDatabase",
+          "glue:GetDatabases",
+          "glue:GetTable",
+          "glue:GetTables"
+        ],
+        Resource = [
+          "arn:aws:glue:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/*/*",
+          "arn:aws:glue:${var.aws_region}:${data.aws_caller_identity.current.account_id}:catalog",
+          "arn:aws:glue:${var.aws_region}:${data.aws_caller_identity.current.account_id}:database/*"
+        ]
+      }
+    ]
+  }))
+}
+
+resource "aws_iam_role" "snowflake_glue_role" {
+  name               = local.snowflake_aws_glue_role_name
+  description        = "IAM role for Snowflake Glue access"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        AWS = snowflake_execute.describe_catalog_integration.query_results[8]["property_value"] #local.result_map["GLUE_AWS_ROLE_ARN"]["property_value"]
+      }
+      Action = "sts:AssumeRole",
+      Condition = {
+        StringEquals = {
+          "sts:ExternalId" = snowflake_execute.describe_catalog_integration.query_results[9]["property_value"] #local.result_map["GLUE_AWS_EXTERNAL_ID"]["property_value"]
+        }
+      }
+    }]
+  })
+
+  depends_on = [ 
+    snowflake_execute.catalog_integration 
+  ]
+}
 
 
-# # resource "aws_iam_role_policy_attachment" "snowflake_glue_policy_attachment" {
-# #   role       = aws_iam_role.snowflake_glue_role.name
-# #   policy_arn = aws_iam_policy.snowflake_glue_access_policy.arn
-# # }
+resource "aws_iam_role_policy_attachment" "snowflake_glue_policy_attachment" {
+  role       = aws_iam_role.snowflake_glue_role.name
+  policy_arn = aws_iam_policy.snowflake_glue_access_policy.arn
+}
 
-# # resource "snowflake_execute" "create_iceberg_table" {
-# #   depends_on = [ 
-# #     snowflake_execute.catalog_integration 
-# #   ]
+resource "aws_iam_role" "snowflake_s3_role" {
+  name               = local.snowflake_aws_s3_role_name
+  description        = "IAM role for Snowflake S3 access"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = storage_aws_iam_user_arn
+        }
+        Action = "sts:AssumeRole",
+        Condition = {
+          StringEquals = {
+            "sts:ExternalId" = storage_aws_external_id
+          }
+        }
+      },
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = snowflake_execute.describe_catalog_integration.query_results[8]["property_value"]
+        }
+        Action = "sts:AssumeRole",
+        Condition = {
+          StringEquals = {
+            "sts:ExternalId" = snowflake_execute.describe_catalog_integration.query_results[9]["property_value"]
+          }
+        }
+      }
+    ]
+  })
 
-# #   execute = <<EOT
-# #     CREATE OR REPLACE ICEBERG TABLE stock_trades
-# #       EXTERNAL_VOLUME = local.volume_name
-# #       CATALOG = 'glue_rest_catalog_integration'
-# #       CATALOG_TABLE_NAME = confluent_kafka_topic.stock_trades.topic_name
-# #     EOT
-# #   revert = <<EOT
-# #     DROP ICEBERG TABLE stock_trades
-# #   EOT
-# # }
+  depends_on = [
+    snowflake_execute.describe_catalog_integration
+  ]
+}
+
+resource "aws_iam_policy" "snowflake_s3_role_access_policy" {
+  name   = "${local.snowflake_aws_s3_role_name}_access_policy"
+  policy = jsonencode(({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:PutObject",
+          "s3:PutObjectTagging",
+          "s3:GetObject",
+          "s3:GetObjectVersion",
+          "s3:DeleteObject",
+          "s3:DeleteObjectVersion",
+          "s3:AbortMultipartUpload",
+          "s3:ListMultipartUploadParts"
+        ],
+        Resource = "arn:aws:s3:::${local.tableflow_topic_s3_base_path}/*"
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:GetBucketLocation",
+          "s3:ListBucketMultipartUploads",
+          "s3:ListBucket"
+        ],
+        Resource = aws_s3_bucket.iceberg_bucket.arn,
+        Condition = {
+          StringLike = {
+            "s3:prefix" = ["*"]
+          }
+        }
+      }
+    ]
+  }))
+
+  depends_on = [
+    aws_iam_role.snowflake_s3_role
+  ]
+}
+
+resource "aws_iam_role_policy_attachment" "snowflake_s3_policy_attachment" {
+  role       = aws_iam_role.snowflake_s3_role.name
+  policy_arn = aws_iam_policy.snowflake_s3_role_access_policy.arn
+}
+
+resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
+  provider = snowflake.account_admin
+  depends_on = [ 
+    aws_iam_role_policy_attachment.snowflake_s3_policy_attachment
+  ]
+
+  execute = <<EOT
+    CREATE OR REPLACE ICEBERG TABLE tableflow_kickstarter.tableflow_kickstarter.stock_trades
+      EXTERNAL_VOLUME = '${local.volume_name}'
+      CATALOG = 'tableflow_kickstarter_catalog_integration'
+      CATALOG_TABLE_NAME = '${confluent_kafka_topic.stock_trades.topic_name}'
+    EOT
+  revert = <<EOT
+    DROP ICEBERG TABLE tableflow_kickstarter.tableflow_kickstarter.stock_trades
+  EOT
+}
