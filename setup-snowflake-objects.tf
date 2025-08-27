@@ -103,12 +103,12 @@ resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
   ]
 
   execute = <<EOT
-    CREATE OR REPLACE ICEBERG TABLE tableflow_kickstarter.tableflow_kickstarter.stock_trades
+    CREATE OR REPLACE ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_kafka_topic.stock_trades.topic_name}
       EXTERNAL_VOLUME = '${local.volume_name}'
       CATALOG = '${local.catalog_integration_name}'
       CATALOG_TABLE_NAME = '${confluent_kafka_topic.stock_trades.topic_name}'
     EOT
   revert = <<EOT
-    DROP ICEBERG TABLE tableflow_kickstarter.tableflow_kickstarter.stock_trades
+    DROP ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_kafka_topic.stock_trades.topic_name}
   EOT
 }

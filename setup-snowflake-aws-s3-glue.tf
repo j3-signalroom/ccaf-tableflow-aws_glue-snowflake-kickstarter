@@ -8,7 +8,7 @@ resource "aws_iam_role" "snowflake_s3_glue_role" {
       {
         Effect = "Allow"
         Principal = {
-          AWS = snowflake_execute.describe_catalog_integration.query_results[8]["property_value"] #local.result_map["GLUE_AWS_ROLE_ARN"]["property_value"]
+          AWS = local.snowflake_aws_s3_glue_role_arn
         }
         Action = "sts:AssumeRole"
         Condition = {
@@ -17,18 +17,19 @@ resource "aws_iam_role" "snowflake_s3_glue_role" {
           }
         }
       },
-      {
-        Effect = "Allow"
-        Principal = {
-          AWS = snowflake_execute.describe_catalog_integration.query_results[8]["property_value"] #local.result_map["GLUE_AWS_ROLE_ARN"]["property_value"]
-        }
-        Action = "sts:TagSession"
+    # Add cross-account access for the Terraform execution user
+    {
+      Effect = "Allow",
+      Principal = {
+        AWS = snowflake_execute.describe_catalog_integration.query_results[8]["property_value"]
       },
+      Action = "sts:AssumeRole"
+    },
       {
-        Effect = "Allow"
+        Effect = "Allow",
         Principal = {
           Service = "glue.amazonaws.com"
-        }
+        },
         Action = "sts:AssumeRole"
       }
     ]
@@ -67,7 +68,7 @@ resource "aws_iam_policy" "snowflake_s3_glue_role_access_policy" {
           "s3:ListBucketMultipartUploads",
           "s3:ListBucket"
         ],
-        Resource = aws_s3_bucket.iceberg_bucket.arn,
+        Resource = "arn:aws:s3:::${local.tableflow_topic_s3_base_path}",
         Condition = {
           StringLike = {
             "s3:prefix" = ["*"]
