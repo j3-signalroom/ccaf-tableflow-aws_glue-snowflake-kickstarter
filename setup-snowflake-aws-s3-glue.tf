@@ -8,7 +8,7 @@ resource "aws_iam_role" "snowflake_s3_glue_role" {
       {
         Effect = "Allow"
         Principal = {
-          AWS = local.snowflake_aws_s3_glue_role_arn
+          AWS = snowflake_execute.describe_catalog_integration.query_results[8]["property_value"]
         }
         Action = "sts:AssumeRole"
         Condition = {
@@ -17,14 +17,6 @@ resource "aws_iam_role" "snowflake_s3_glue_role" {
           }
         }
       },
-    # Add cross-account access for the Terraform execution user
-    {
-      Effect = "Allow",
-      Principal = {
-        AWS = snowflake_execute.describe_catalog_integration.query_results[8]["property_value"]
-      },
-      Action = "sts:AssumeRole"
-    },
       {
         Effect = "Allow",
         Principal = {
@@ -59,10 +51,7 @@ resource "aws_iam_policy" "snowflake_s3_glue_role_access_policy" {
           "s3:AbortMultipartUpload",
           "s3:ListMultipartUploadParts"
         ],
-        Resource = [
-          "arn:aws:s3:::${aws_s3_bucket.iceberg_bucket.bucket}", 
-          "arn:aws:s3:::${aws_s3_bucket.iceberg_bucket.bucket}/*"
-        ]
+        Resource = "arn:aws:s3:::${aws_s3_bucket.iceberg_bucket.bucket}/*"
       },
       {
         Effect = "Allow",
