@@ -60,8 +60,8 @@ resource "aws_iam_policy" "snowflake_s3_glue_role_access_policy" {
           "s3:ListMultipartUploadParts"
         ],
         Resource = [
-          "arn:aws:s3:::${local.tableflow_topic_s3_base_path}", 
-          "arn:aws:s3:::${local.tableflow_topic_s3_base_path}/*"
+          "arn:aws:s3:::${aws_s3_bucket.iceberg_bucket.bucket}", 
+          "arn:aws:s3:::${aws_s3_bucket.iceberg_bucket.bucket}/*"
         ]
       },
       {
@@ -71,7 +71,7 @@ resource "aws_iam_policy" "snowflake_s3_glue_role_access_policy" {
           "s3:ListBucketMultipartUploads",
           "s3:ListBucket"
         ],
-        Resource = "arn:aws:s3:::${local.tableflow_topic_s3_base_path}",
+        Resource = "arn:aws:s3:::${aws_s3_bucket.iceberg_bucket.bucket}",
         Condition = {
           StringLike = {
             "s3:prefix" = ["*"]
