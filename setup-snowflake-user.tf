@@ -90,7 +90,7 @@ resource "snowflake_grant_privileges_to_account_role" "user_all_privileges" {
 
 # Emits GRANT USAGE ON INTEGRATION <integration_name> TO ROLE <security_admin_role>;
 resource "snowflake_grant_privileges_to_account_role" "integration_usage" {
-  provider          = snowflake.a
+  provider          = snowflake.security_admin
   privileges        = ["USAGE"]
   account_role_name = snowflake_account_role.security_admin_role.name
   on_account_object {
