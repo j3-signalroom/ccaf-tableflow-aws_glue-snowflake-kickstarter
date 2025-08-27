@@ -172,7 +172,6 @@ resource "aws_iam_role" "snowflake_glue_role" {
   ]
 }
 
-
 resource "aws_iam_role_policy_attachment" "snowflake_glue_policy_attachment" {
   role       = aws_iam_role.snowflake_glue_role.name
   policy_arn = aws_iam_policy.snowflake_glue_access_policy.arn
@@ -187,12 +186,12 @@ resource "aws_iam_role" "snowflake_s3_role" {
       {
         Effect = "Allow"
         Principal = {
-          AWS = storage_aws_iam_user_arn
+          AWS = "${storage_aws_iam_user_arn}"
         }
         Action = "sts:AssumeRole",
         Condition = {
           StringEquals = {
-            "sts:ExternalId" = storage_aws_external_id
+            "sts:ExternalId" = "${storage_aws_external_id}"
           }
         }
       },
