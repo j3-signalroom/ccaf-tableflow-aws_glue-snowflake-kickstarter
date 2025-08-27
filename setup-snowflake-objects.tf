@@ -31,7 +31,7 @@ resource "snowflake_external_volume" "tableflow_kickstarter_volume" {
   name         = local.volume_name
   allow_writes = false
   storage_location {
-    storage_location_name = "${local.volume_name}_LOCATION"
+    storage_location_name = local.location_name
     storage_base_url      = local.tableflow_topic_s3_base_path
     storage_provider      = "S3"
     storage_aws_role_arn  = local.snowflake_aws_s3_glue_role_arn
@@ -52,18 +52,18 @@ resource "snowflake_execute" "catalog_integration" {
   ]
 
   execute = <<EOT
-    CREATE CATALOG INTEGRATION tableflow_kickstarter_catalog_integration
+    CREATE CATALOG INTEGRATION ${local.catalog_integration_name}
       CATALOG_SOURCE = GLUE
-      CATALOG_NAMESPACE = '${confluent_kafka_cluster.kafka_cluster.id}'
       TABLE_FORMAT = ICEBERG
       GLUE_AWS_ROLE_ARN = '${local.snowflake_aws_s3_glue_role_arn}'
       GLUE_CATALOG_ID = '${data.aws_caller_identity.current.account_id}'
       GLUE_REGION = '${var.aws_region}'
+      CATALOG_NAMESPACE = '${confluent_kafka_cluster.kafka_cluster.id}'
       ENABLED = TRUE;
   EOT
 
   revert = <<EOT
-    DROP CATALOG INTEGRATION tableflow_kickstarter_catalog_integration;
+    DROP CATALOG INTEGRATION "${local.catalog_integration_name}";
   EOT
 }
 
@@ -75,15 +75,15 @@ resource "snowflake_execute" "describe_catalog_integration" {
   ]
 
   execute = <<EOT
-    DESCRIBE CATALOG INTEGRATION tableflow_kickstarter_catalog_integration;
+    DESCRIBE CATALOG INTEGRATION ${local.catalog_integration_name};
   EOT
 
   revert = <<EOT
-    DESCRIBE CATALOG INTEGRATION tableflow_kickstarter_catalog_integration;
+    DESCRIBE CATALOG INTEGRATION ${local.catalog_integration_name};
   EOT
 
   query = <<EOT
-    DESCRIBE CATALOG INTEGRATION tableflow_kickstarter_catalog_integration;
+    DESCRIBE CATALOG INTEGRATION ${local.catalog_integration_name};
   EOT
 }
 
@@ -96,13 +96,16 @@ locals {
 resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
   provider = snowflake.account_admin
   depends_on = [ 
+    snowflake_external_volume.tableflow_kickstarter_volume,
+    snowflake_execute.catalog_integration,
+    snowflake_execute.describe_catalog_integration,
     aws_iam_role_policy_attachment.snowflake_s3_glue_policy_attachment
   ]
 
   execute = <<EOT
     CREATE OR REPLACE ICEBERG TABLE tableflow_kickstarter.tableflow_kickstarter.stock_trades
       EXTERNAL_VOLUME = '${local.volume_name}'
-      CATALOG = 'tableflow_kickstarter_catalog_integration'
+      CATALOG = '${local.catalog_integration_name}'
       CATALOG_TABLE_NAME = '${confluent_kafka_topic.stock_trades.topic_name}'
     EOT
   revert = <<EOT

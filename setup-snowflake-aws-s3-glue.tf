@@ -35,6 +35,7 @@ resource "aws_iam_role" "snowflake_s3_glue_role" {
   })
 
   depends_on = [ 
+    snowflake_execute.catalog_integration,
     snowflake_execute.describe_catalog_integration 
   ]
 }
