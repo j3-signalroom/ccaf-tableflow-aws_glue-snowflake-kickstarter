@@ -1,0 +1,96 @@
+resource "aws_iam_role" "snowflake_s3_glue_role" {
+  name               = local.snowflake_aws_s3_glue_role_name
+  description        = "IAM role for Snowflake S3 and Glue access"
+  
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = snowflake_execute.describe_catalog_integration.query_results[8]["property_value"]
+        }
+        Action = "sts:AssumeRole"
+        Condition = {
+          StringEquals = {
+            "sts:ExternalId" = snowflake_execute.describe_catalog_integration.query_results[9]["property_value"] #local.result_map["GLUE_AWS_EXTERNAL_ID"]["property_value"]
+          }
+        }
+      },
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "glue.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+
+  depends_on = [ 
+    snowflake_execute.catalog_integration,
+    snowflake_execute.describe_catalog_integration 
+  ]
+}
+
+resource "aws_iam_policy" "snowflake_s3_glue_role_access_policy" {
+  name   = "${local.snowflake_aws_s3_glue_role_name}_access_policy"
+
+  policy = jsonencode(({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:PutObject",
+          "s3:PutObjectTagging",
+          "s3:GetObject",
+          "s3:GetObjectVersion",
+          "s3:DeleteObject",
+          "s3:DeleteObjectVersion",
+          "s3:AbortMultipartUpload",
+          "s3:ListMultipartUploadParts"
+        ],
+        Resource = "arn:aws:s3:::${aws_s3_bucket.iceberg_bucket.bucket}/*"
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:GetBucketLocation",
+          "s3:ListBucketMultipartUploads",
+          "s3:ListBucket"
+        ],
+        Resource = "arn:aws:s3:::${aws_s3_bucket.iceberg_bucket.bucket}",
+        Condition = {
+          StringLike = {
+            "s3:prefix" = ["*"]
+          }
+        }
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "glue:GetCatalog",
+          "glue:GetDatabase",
+          "glue:GetDatabases",
+          "glue:GetTable",
+          "glue:GetTables"
+        ],
+        Resource = [
+          "arn:aws:glue:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/*/*",
+          "arn:aws:glue:${var.aws_region}:${data.aws_caller_identity.current.account_id}:catalog",
+          "arn:aws:glue:${var.aws_region}:${data.aws_caller_identity.current.account_id}:database/*"
+        ]
+      }
+    ]
+  }))
+
+  depends_on = [
+    aws_iam_role.snowflake_s3_glue_role
+  ]
+}
+
+resource "aws_iam_role_policy_attachment" "snowflake_s3_glue_policy_attachment" {
+  role       = aws_iam_role.snowflake_s3_glue_role.name
+  policy_arn = aws_iam_policy.snowflake_s3_glue_role_access_policy.arn
+}
