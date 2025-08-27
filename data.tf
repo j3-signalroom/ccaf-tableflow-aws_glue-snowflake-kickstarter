@@ -23,6 +23,7 @@ locals {
   snowflake_secrets_path_prefix   = "/snowflake_resource/${local.secrets_insert}"
   generic_name                    = "${upper(local.secrets_insert)}"
   catalog_integration_name        = "${local.generic_name}_CATALOG_INTEGRATION"
+  aws_s3_integration_name         = "${local.generic_name}_STORAGE_INTEGRATION"
   volume_name                     = "${local.generic_name}_VOLUME"
   user_name                       = "${local.generic_name}_USER"
   warehouse_name                  = "${local.generic_name}_WAREHOUSE"

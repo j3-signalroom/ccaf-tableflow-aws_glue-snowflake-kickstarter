@@ -88,6 +88,22 @@ resource "snowflake_grant_privileges_to_account_role" "user_all_privileges" {
   ]
 }
 
+# Emits GRANT USAGE ON INTEGRATION <integration_name> TO ROLE <security_admin_role>;
+resource "snowflake_grant_privileges_to_account_role" "integration_usage" {
+  provider          = snowflake.security_admin
+  privileges        = ["USAGE"]
+  account_role_name = snowflake_account_role.security_admin_role.name
+  on_account_object {
+    object_type = "INTEGRATION"
+    object_name = local.aws_s3_integration_name
+  }
+
+  depends_on = [ 
+    snowflake_grant_account_role.user_security_admin,
+    snowflake_user.user
+  ]
+}
+
 # Emits GRANT USAGE ON WAREHOUSE <warehouse_name> TO ROLE <security_admin_role>;
 resource "snowflake_grant_privileges_to_account_role" "warehouse_usage" {
   provider          = snowflake.security_admin
