@@ -62,7 +62,7 @@ resource "snowflake_execute" "catalog_integration" {
   execute = <<EOT
     CREATE CATALOG INTEGRATION tableflow_kickstarter_catalog_integration
       CATALOG_SOURCE = GLUE
-      CATALOG_NAMESPACE = 'tableflow_external_catalog'
+      CATALOG_NAMESPACE = '${confluent_kafka_cluster.cluster.id}'
       TABLE_FORMAT = ICEBERG
       GLUE_AWS_ROLE_ARN = '${local.snowflake_aws_glue_role_arn}'
       GLUE_CATALOG_ID = '${data.aws_caller_identity.current.account_id}'
