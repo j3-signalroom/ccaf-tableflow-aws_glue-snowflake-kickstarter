@@ -53,28 +53,6 @@ locals {
   storage_aws_role_arn = lookup(local.external_volume_properties, "STORAGE_AWS_ROLE_ARN", null)
 }
 
-resource "aws_s3_bucket_policy" "example" {
-  bucket = aws_s3_bucket.iceberg_bucket.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid = "AllowSpecificRoleAccess"
-        Effect = "Allow"
-        Principal = {
-          AWS = "arn:aws:iam::123456789012:role/MyTrustedRole"
-        }
-        Action = "s3:*"
-        Resource = [
-          "arn:aws:s3:::${aws_s3_bucket.iceberg_bucket.id}",
-          "arn:aws:s3:::${aws_s3_bucket.iceberg_bucket.id}/*"
-        ]
-      }
-    ]
-  })
-}
-
 # Snowflake Terraform Provider 2.5.0 does not support the creation of catalog integrations
 resource "snowflake_execute" "catalog_integration" {
   provider = snowflake.account_admin
