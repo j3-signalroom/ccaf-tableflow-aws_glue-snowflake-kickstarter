@@ -48,9 +48,8 @@ locals {
     for describe_record in snowflake_external_volume.tableflow_kickstarter_volume.describe_output : describe_record.name => describe_record.value
   }
 
-  storage_aws_external_id = lookup(local.external_volume_properties, "STORAGE_AWS_EXTERNAL_ID", null)
-  storage_aws_iam_user_arn = lookup(local.external_volume_properties, "STORAGE_AWS_IAM_USER_ARN", null)
-  storage_aws_role_arn = lookup(local.external_volume_properties, "STORAGE_AWS_ROLE_ARN", null)
+  storage_aws_external_id = lookup(local.external_volume_properties, "STORAGE_AWS_EXTERNAL_ID", "snowflake_external_id")
+  storage_aws_iam_user_arn = lookup(local.external_volume_properties, "STORAGE_AWS_IAM_USER_ARN", "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root")
 }
 
 # Snowflake Terraform Provider 2.5.0 does not support the creation of catalog integrations
@@ -164,12 +163,12 @@ resource "aws_iam_role" "snowflake_s3_role" {
       {
         Effect = "Allow"
         Principal = {
-          AWS = "${local.storage_aws_iam_user_arn}"
+          AWS = local.storage_aws_iam_user_arn
         }
         Action = "sts:AssumeRole",
         Condition = {
           StringEquals = {
-            "sts:ExternalId" = "${local.storage_aws_external_id}"
+            "sts:ExternalId" = local.storage_aws_external_id
           }
         }
       },
@@ -189,6 +188,7 @@ resource "aws_iam_role" "snowflake_s3_role" {
   })
 
   depends_on = [
+    snowflake_external_volume.tableflow_kickstarter_volume,
     snowflake_execute.describe_catalog_integration
   ]
 }
