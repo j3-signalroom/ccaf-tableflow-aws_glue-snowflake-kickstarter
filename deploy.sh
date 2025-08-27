@@ -144,7 +144,7 @@ else
     \nconfluent_api_key=\"${confluent_api_key}\"\
     \nconfluent_api_secret=\"${confluent_api_secret}\"\
     \nsnowflake_warehouse=\"${snowflake_warehouse}\"\
-    \nadmin_user_secrets_root_path=\"${admin_user_secrets_root_path}\"" > terraform.tfvars
+    \nadmin_user_secrets_root_path=\"${admin_user_secrets_root_path}" > terraform.tfvars
 fi
 
 # Initialize the Terraform configuration
