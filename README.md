@@ -205,6 +205,18 @@ Below is the Terraform visualization of the configuration. It displays the resou
 
 > **To fully view the image, open it in another tab on your browser to zoom in.**
 
+**The magic behind the Terraform Graph**
+
+As you can see, the Terraform graph is a powerful tool that visualizes dependencies between resources in your infrastructure. It helps you understand how different components interact and the order in which they are created or destroyed. For example, the graph shows how Confluent Cloud resources depend on AWS services and Snowflake objects, ensuring everything is provisioned correctly. Additionally, the graph makes it easy to identify potential bottlenecks or issues that may occur during provisioning.
+
+To use this useful tool in your project, you just need the [Graphviz](https://graphviz.gitlab.io/download/) tool installed on your machine to generate the graph. For instance, in this project, the following command is run:
+
+```bash
+terraform graph | dot -Tpng > .blog/images/terraform-visualization.png
+```
+
+This will create a PNG image of the graph, which you can view to gain insights into your infrastructure.
+
 ### 3.1 Setup Confluent Cloud Standard Kafka Cluster
 The [`setup-confluent-kafka.tf`](setup-confluent-kafka.tf) is responsible for deploying a Confluent Cloud Standard Kafka Cluster with Consumer and Producer service accounts that have the appropriate RBAC (Role-Based Access Control) privileges, along with a DataGen Source Connector to generate sample stock trade records in a Kafka topic called `stock_trades` that will be used to demonstrate Tableflow.
 
