@@ -1,7 +1,7 @@
 resource "aws_iam_role" "snowflake_s3_glue_role" {
   name               = local.snowflake_aws_s3_glue_role_name
-  description        = "IAM role for Snowflake S3 and Glue access"
-  
+  description        = "IAM role for Snowflake S3 and Glue access, and manages the cross-account access."
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
