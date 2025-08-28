@@ -25,14 +25,10 @@ _Confluent Tableflow for Apache Iceberg enables you to turn a Kafka topic into a
     - [**3.1 Setup Confluent Cloud Standard Kafka Cluster**](#31-setup-confluent-cloud-standard-kafka-cluster)
     - [**3.2 Setup Confluent Cloud Environment and Schema Registry Cluster**](#32-setup-confluent-cloud-environment-and-schema-registry-cluster)
     - [**3.3 Setup Confluent Cloud for Apache Flink and Execute Flink SQL Statement**](#33-setup-confluent-cloud-for-apache-flink-and-execute-flink-sql-statement)
-    - [**3.4 Enable Tableflow on the `stock_trades` Kafka topic and Create the Amazon S3 bucket for the Apache Iceberg Metadata and Data Files**](#34-enable-tableflow-on-the-stock_trades-kafka-topic-and-create-the-amazon-s3-bucket-for-the-apache-iceberg-metadata-and-data-files)
-    - [**3.5 Getting the Amazon S3 location of the Apache Iceberg Metedata and Data Files**](#35-getting-the-amazon-s3-location-of-the-apache-iceberg-metedata-and-data-files)
-    - [**3.6 Store the Confluent Kafka Cluster, Schema Registry Cluster, and Service Accounts API Key Pairs in AWS Secrets Manager Secrets**](#36-store-the-confluent-kafka-cluster-schema-registry-cluster-and-service-accounts-api-key-pairs-in-aws-secrets-manager-secrets)
-    - [**3.7 Setup the Snowflake User and Roles**](#37-setup-the-snowflake-user-and-roles)
-    - [**3.8 Setup the Snowflake Database, Schema, External Stage and External Tables**](#38-setup-the-snowflake-database-schema-external-stage-and-external-tables)
+    - [**3.4 Enable Tableflow on the `stock_trades` and `stock_trades_with_totals` Kafka topics, and Create the Amazon S3 bucket for the Apache Iceberg Metadata and Data Files**](#34-enable-tableflow-on-the-stock_trades-and-stock_trades_with_totals-kafka-topics-and-create-the-amazon-s3-bucket-for-the-apache-iceberg-metadata-and-data-files)
+    - [**3.5 Store the Confluent Kafka Cluster, Schema Registry Cluster, and Service Accounts API Key Pairs in AWS Secrets Manager Secrets**](#35-store-the-confluent-kafka-cluster-schema-registry-cluster-and-service-accounts-api-key-pairs-in-aws-secrets-manager-secrets)
+    - [**3.6 Setup the Snowflake User, Roles, Warehouse, Database, Schema, and Iceberg Tables**](#36-setup-the-snowflake-user-roles-warehouse-database-schema-and-iceberg-tables)
 + [**4.0 Conclusion**](#40-conclusion)
-+ [**Resources**](#resources)
-    - [**AWS Glue**](#aws-glue)
 <!-- tocstop -->
 
 ## 1.0 The Impetus
@@ -236,8 +232,8 @@ The [`setup-confluent-flink.tf`](setup-confluent-flink.tf) is responsible for d
 Otherwise, if you didn’t use the automated Terraform script, you’ll have to do the following manually by following the instructions on these web page(s):
 * [Stream Processing with Confluent Cloud for Apache Flink](https://docs.confluent.io/cloud/current/flink/overview.html#stream-processing-with-af-long)
 
-### 3.4 Enable Tableflow on the `stock_trades` Kafka topic and Create the Amazon S3 bucket for the Apache Iceberg Metadata and Data Files
-The [`setup-confluent-tableflow.tf`](setup-confluent-tableflow.tf) is responsible for configuring Tableflow integration support for AWS Glue Data Catalog, enabling AWS Glue Data Catalog and Amazon S3 permissions to each other and the Confluent Cloud Kafka Cluster via the [`tableflow_glue_s3_access_role`](./modules/tableflow_glue_s3_access_role/) module, and enabling Tableflow on the `stock_trades` Kafka topic.  Along with the [`setup-aws-s3.tf`](setup-aws-s3.tf) that is responsible for creating the Amazon S3 bucket for Tableflow.
+### 3.4 Enable Tableflow on the `stock_trades` and `stock_trades_with_totals` Kafka topics, and Create the Amazon S3 bucket for the Apache Iceberg Metadata and Data Files
+The [`setup-confluent-tableflow.tf`](setup-confluent-tableflow.tf) is responsible for configuring Tableflow integration support for AWS Glue Data Catalog, enabling AWS Glue Data Catalog and Amazon S3 permissions to each other and the Confluent Cloud Kafka Cluster via the [`setup-confluent-tableflow-aws-s3-glue`](setup-confluent-tableflow-aws-s3-glue.tf) configuration, and enabling Tableflow on the `stock_trades` and `stock_trades_with_totals` Kafka topics.  Along with the [`setup-aws-s3.tf`](setup-aws-s3.tf) that is responsible for creating the Amazon S3 bucket for Tableflow.
 
 Otherwise, if you didn’t use the automated Terraform script, you’ll have to do the following manually by following the instructions on these web pages:
 
@@ -245,32 +241,17 @@ Otherwise, if you didn’t use the automated Terraform script, you’ll have to 
 
 * [Bring Your Own Storage (BYOS)](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/configure-storage.html#cloud-tableflow-storage-byos)
 
-### 3.5 Getting the Amazon S3 location of the Apache Iceberg Metedata and Data Files
-The [`setup-confluent-tableflow-restful_call.tf`](setup-confluent-tableflow-restful_call.tf) is responsible for making a RESTful API `GET` call to the Confluent Tableflow API to get the `table path` of the Apache Iceberg Metadata and Data files for the `stock_trades` enable Tableflow Kafka topic.
-
-> Later, the Snowflake External Stage will need this information to read the data stored in the `stock_trades` enable Tableflow Kafka topic.
-
-### 3.6 Store the Confluent Kafka Cluster, Schema Registry Cluster, and Service Accounts API Key Pairs in AWS Secrets Manager Secrets
+### 3.5 Store the Confluent Kafka Cluster, Schema Registry Cluster, and Service Accounts API Key Pairs in AWS Secrets Manager Secrets
 The [`setup-aws-secret_manager.tf`](setup-aws-secret_manager.tf) is responsible for storing all the Confluent Kafka Cluster, Schema Registry Cluster, and Service Accounts API Key Pairs in AWS Secrets Manager Secrets.
 
-> _Storing the API Key Pairs in AWS Secrets Manager offers the advantage of securely managing and accessing sensitive information, like API keys, without embedding them directly in your application code or configuration files. This improves security by lowering the chance of accidentally exposing sensitive credentials.
+> _Storing the API Key Pairs in AWS Secrets Manager offers the advantage of securely managing and accessing sensitive information, like API keys, without embedding them directly in your application code or configuration files. This improves security by lowering the chance of accidentally exposing sensitive credentials._
 
-### 3.7 Setup the Snowflake User and Roles
-The [`setup-snowflake-user_roles.tf`](setup-snowflake-user_roles.tf) is responsible for setting up the Snowflake user and roles to access the Snowflake environment via the [`snowflake_user_rsa_key_pairs_rotation`](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module) module, and allow Snowflake to access Amazon S3 bucket.
+### 3.6 Setup the Snowflake User, Roles, Warehouse, Database, Schema, and Iceberg Tables
+The [`setup-snowflake-user.tf`](setup-snowflake-user.tf) file is responsible for configuring the Snowflake user and roles to access the Snowflake environment via the [`snowflake_user_rsa_key_pairs_rotation`](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module) module, and enabling Snowflake to access the Amazon S3 bucket. Additionally, the [`setup-snowflake-objects.tf`](setup-snowflake-objects.tf) file handles creating the Snowflake Database, Schema, External Volume, Catalog Integration, and Iceberg Tables, along with the [`setup-snowflake-aws-s3-glue.tf`](setup-snowflake-aws-s3-glue.tf) to set up the AWS IAM permissions and trusted policies required to query the Apache Iceberg tables using SnowSQL!
 
-Otherwise, if you didn’t use the automated Terraform script, you’ll have to do the following manually by following the instructions on these web pages:
+![stock-trades-query-results](.blog/images/stock-trades-query-results.png)
 
-* [CREATE STORAGE INTEGRATION](https://docs.snowflake.com/en/sql-reference/sql/create-storage-integration)
-
-* [Option 1: Configuring a Snowflake storage integration to access Amazon S3](https://docs.snowflake.com/en/user-guide/data-load-s3-config-storage-integration)
-
-* [Option 3: Configuring AWS IAM user credentials to access Amazon S3](https://docs.snowflake.com/en/user-guide/data-load-s3-config-aws-iam-user)
-
-### 3.8 Setup the Snowflake Database, Schema, External Stage and External Tables
-The [`setup-snowflake-objects.tf`](setup-snowflake-objects.tf) is responsible for creating the Snowflake Database, Schema, External Stage, and External Tables along with the [`setup-snowflake-grant_privileges.tf`](setup-snowflake-grant_privileges.tf) to grant all the required privileges for you to query the Apache Iceberg tables using SnowSQL.
-
-Otherwise, if you didn’t use the automated Terraform script, you’ll have to do the following manually by following the instructions on these web page(s):
-* [Query Iceberg Tables with Snowflake and Tableflow in Confluent Cloud](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/query-engines/query-with-snowflake.html)
+Otherwise, if you didn’t use the automated Terraform script, you’ll have to complete steps 1 through 7 manually by following the instructions [here](https://docs.confluent.io/cloud/current/topics/tableflow/how-to-guides/query-engines/query-with-snowflake.html#use-snowflake-with-aws-glue-data-catalog-integration).
 
 ## 4.0 Conclusion
 Using Terraform, you can **_reliably_** and **_consistently_** deploy automatically with just a few keystrokes. Leverage the fully managed open-source trio—**_Apache Kafka, Apache Flink, and Apache Iceberg_**—along with **Snowflake** to enhance your data lakehouse architecture.  For instance, you have:
@@ -285,8 +266,3 @@ Using Terraform, you can **_reliably_** and **_consistently_** deploy automatica
 * Use **Snowflake** to query the Kafka Topic Tableflow-enabled Apache Iceberg Tables with **SnowSQL**.
 
 **_Welcome to the forefront of the data revolution, where every challenge is an opportunity and innovation knows no bounds!_**
-
-## Resources
-### AWS Glue
-- [Connecting to the Data Catalog using AWS Glue Iceberg REST endpoint](https://docs.aws.amazon.com/glue/latest/dg/connect-glu-iceberg-rest.html)
-- [AWS Signature Version 4 for API requests](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv.html)
