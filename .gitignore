@@ -36,5 +36,7 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
 scratch.pad
 scratch.pdf
+current_kafka_cluster_id.txt
