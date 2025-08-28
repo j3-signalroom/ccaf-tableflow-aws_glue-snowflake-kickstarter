@@ -8,12 +8,27 @@ resource "aws_iam_role" "snowflake_s3_glue_role" {
       {
         Effect = "Allow"
         Principal = {
-          AWS = snowflake_execute.describe_catalog_integration.query_results[8]["property_value"]
+          AWS = [
+            jsondecode(local.external_volume_properties["STORAGE_LOCATION_1"])["STORAGE_AWS_IAM_USER_ARN"],
+            local.snowflake_aws_s3_glue_role_arn
+          ]
         }
         Action = "sts:AssumeRole"
         Condition = {
           StringEquals = {
-            "sts:ExternalId" = snowflake_execute.describe_catalog_integration.query_results[9]["property_value"] #local.result_map["GLUE_AWS_EXTERNAL_ID"]["property_value"]
+            "sts:ExternalId" = jsondecode(local.external_volume_properties["STORAGE_LOCATION_1"])["STORAGE_AWS_EXTERNAL_ID"]
+          }
+        }
+      },
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = local.catalog_integration_query_result_map["GLUE_AWS_IAM_USER_ARN"]
+        }
+        Action = "sts:AssumeRole"
+        Condition = {
+          StringEquals = {
+            "sts:ExternalId" = local.catalog_integration_query_result_map["GLUE_AWS_EXTERNAL_ID"]
           }
         }
       },

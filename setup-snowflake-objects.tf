@@ -43,6 +43,13 @@ resource "snowflake_external_volume" "tableflow_kickstarter_volume" {
   ]
 }
 
+# Gets the results of the DESCRIBE EXTERNAL VOLUME
+locals {
+  external_volume_properties = {
+    for describe_record in snowflake_external_volume.tableflow_kickstarter_volume.describe_output : describe_record.name => describe_record.value
+  }
+}
+
 # Snowflake Terraform Provider 2.5.0 does not support the creation of catalog integrations
 resource "snowflake_execute" "catalog_integration" {
   provider = snowflake.account_admin
@@ -87,46 +94,21 @@ resource "snowflake_execute" "describe_catalog_integration" {
   EOT
 }
 
+# Get's the results of the DESCRIBE CATALOG INTEGRATION
 locals {
-  result_map = {
-    for result in snowflake_execute.describe_catalog_integration.query_results : result["property"] => result
+  catalog_integration_query_result_map = {
+    for query_result in snowflake_execute.describe_catalog_integration.query_results : query_result.property => query_result.property_value
   }
-}
-
-resource "snowflake_storage_integration" "aws_s3_integration" {
-  provider                  = snowflake.account_admin
-  name                      = local.aws_s3_integration_name
-  storage_allowed_locations = ["${local.tableflow_topic_s3_base_path}"]
-  storage_provider          = "S3"
-  storage_aws_object_acl    = "bucket-owner-full-control"
-  storage_aws_role_arn      = local.snowflake_aws_s3_glue_role_arn
-  enabled                   = true
-  type                      = "EXTERNAL_STAGE"
-}
-
-resource "snowflake_execute" "use_warehouse" {
-  execute = <<EOT
-    USE WAREHOUSE ${local.warehouse_name};
-  EOT
-
-  revert = <<EOT
-    USE WAREHOUSE ${local.warehouse_name};
-  EOT
-
-  query = <<EOT
-    USE WAREHOUSE ${local.warehouse_name};
-  EOT
 }
 
 resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
   provider = snowflake.account_admin
   depends_on = [ 
+    confluent_kafka_topic.stock_trades,
     snowflake_external_volume.tableflow_kickstarter_volume,
     snowflake_execute.catalog_integration,
     snowflake_execute.describe_catalog_integration,
-    snowflake_storage_integration.aws_s3_integration,
-    aws_iam_role_policy_attachment.snowflake_s3_glue_policy_attachment,
-    snowflake_execute.use_warehouse
+    aws_iam_role_policy_attachment.snowflake_s3_glue_policy_attachment
   ]
 
   execute = <<EOT
@@ -137,5 +119,26 @@ resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
     EOT
   revert = <<EOT
     DROP ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_kafka_topic.stock_trades.topic_name}
+  EOT
+}
+
+resource "snowflake_execute" "snowflake_stock_trades_with_totals_iceberg_table" {
+  provider = snowflake.account_admin
+  depends_on = [ 
+    confluent_tableflow_topic.stock_trades_with_totals,
+    snowflake_external_volume.tableflow_kickstarter_volume,
+    snowflake_execute.catalog_integration,
+    snowflake_execute.describe_catalog_integration,
+    aws_iam_role_policy_attachment.snowflake_s3_glue_policy_attachment
+  ]
+
+  execute = <<EOT
+    CREATE OR REPLACE ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_tableflow_topic.stock_trades_with_totals.display_name}
+      EXTERNAL_VOLUME = '${local.volume_name}'
+      CATALOG = '${local.catalog_integration_name}'
+      CATALOG_TABLE_NAME = '${confluent_tableflow_topic.stock_trades_with_totals.display_name}';
+    EOT
+  revert = <<EOT
+    DROP ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_tableflow_topic.stock_trades_with_totals.display_name}
   EOT
 }
