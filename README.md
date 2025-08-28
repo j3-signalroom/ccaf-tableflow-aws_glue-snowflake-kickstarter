@@ -20,7 +20,6 @@ _Confluent Tableflow for Apache Iceberg enables you to turn a Kafka topic into a
         - [**1.1.3 Bring Your Own Storage (BYOS)**](#113-bring-your-own-storage-byos)
     - [**1.2 Why Apache Iceberg is a Game-changer?**](#12-why-apache-iceberg-is-a-game-changer)
 + [**2.0 Now Let's Dive In!**](#20-now-lets-dive-in)
-    - [**2.1 From Manual to Automated (DevOps in Action: Running Terraform Locally)**](#21-from-manual-to-automated-devops-in-action-running-terraform-locally)
 + [**3.0 Close-up of What Was Automated for You**](#30-close-up-of-what-was-automated-for-you)
     - [**3.1 Setup Confluent Cloud Standard Kafka Cluster**](#31-setup-confluent-cloud-standard-kafka-cluster)
     - [**3.2 Setup Confluent Cloud Environment and Schema Registry Cluster**](#32-setup-confluent-cloud-environment-and-schema-registry-cluster)
@@ -78,7 +77,7 @@ With the challenges resolved by Apache Iceberg when working on S3 (a distributed
 * data governance, and
 * integration with compute engines (e.g., **Snowflake**).
 
-The Apache Iceberg metadata is organized in a heirarchical tree structure, with metadata files at the top, followed by manifest lists, and then manifest files:
+The Apache Iceberg metadata is organized in a hierarchical tree structure, with metadata files at the top, followed by manifest lists, and then manifest files:
 
 ![apache-iceberg-table-structure](.blog/images/apache-iceberg-table-structure.png)
 
@@ -122,15 +121,12 @@ The true power of Apache Iceberg is that it allows for the separation of storage
 
 **These are the steps**
 
-1. Take care of the local environment prequisities listed below:
-    * You need to have the following installed on your local machine:
-        - [AWS CLI version 2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-        - [Confluent CLI version 4 or higher](https://docs.confluent.io/confluent-cli/4.0/overview.html)
-        - [Terraform CLI version 1.12.2 or higher](https://developer.hashicorp.com/terraform/install)
+1. Install the following on your local machine:
+    - [AWS CLI version 2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+    - [Confluent CLI version 4 or higher](https://docs.confluent.io/confluent-cli/4.0/overview.html)
+    - [Terraform CLI version 1.12.2 or higher](https://developer.hashicorp.com/terraform/install)
 
-2. Get your Confluent Cloud API key pair, by execute the following Confluent CLI command to generate the Cloud API Key:
-
-    > Click [here](.blog/why-do-you-need-the-confluent-cloud-api-key.md#2-integration-with-cicd-pipelines) to learn why you need it.
+2. Get your Confluent Cloud API key pair by executing the following Confluent CLI command to generate the Cloud API Key (click [here](.blog/why-do-you-need-the-confluent-cloud-api-key.md#2-integration-with-cicd-pipelines) to learn why you need it):
 
     ```shell
     confluent api-key create --resource "cloud" 
@@ -143,27 +139,11 @@ The true power of Apache Iceberg is that it allows for the separation of storage
     git clone https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter.git
     ```
 
+    > You will then supply the created Cloud API Key and Cloud API Secret to the `deploy.sh` script in step 5.
+
 4. Apart of the Terraform configurations, is the `snowflake_user_rsa_key_pairs_rotation`, the [`iac-snowflake-user-rsa_key_pairs_rotation-tf_module`](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module) Terraform [module](https://developer.hashicorp.com/terraform/language/modules) to automate the creation and rotation of [RSA key pairs](https://github.com/j3-signalroom/j3-techstack-lexicon/blob/main/cryptographic-glossary.md#rsa-key-pair) for a Snowflake service account user.  It leverages a specialized AWS Lambda function, known as the [`iac-snowflake-user-rsa_key_pairs_generator-lambda`](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_generator-lambda), to automate the generation and rotation of RSA key pairs. The module allows users to define rotation intervals (e.g., every 30 days since the last key generation) to enhance security by regularly renewing cryptographic credentials. Additionally, it integrates seamlessly with AWS Secrets Manager to securely store and manage the generated key pairs, ensuring that the keys remain protected and easily accessible for Snowflake authentication without manual intervention.
 
-### 2.1 From Manual to Automated (DevOps in Action: Running Terraform Locally)
-To run the Terraform deployment configuration locally on your machine, you need to first have the following installed:
-
-1. Take care of the local environment prequisities listed below:
-    > You need to have the following installed on your local machine:
-    > - [Confluent CLI version 4 or higher](https://docs.confluent.io/confluent-cli/4.0/overview.html)
-    > - [Terraform CLI version 1.12 or higher](https://developer.hashicorp.com/terraform/install).  To learn how to set up Terraform Cloud for local use by clicking [here](.blog/setup-terraform-cloud.md).
-
-2. Get your Confluent Cloud API key pair, by execute the following Confluent CLI command to generate the Cloud API Key:
-
-    > Click [here](.blog/why-do-you-need-the-confluent-cloud-api-key.md#2-integration-with-cicd-pipelines) to learn why you need it.
-
-    ```shell
-    confluent api-key create --resource "cloud" 
-    ```
-
-    > You will then supply the created Cloud API Key and Cloud API Secret to the `deploy.sh` script below.
-
-3. Then run the following command to set up the Terraform configuration locally. This command will create a Confluent Cloud environment with a Kafka Cluster configured for Tableflow, AWS Secrets Manager, an AWS S3 bucket, AWS Glue Data Catalog, and Snowflake Database:
+5. Then run the following command to set up the Terraform configuration locally. This command will create a Confluent Cloud environment with a Kafka Cluster configured for Tableflow, AWS Secrets Manager, an AWS S3 bucket, AWS Glue Data Catalog, and Snowflake Database:
 
     > **Note**: _The script and this project, in general, assume your hyperscaler is **AWS**. Additionally, it is expected that the AWS account is configured with SSO (Single Sign-On) support._
 
