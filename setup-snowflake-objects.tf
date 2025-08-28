@@ -101,20 +101,6 @@ locals {
   }
 }
 
-resource "snowflake_execute" "set_current_warehouse" {
-  execute = <<EOT
-    USE WAREHOUSE ${local.warehouse_name};
-  EOT
-
-  revert = <<EOT
-    USE WAREHOUSE ${local.warehouse_name};
-  EOT
-
-  query = <<EOT
-    USE WAREHOUSE ${local.warehouse_name};
-  EOT
-}
-
 resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
   provider = snowflake.account_admin
   depends_on = [ 
@@ -122,8 +108,7 @@ resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
     snowflake_external_volume.tableflow_kickstarter_volume,
     snowflake_execute.catalog_integration,
     snowflake_execute.describe_catalog_integration,
-    aws_iam_role_policy_attachment.snowflake_s3_glue_policy_attachment,
-    snowflake_execute.set_current_warehouse
+    aws_iam_role_policy_attachment.snowflake_s3_glue_policy_attachment
   ]
 
   execute = <<EOT
@@ -144,8 +129,7 @@ resource "snowflake_execute" "snowflake_stock_trades_with_totals_iceberg_table" 
     snowflake_external_volume.tableflow_kickstarter_volume,
     snowflake_execute.catalog_integration,
     snowflake_execute.describe_catalog_integration,
-    aws_iam_role_policy_attachment.snowflake_s3_glue_policy_attachment,
-    snowflake_execute.set_current_warehouse
+    aws_iam_role_policy_attachment.snowflake_s3_glue_policy_attachment
   ]
 
   execute = <<EOT
