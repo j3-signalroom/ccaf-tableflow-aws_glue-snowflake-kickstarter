@@ -15,7 +15,7 @@ resource "confluent_kafka_cluster" "kafka_cluster" {
 resource "local_file" "track_kafka_cluster_id" {
   content = confluent_kafka_cluster.kafka_cluster.id
 
-  filename = "${path.module}/current_kafka_cluster_id.txt"
+  filename = "${path.root}/current_kafka_cluster_id.txt"
 
   depends_on = [ 
     confluent_kafka_cluster.kafka_cluster 

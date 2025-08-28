@@ -20,7 +20,8 @@ provider "snowflake" {
   user              = local.snowflake_admin_user
   authenticator     = local.snowflake_authenticator
   private_key       = local.snowflake_active_private_key
-  warehouse         = local.warehouse_name
+  validate_default_parameters = false
+  warehouse                   = local.warehouse_name
 
   preview_features_enabled = [
     "snowflake_external_volume_resource"
@@ -36,7 +37,8 @@ provider "snowflake" {
   user              = local.snowflake_admin_user
   authenticator     = local.snowflake_authenticator
   private_key       = local.snowflake_active_private_key
-  warehouse         = local.warehouse_name
+  validate_default_parameters = false
+  warehouse                   = local.warehouse_name
 }
 
 # The SYSADMIN (Systems Admin) oversees creating objects inside Snowflake.
@@ -47,5 +49,6 @@ provider "snowflake" {
   user              = local.snowflake_admin_user
   authenticator     = local.snowflake_authenticator
   private_key       = local.snowflake_active_private_key
-  warehouse         = local.warehouse_name
+  validate_default_parameters = false
+  warehouse                   = local.warehouse_name
 }

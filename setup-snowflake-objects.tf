@@ -59,7 +59,7 @@ resource "snowflake_execute" "catalog_integration" {
   ]
 
   execute = <<EOT
-    CREATE CATALOG INTEGRATION ${local.catalog_integration_name}
+    CREATE OR REPLACE CATALOG INTEGRATION ${local.catalog_integration_name}
       CATALOG_SOURCE = GLUE
       TABLE_FORMAT = ICEBERG
       GLUE_AWS_ROLE_ARN = '${local.snowflake_aws_s3_glue_role_arn}'
