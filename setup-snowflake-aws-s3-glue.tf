@@ -8,7 +8,10 @@ resource "aws_iam_role" "snowflake_s3_glue_role" {
       {
         Effect = "Allow"
         Principal = {
-          AWS = jsondecode(local.external_volume_properties["STORAGE_LOCATION_1"])["STORAGE_AWS_IAM_USER_ARN"]
+          AWS = [
+            jsondecode(local.external_volume_properties["STORAGE_LOCATION_1"])["STORAGE_AWS_IAM_USER_ARN"],
+            local.snowflake_aws_s3_glue_role_arn
+          ]
         }
         Action = "sts:AssumeRole"
         Condition = {
