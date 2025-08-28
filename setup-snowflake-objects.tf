@@ -43,6 +43,7 @@ resource "snowflake_external_volume" "tableflow_kickstarter_volume" {
   ]
 }
 
+# Gets the results of the DESCRIBE EXTERNAL VOLUME
 locals {
   external_volume_properties = {
     for describe_record in snowflake_external_volume.tableflow_kickstarter_volume.describe_output : describe_record.name => describe_record.value
@@ -93,6 +94,7 @@ resource "snowflake_execute" "describe_catalog_integration" {
   EOT
 }
 
+# Get's the results of the DESCRIBE CATALOG INTEGRATION
 locals {
   catalog_integration_query_result_map = {
     for query_result in snowflake_execute.describe_catalog_integration.query_results : query_result.property => query_result.property_value
