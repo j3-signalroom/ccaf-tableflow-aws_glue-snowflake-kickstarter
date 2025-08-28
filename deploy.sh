@@ -174,4 +174,24 @@ else
     aws secretsmanager delete-secret --secret-id ${confluent_base_path}/flink --force-delete-without-recovery || true
     aws secretsmanager delete-secret --secret-id ${confluent_base_path}/tableflow --force-delete-without-recovery || true
     aws secretsmanager delete-secret --secret-id ${snowflake_base_path} --force-delete-without-recovery || true
+
+    # Read current Kafka Cluster ID of the Kafka Cluster previously created
+    kafka_cluster_id=$(cat ./current_kafka_cluster_id.txt)
+
+    # Delete the AWS Glue Database and Tables created for the Kafka Cluster
+    echo "Getting list of tables in database '$kafka_cluster_id'..."
+    kafka_topics=$(aws glue get-tables --database-name "$kafka_cluster_id" --query 'TableList[].Name' --output text)
+
+    if [ ! -z "$kafka_topics" ]; then
+        echo "Found tables: $kafka_topics"
+        echo "Deleting tables first..."
+        
+        for kafka_topic in $kafka_topics; do
+            echo "Deleting table: $kafka_topic"
+            aws glue delete-table --database-name "$kafka_cluster_id" --name "$kafka_topic"
+        done
+    fi
+
+    echo "Deleting database '$kafka_cluster_id'..."
+    aws glue delete-database --name "$kafka_cluster_id"
 fi
