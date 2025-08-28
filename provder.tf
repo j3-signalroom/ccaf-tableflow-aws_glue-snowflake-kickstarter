@@ -22,8 +22,7 @@ provider "snowflake" {
   private_key       = local.snowflake_active_private_key
 
   preview_features_enabled = [
-    "snowflake_external_volume_resource",
-    "snowflake_storage_integration_resource"
+    "snowflake_external_volume_resource"
   ]
 }
 # The SECURITYADMIN (Security Administrator) is responsible for users, roles and privileges.

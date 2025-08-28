@@ -93,17 +93,6 @@ locals {
   }
 }
 
-resource "snowflake_storage_integration" "aws_s3_integration" {
-  provider                  = snowflake.account_admin
-  name                      = local.aws_s3_integration_name
-  storage_allowed_locations = ["${local.tableflow_topic_s3_base_path}"]
-  storage_provider          = "S3"
-  storage_aws_object_acl    = "bucket-owner-full-control"
-  storage_aws_role_arn      = local.snowflake_aws_s3_glue_role_arn
-  enabled                   = true
-  type                      = "EXTERNAL_STAGE"
-}
-
 resource "snowflake_execute" "use_warehouse" {
   execute = <<EOT
     USE WAREHOUSE ${local.warehouse_name};
