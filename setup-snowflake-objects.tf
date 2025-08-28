@@ -113,7 +113,6 @@ resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
     snowflake_external_volume.tableflow_kickstarter_volume,
     snowflake_execute.catalog_integration,
     snowflake_execute.describe_catalog_integration,
-    snowflake_storage_integration.aws_s3_integration,
     aws_iam_role_policy_attachment.snowflake_s3_glue_policy_attachment,
     snowflake_execute.use_warehouse
   ]
