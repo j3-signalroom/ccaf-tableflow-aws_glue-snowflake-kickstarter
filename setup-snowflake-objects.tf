@@ -118,6 +118,7 @@ resource "snowflake_execute" "use_warehouse" {
 resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
   provider = snowflake.account_admin
   depends_on = [ 
+    confluent_kafka_topic.stock_trades,
     snowflake_external_volume.tableflow_kickstarter_volume,
     snowflake_execute.catalog_integration,
     snowflake_execute.describe_catalog_integration,
@@ -133,5 +134,27 @@ resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
     EOT
   revert = <<EOT
     DROP ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_kafka_topic.stock_trades.topic_name}
+  EOT
+}
+
+resource "snowflake_execute" "snowflake_stock_trades_with_totals_iceberg_table" {
+  provider = snowflake.account_admin
+  depends_on = [ 
+    confluent_kafka_topic.stock_trades_with_totals,
+    snowflake_external_volume.tableflow_kickstarter_volume,
+    snowflake_execute.catalog_integration,
+    snowflake_execute.describe_catalog_integration,
+    aws_iam_role_policy_attachment.snowflake_s3_glue_policy_attachment,
+    snowflake_execute.use_warehouse
+  ]
+
+  execute = <<EOT
+    CREATE OR REPLACE ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_kafka_topic.stock_trades_with_totals.topic_name}
+      EXTERNAL_VOLUME = '${local.volume_name}'
+      CATALOG = '${local.catalog_integration_name}'
+      CATALOG_TABLE_NAME = '${confluent_kafka_topic.stock_trades_with_totals.topic_name}';
+    EOT
+  revert = <<EOT
+    DROP ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_kafka_topic.stock_trades_with_totals.topic_name}
   EOT
 }
