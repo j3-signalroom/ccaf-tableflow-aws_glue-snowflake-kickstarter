@@ -112,7 +112,7 @@ resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
   ]
 
   execute = <<EOT
-    CREATE OR REPLACE ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_kafka_topic.stock_trades.topic_name}
+    CREATE ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_kafka_topic.stock_trades.topic_name}
       EXTERNAL_VOLUME = '${local.volume_name}'
       CATALOG = '${local.catalog_integration_name}'
       CATALOG_TABLE_NAME = '${confluent_kafka_topic.stock_trades.topic_name}';
@@ -133,7 +133,7 @@ resource "snowflake_execute" "snowflake_stock_trades_with_totals_iceberg_table" 
   ]
 
   execute = <<EOT
-    CREATE OR REPLACE ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_tableflow_topic.stock_trades_with_totals.display_name}
+    CREATE ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_tableflow_topic.stock_trades_with_totals.display_name}
       EXTERNAL_VOLUME = '${local.volume_name}'
       CATALOG = '${local.catalog_integration_name}'
       CATALOG_TABLE_NAME = '${confluent_tableflow_topic.stock_trades_with_totals.display_name}';
