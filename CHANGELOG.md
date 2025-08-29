@@ -9,6 +9,7 @@ The format is base on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), 
 - Issue [#346](https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter/issues/346)
 - Issue [#353](https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter/issues/353)
 - Issue [#348](https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter/issues/348)
+- Issue [#355](https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter/issues/355)
 
 ### Fixed
 - Issue [#351](https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter/issues/351)
