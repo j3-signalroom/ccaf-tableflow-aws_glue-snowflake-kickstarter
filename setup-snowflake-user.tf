@@ -135,16 +135,18 @@ resource "snowflake_grant_privileges_to_account_role" "external_volume_usage" {
   ]
 }
 
-# Emits GRANT CREATE ICEBERG TABLE <schema_fully_qualified_name> TO ROLE <security_admin_role>;
-resource "snowflake_grant_privileges_to_account_role" "create_iceberg_table" {
+# Emits GRANT USAGE ON INTEGRATION <integration_name> TO ROLE <security_admin_role>;
+resource "snowflake_grant_privileges_to_account_role" "integration_usage" {
   provider          = snowflake.security_admin
-  privileges        = ["CREATE ICEBERG TABLE"]
+  privileges        = ["USAGE"]
   account_role_name = snowflake_account_role.security_admin_role.name
-  on_schema {
-    schema_name = "${local.database_name}.${local.schema_name}"
+  on_account_object {
+    object_type = "INTEGRATION"
+    object_name = local.catalog_integration_name
   }
 
-  depends_on = [
-    snowflake_grant_account_role.user_security_admin
+  depends_on = [ 
+    snowflake_grant_account_role.user_security_admin,
+    snowflake_user.user
   ]
 }
