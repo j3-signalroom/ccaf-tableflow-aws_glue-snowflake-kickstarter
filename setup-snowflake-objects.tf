@@ -88,13 +88,14 @@ resource "snowflake_execute" "describe_catalog_integration" {
 }
 
 resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
-  provider = snowflake.account_admin
+  provider = snowflake
   depends_on = [ 
     confluent_kafka_topic.stock_trades,
     snowflake_external_volume.tableflow_kickstarter_volume,
     snowflake_execute.catalog_integration,
     snowflake_execute.describe_catalog_integration,
-    aws_iam_role_policy_attachment.snowflake_s3_glue_policy_attachment
+    aws_iam_role_policy_attachment.snowflake_s3_glue_policy_attachment,
+    aws_iam_role.update_snowflake_s3_glue_role
   ]
 
   execute = <<EOT
@@ -109,13 +110,14 @@ resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
 }
 
 resource "snowflake_execute" "snowflake_stock_trades_with_totals_iceberg_table" {
-  provider = snowflake.account_admin
+  provider = snowflake
   depends_on = [ 
     confluent_tableflow_topic.stock_trades_with_totals,
     snowflake_external_volume.tableflow_kickstarter_volume,
     snowflake_execute.catalog_integration,
     snowflake_execute.describe_catalog_integration,
-    aws_iam_role_policy_attachment.snowflake_s3_glue_policy_attachment
+    aws_iam_role_policy_attachment.snowflake_s3_glue_policy_attachment,
+    aws_iam_role.update_snowflake_s3_glue_role
   ]
 
   execute = <<EOT

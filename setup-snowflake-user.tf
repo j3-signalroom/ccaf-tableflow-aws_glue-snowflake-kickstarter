@@ -90,63 +90,68 @@ resource "snowflake_grant_privileges_to_account_role" "user_all_privileges" {
 
 # Emits GRANT USAGE ON WAREHOUSE <warehouse_name> TO ROLE <security_admin_role>;
 resource "snowflake_grant_privileges_to_account_role" "warehouse_usage" {
-  provider          = snowflake.security_admin
+  provider          = snowflake.account_admin
   privileges        = ["USAGE"]
-  account_role_name = snowflake_account_role.security_admin_role.name
+  account_role_name = snowflake_account_role.system_admin_role.name
   on_account_object {
     object_type = "WAREHOUSE"
     object_name = local.warehouse_name
   }
 
   depends_on = [ 
-    snowflake_grant_account_role.user_security_admin,
+    snowflake_account_role.system_admin_role,
+    snowflake_grant_account_role.user_system_admin,
     snowflake_warehouse.tableflow_kickstarter
   ]
 }
 
 # Emits GRANT USAGE ON DATABASE <database_name> TO ROLE <security_admin_role>;
 resource "snowflake_grant_privileges_to_account_role" "database_usage" {
-  provider          = snowflake.security_admin
+  provider          = snowflake.account_admin
   privileges        = ["USAGE"]
-  account_role_name = snowflake_account_role.security_admin_role.name
+  account_role_name = snowflake_account_role.system_admin_role.name
   on_account_object {
     object_type = "DATABASE"
     object_name = local.database_name
   }
 
   depends_on = [ 
-    snowflake_grant_account_role.user_security_admin,
+    snowflake_account_role.system_admin_role,
+    snowflake_grant_account_role.user_system_admin,
     snowflake_database.tableflow_kickstarter
   ]
 }
 
 # Emits GRANT USAGE ON EXTERNAL VOLUME <volume_name> TO ROLE <security_admin_role>;
 resource "snowflake_grant_privileges_to_account_role" "external_volume_usage" {
-  provider          = snowflake.security_admin
+  provider          = snowflake.account_admin
   privileges        = ["USAGE"]
-  account_role_name = snowflake_account_role.security_admin_role.name
+  account_role_name = snowflake_account_role.system_admin_role.name
   on_account_object {
       object_type = "EXTERNAL VOLUME"
       object_name = local.volume_name
   }
 
   depends_on = [
+    snowflake_account_role.system_admin_role,
+    snowflake_grant_account_role.user_system_admin,
     snowflake_external_volume.tableflow_kickstarter_volume
   ]
 }
 
 # Emits GRANT USAGE ON INTEGRATION <integration_name> TO ROLE <security_admin_role>;
 resource "snowflake_grant_privileges_to_account_role" "integration_usage" {
-  provider          = snowflake.security_admin
+  provider          = snowflake.account_admin
   privileges        = ["USAGE"]
-  account_role_name = snowflake_account_role.security_admin_role.name
+  account_role_name = snowflake_account_role.system_admin_role.name
   on_account_object {
     object_type = "INTEGRATION"
     object_name = local.catalog_integration_name
   }
 
   depends_on = [ 
-    snowflake_grant_account_role.user_security_admin,
-    snowflake_user.user
+    snowflake_account_role.system_admin_role,
+    snowflake_grant_account_role.user_system_admin,
+    snowflake_execute.catalog_integration
   ]
 }
