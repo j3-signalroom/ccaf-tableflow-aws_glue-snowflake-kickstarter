@@ -9,8 +9,7 @@ resource "aws_iam_role" "snowflake_s3_glue_role" {
         Effect = "Allow"
         Principal = {
           AWS = [
-            jsondecode(local.external_volume_properties["STORAGE_LOCATION_1"])["STORAGE_AWS_IAM_USER_ARN"],
-            local.snowflake_aws_s3_glue_role_arn
+            jsondecode(local.external_volume_properties["STORAGE_LOCATION_1"])["STORAGE_AWS_IAM_USER_ARN"]
           ]
         }
         Action = "sts:AssumeRole"
@@ -45,7 +44,8 @@ resource "aws_iam_role" "snowflake_s3_glue_role" {
   depends_on = [ 
     snowflake_external_volume.tableflow_kickstarter_volume,
     snowflake_execute.catalog_integration,
-    snowflake_execute.describe_catalog_integration 
+    snowflake_execute.describe_catalog_integration,
+    snowflake_grant_privileges_to_account_role.integration_usage
   ]
 }
 
@@ -109,4 +109,51 @@ resource "aws_iam_policy" "snowflake_s3_glue_role_access_policy" {
 resource "aws_iam_role_policy_attachment" "snowflake_s3_glue_policy_attachment" {
   role       = aws_iam_role.snowflake_s3_glue_role.name
   policy_arn = aws_iam_policy.snowflake_s3_glue_role_access_policy.arn
+}
+
+
+resource "aws_iam_role" "update_snowflake_s3_glue_role" {
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = [
+            jsondecode(local.external_volume_properties["STORAGE_LOCATION_1"])["STORAGE_AWS_IAM_USER_ARN"],
+            local.snowflake_aws_s3_glue_role_arn
+          ]
+        }
+        Action = "sts:AssumeRole"
+        Condition = {
+          StringEquals = {
+            "sts:ExternalId" = jsondecode(local.external_volume_properties["STORAGE_LOCATION_1"])["STORAGE_AWS_EXTERNAL_ID"]
+          }
+        }
+      },
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = local.catalog_integration_query_result_map["GLUE_AWS_IAM_USER_ARN"]
+        }
+        Action = "sts:AssumeRole"
+        Condition = {
+          StringEquals = {
+            "sts:ExternalId" = local.catalog_integration_query_result_map["GLUE_AWS_EXTERNAL_ID"]
+          }
+        }
+      },
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "glue.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+
+  depends_on = [ 
+    aws_iam_role_policy_attachment.snowflake_s3_glue_policy_attachment
+  ]
 }
