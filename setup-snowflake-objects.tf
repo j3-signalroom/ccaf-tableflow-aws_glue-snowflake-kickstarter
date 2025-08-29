@@ -112,7 +112,7 @@ resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
 resource "snowflake_execute" "snowflake_stock_trades_with_totals_iceberg_table" {
   provider = snowflake
   depends_on = [ 
-    confluent_tableflow_topic.stock_trades_with_totals,
+    module.create_set_1,
     snowflake_external_volume.tableflow_kickstarter_volume,
     snowflake_execute.catalog_integration,
     snowflake_execute.describe_catalog_integration,
