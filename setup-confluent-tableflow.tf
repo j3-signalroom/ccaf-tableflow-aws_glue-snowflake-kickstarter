@@ -114,8 +114,3 @@ resource "confluent_tableflow_topic" "stock_trades_with_totals" {
     module.create_set_1
   ]
 }
-
-locals {
-  part_before_v1                = split("/v1/", confluent_tableflow_topic.stock_trades.table_path)
-  tableflow_topic_s3_base_path  = "${local.part_before_v1[0]}/v1/"
-}

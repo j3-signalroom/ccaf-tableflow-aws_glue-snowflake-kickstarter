@@ -32,7 +32,7 @@ resource "snowflake_external_volume" "tableflow_kickstarter_volume" {
   allow_writes = false
   storage_location {
     storage_location_name = local.location_name
-    storage_base_url      = local.tableflow_topic_s3_base_path
+    storage_base_url      = local.tableflow_topics_s3_base_path
     storage_provider      = "S3"
     storage_aws_role_arn  = local.snowflake_aws_s3_glue_role_arn
   }
@@ -41,13 +41,6 @@ resource "snowflake_external_volume" "tableflow_kickstarter_volume" {
     confluent_tableflow_topic.stock_trades,
     confluent_tableflow_topic.stock_trades_with_totals
   ]
-}
-
-# Gets the results of the DESCRIBE EXTERNAL VOLUME
-locals {
-  external_volume_properties = {
-    for describe_record in snowflake_external_volume.tableflow_kickstarter_volume.describe_output : describe_record.name => describe_record.value
-  }
 }
 
 # Snowflake Terraform Provider 2.5.0 does not support the creation of catalog integrations
@@ -92,13 +85,6 @@ resource "snowflake_execute" "describe_catalog_integration" {
   query = <<EOT
     DESCRIBE CATALOG INTEGRATION ${local.catalog_integration_name};
   EOT
-}
-
-# Get's the results of the DESCRIBE CATALOG INTEGRATION
-locals {
-  catalog_integration_query_result_map = {
-    for query_result in snowflake_execute.describe_catalog_integration.query_results : query_result.property => query_result.property_value
-  }
 }
 
 resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
