@@ -134,3 +134,17 @@ resource "snowflake_grant_privileges_to_account_role" "external_volume_usage" {
     snowflake_external_volume.tableflow_kickstarter_volume
   ]
 }
+
+# Emits GRANT CREATE ICEBERG TABLE <schema_fully_qualified_name> TO ROLE <security_admin_role>;
+resource "snowflake_grant_privileges_to_account_role" "create_iceberg_table" {
+  provider          = snowflake.security_admin
+  privileges        = ["CREATE ICEBERG TABLE"]
+  account_role_name = snowflake_account_role.security_admin_role.name
+  on_schema {
+    schema_name = "${local.database_name}.${local.schema_name}"
+  }
+
+  depends_on = [
+    snowflake_grant_account_role.user_security_admin
+  ]
+}
