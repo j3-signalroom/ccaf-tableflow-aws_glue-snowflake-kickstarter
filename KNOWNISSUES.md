@@ -1,4 +1,8 @@
 # Known Issues
-All known issues related to this project will be documented in this file.
+All known release issues related to this project will be documented in this file.
 
 > _If you have a known issue that is not listed here, please open an issue on the project's GitHub repository._
+
+- Issue [#348](https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter/issues/348)
+- Issue [#349](https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter/issues/349)
+- Issue [#350](https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter/issues/350)
