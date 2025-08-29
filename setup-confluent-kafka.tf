@@ -11,17 +11,6 @@ resource "confluent_kafka_cluster" "kafka_cluster" {
   }
 }
 
-# Track the Kafka cluster ID in a local file for use in the deploy.
-resource "local_file" "track_kafka_cluster_id" {
-  content = confluent_kafka_cluster.kafka_cluster.id
-
-  filename = "${path.root}/current_kafka_cluster_id.txt"
-
-  depends_on = [ 
-    confluent_kafka_cluster.kafka_cluster 
-  ]
-}
-
 # 'app_manager' service account is required in this configuration to create 'stock_trades' topic and grant ACLs
 # to 'app_producer' and 'app_consumer' service accounts.
 resource "confluent_service_account" "app_manager" {

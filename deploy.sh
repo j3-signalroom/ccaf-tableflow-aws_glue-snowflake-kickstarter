@@ -157,6 +157,9 @@ then
     terraform plan -var-file=terraform.tfvars
     terraform apply -var-file=terraform.tfvars
 else
+    # Gets kafka_cluster_id of the Kafka Cluster created
+    kafka_cluster_id=$(terraform output -raw kafka_cluster_id)
+
     # Destroy the Terraform configuration
     terraform destroy -var-file=terraform.tfvars
 
@@ -174,9 +177,6 @@ else
     aws secretsmanager delete-secret --secret-id ${confluent_base_path}/flink --force-delete-without-recovery || true
     aws secretsmanager delete-secret --secret-id ${confluent_base_path}/tableflow --force-delete-without-recovery || true
     aws secretsmanager delete-secret --secret-id ${snowflake_base_path} --force-delete-without-recovery || true
-
-    # Read current Kafka Cluster ID of the Kafka Cluster previously created
-    kafka_cluster_id=$(cat ./current_kafka_cluster_id.txt)
 
     # Delete the AWS Glue Database and Tables created for the Kafka Cluster
     echo "Getting list of tables in database '$kafka_cluster_id'..."
