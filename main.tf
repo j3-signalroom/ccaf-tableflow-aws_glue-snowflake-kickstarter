@@ -8,13 +8,13 @@ terraform {
   }
 
   required_providers {
+        aws = {
+            source  = "hashicorp/aws"
+            version = "6.11.0"
+        }
         confluent = {
             source  = "confluentinc/confluent"
             version = "2.37.0"
-        }
-        aws = {
-            source  = "hashicorp/aws"
-            version = "6.10.0"
         }
         snowflake = {
             source = "snowflakedb/snowflake"
