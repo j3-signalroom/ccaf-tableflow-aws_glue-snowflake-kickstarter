@@ -43,7 +43,7 @@ resource "snowflake_external_volume" "tableflow_kickstarter_volume" {
   ]
 }
 
-# Snowflake Terraform Provider 2.5.0 does not support the creation of catalog integrations
+# Snowflake Terraform Provider 2.6.0 does not support the creation of catalog integrations
 resource "snowflake_execute" "catalog_integration" {
   provider = snowflake.account_admin
   depends_on = [ 
