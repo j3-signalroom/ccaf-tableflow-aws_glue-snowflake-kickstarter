@@ -13,13 +13,13 @@ provider "confluent" {
 
 # `ACCOUNTADMIN` role is required to create the external volume.
 provider "snowflake" {
-  alias             = "account_admin"
-  role              = "ACCOUNTADMIN"
-  organization_name = local.snowflake_organization_name
-  account_name      = local.snowflake_account_name
-  user              = local.snowflake_admin_user
-  authenticator     = local.snowflake_authenticator
-  private_key       = local.snowflake_active_private_key
+  alias                       = "account_admin"
+  role                        = "ACCOUNTADMIN"
+  organization_name           = local.snowflake_organization_name
+  account_name                = local.snowflake_account_name
+  user                        = local.snowflake_admin_user
+  authenticator               = local.snowflake_authenticator
+  private_key                 = local.snowflake_active_private_key
   validate_default_parameters = false
   warehouse                   = local.warehouse_name
 
@@ -28,27 +28,26 @@ provider "snowflake" {
   ]
 }
 # The SECURITYADMIN (Security Administrator) is responsible for users, roles and privileges.
-# All roles, users and privileges should be owned and created by the security administrator.
 provider "snowflake" {
-  alias             = "security_admin"
-  role              = "SECURITYADMIN"
-  organization_name = local.snowflake_organization_name
-  account_name      = local.snowflake_account_name
-  user              = local.snowflake_admin_user
-  authenticator     = local.snowflake_authenticator
-  private_key       = local.snowflake_active_private_key
+  alias                       = "security_admin"
+  role                        = "SECURITYADMIN"
+  organization_name           = local.snowflake_organization_name
+  account_name                = local.snowflake_account_name
+  user                        = local.snowflake_admin_user
+  authenticator               = local.snowflake_authenticator
+  private_key                 = local.snowflake_active_private_key
   validate_default_parameters = false
   warehouse                   = local.warehouse_name
 }
 
 # The SYSADMIN (Systems Admin) oversees creating objects inside Snowflake.
 provider "snowflake" {
-  role              = "SYSADMIN"
-  organization_name = local.snowflake_organization_name
-  account_name      = local.snowflake_account_name
-  user              = local.snowflake_admin_user
-  authenticator     = local.snowflake_authenticator
-  private_key       = local.snowflake_active_private_key
+  role                        = "SYSADMIN"
+  organization_name           = local.snowflake_organization_name
+  account_name                = local.snowflake_account_name
+  user                        = local.snowflake_admin_user
+  authenticator               = local.snowflake_authenticator
+  private_key                 = local.snowflake_active_private_key
   validate_default_parameters = false
   warehouse                   = local.warehouse_name
 }

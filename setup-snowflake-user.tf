@@ -88,7 +88,7 @@ resource "snowflake_grant_privileges_to_account_role" "user_all_privileges" {
   ]
 }
 
-# Emits GRANT USAGE ON WAREHOUSE <warehouse_name> TO ROLE <security_admin_role>;
+# Emits GRANT USAGE ON WAREHOUSE <warehouse_name> TO ROLE <system_admin_role>;
 resource "snowflake_grant_privileges_to_account_role" "warehouse_usage" {
   provider          = snowflake.account_admin
   privileges        = ["USAGE"]
@@ -105,7 +105,7 @@ resource "snowflake_grant_privileges_to_account_role" "warehouse_usage" {
   ]
 }
 
-# Emits GRANT USAGE ON DATABASE <database_name> TO ROLE <security_admin_role>;
+# Emits GRANT USAGE ON DATABASE <database_name> TO ROLE <system_admin_role>;
 resource "snowflake_grant_privileges_to_account_role" "database_usage" {
   provider          = snowflake.account_admin
   privileges        = ["USAGE"]
@@ -122,7 +122,7 @@ resource "snowflake_grant_privileges_to_account_role" "database_usage" {
   ]
 }
 
-# Emits GRANT USAGE ON EXTERNAL VOLUME <volume_name> TO ROLE <security_admin_role>;
+# Emits GRANT USAGE ON EXTERNAL VOLUME <volume_name> TO ROLE <system_admin_role>;
 resource "snowflake_grant_privileges_to_account_role" "external_volume_usage" {
   provider          = snowflake.account_admin
   privileges        = ["USAGE"]
@@ -139,7 +139,7 @@ resource "snowflake_grant_privileges_to_account_role" "external_volume_usage" {
   ]
 }
 
-# Emits GRANT USAGE ON INTEGRATION <integration_name> TO ROLE <security_admin_role>;
+# Emits GRANT USAGE ON INTEGRATION <integration_name> TO ROLE <system_admin_role>;
 resource "snowflake_grant_privileges_to_account_role" "integration_usage" {
   provider          = snowflake.account_admin
   privileges        = ["USAGE"]

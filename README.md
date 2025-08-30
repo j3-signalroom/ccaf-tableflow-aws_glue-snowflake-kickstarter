@@ -7,7 +7,7 @@ On [March 19, 2025](https://docs.confluent.io/cloud/current/release-notes/index.
 
 ![this-is-us-sterling-k-brown](.blog/images/this-is-us-sterling-k-brown.gif)
 
-_Confluent Tableflow for Apache Iceberg enables you to turn a Kafka topic into an Apache Iceberg table_, usable for both operational and analytical tasks. This feature is innovative because it lets you utilize Apache Iceberg’s table format to manage your data as you wish, while still taking advantage of Kafka’s real-time streaming capabilities.
+_Confluent Tableflow for Apache Iceberg enables you to turn a Kafka topic into an Apache Iceberg table_, usable for both operational and analytical tasks. This feature is innovative because it allows you to utilize Apache Iceberg's table format to manage your data as needed, while still leveraging Kafka's real-time streaming capabilities.
 
 ![omg](.blog/images/omg.gif)
 
@@ -148,12 +148,12 @@ The true power of Apache Iceberg is that it allows for the separation of storage
     > **Note**: _The script and this project, in general, assume your hyperscaler is **AWS**. Additionally, it is expected that the AWS account is configured with SSO (Single Sign-On) support._
 
     ```bash
-    deploy.sh <create | delete> --profile <SSO-PROFILE-NAME> \
-                                --confluent-api-key <CONFLUENT-API-KEY> \
-                                --confluent-api-secret <CONFLUENT-API-SECRET> \
-                                --snowflake-warehouse <SNOWFLAKE-WAREHOUSE> \
+    deploy.sh <create | delete> --profile=<SSO-PROFILE-NAME> \
+                                --confluent-api-key=<CONFLUENT-API-KEY> \
+                                --confluent-api-secret=<CONFLUENT-API-SECRET> \
+                                --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> \
                                 --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> \
-                                --day-count <DAY-COUNT>
+                                --day-count=<DAY-COUNT>
     ```
     > Argument placeholder|Replace with
     > -|-

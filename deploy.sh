@@ -8,6 +8,7 @@
 #                             --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE>
 #                             --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> 
 #                             --day-count=<DAY_COUNT>
+#                             --debug
 #
 #
 
@@ -21,7 +22,7 @@ case $1 in
     echo
     echo "(Error Message 001)  You did not specify one of the commands: create | delete."
     echo
-    echo "Usage:  Require all four arguments ---> `basename $0`=<create | delete> --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> --day-count=<DAY_COUNT>"
+    echo "Usage:  Require all five arguments ---> `basename $0`=<create | delete> --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
     ;;
@@ -50,6 +51,8 @@ do
         *"--day-count="*)
             arg_length=12
             day_count=${arg:$arg_length:$(expr ${#arg} - $arg_length)};;
+        *"--debug"*)
+            debug=true;;
     esac
 done
 
@@ -59,7 +62,7 @@ then
     echo
     echo "(Error Message 002)  You did not include the proper use of the -- profile=<SSO_PROFILE_NAME> argument in the call."
     echo
-    echo "Usage:  Require all four arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> --day-count=<DAY_COUNT>"
+    echo "Usage:  Require all five arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
 fi
@@ -70,7 +73,7 @@ then
     echo
     echo "(Error Message 003)  You did not include the proper use of the --confluent-api-key=<CONFLUENT_API_KEY> argument in the call."
     echo
-    echo "Usage:  Require all four arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> --day-count=<DAY_COUNT>"
+    echo "Usage:  Require all five arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
 fi
@@ -81,7 +84,7 @@ then
     echo
     echo "(Error Message 004)  You did not include the proper use of the --confluent-api-secret=<CONFLUENT_API_SECRET> argument in the call."
     echo
-    echo "Usage:  Require all four arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> --day-count=<DAY_COUNT>"
+    echo "Usage:  Require all five arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
 fi
@@ -92,7 +95,7 @@ then
     echo
     echo "(Error Message 005)  You did not include the proper use of the --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> argument in the call."
     echo
-    echo "Usage:  Require all four arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> --day-count=<DAY_COUNT>"
+    echo "Usage:  Require all five arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
 fi
@@ -103,7 +106,7 @@ then
     echo
     echo "(Error Message 006)  You did not include the proper use of the --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> argument in the call."
     echo
-    echo "Usage:  Require all four arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> --day-count=<DAY_COUNT>"
+    echo "Usage:  Require all five arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
 fi
@@ -114,7 +117,7 @@ then
     echo
     echo "(Error Message 007)  You did not include the proper use of the --day-count=<DAY_COUNT> argument in the call."
     echo
-    echo "Usage:  Require all four arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> --day-count=<DAY_COUNT>"
+    echo "Usage:  Require all five arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
 fi
@@ -155,9 +158,18 @@ then
     # Create/Update the Terraform configuration
     terraform init
     terraform plan -var-file=terraform.tfvars
-    terraform apply -var-file=terraform.tfvars
+    if [ "$debug" = false ]
+    then
+        terraform apply -var-file=terraform.tfvars
+    else
+        # Enable debug logging, and specifically tells Terraform to log both stdout and stderr
+        # (provider calls, API requests, retries, and errors).
+        export TF_LOG=DEBUG
+        terraform apply -var-file=terraform.tfvars 2>&1 | tee terraform-debug.log
+        unset TF_LOG
+    fi
 else
-    # Gets kafka_cluster_id of the Kafka Cluster created
+    # Gets kafka_cluster_id of the Kafka Cluster created during the apply run
     kafka_cluster_id=$(terraform output -raw kafka_cluster_id)
 
     # Destroy the Terraform configuration
@@ -178,7 +190,8 @@ else
     aws secretsmanager delete-secret --secret-id ${confluent_base_path}/tableflow --force-delete-without-recovery || true
     aws secretsmanager delete-secret --secret-id ${snowflake_base_path} --force-delete-without-recovery || true
 
-    # Delete the AWS Glue Database and Tables created for the Kafka Cluster
+    # Using the kafka_cluster_id to delete the AWS Glue Database and Tables created 
+    # for the Kafka Cluster
     echo "Getting list of tables in database '$kafka_cluster_id'..."
     kafka_topics=$(aws glue get-tables --database-name "$kafka_cluster_id" --query 'TableList[].Name' --output text)
 
