@@ -169,7 +169,7 @@ then
         unset TF_LOG
     fi
 else
-    # Gets kafka_cluster_id of the Kafka Cluster created
+    # Gets kafka_cluster_id of the Kafka Cluster created during the apply run
     kafka_cluster_id=$(terraform output -raw kafka_cluster_id)
 
     # Destroy the Terraform configuration
@@ -190,7 +190,8 @@ else
     aws secretsmanager delete-secret --secret-id ${confluent_base_path}/tableflow --force-delete-without-recovery || true
     aws secretsmanager delete-secret --secret-id ${snowflake_base_path} --force-delete-without-recovery || true
 
-    # Delete the AWS Glue Database and Tables created for the Kafka Cluster
+    # Using the kafka_cluster_id to delete the AWS Glue Database and Tables created 
+    # for the Kafka Cluster
     echo "Getting list of tables in database '$kafka_cluster_id'..."
     kafka_topics=$(aws glue get-tables --database-name "$kafka_cluster_id" --query 'TableList[].Name' --output text)
 
