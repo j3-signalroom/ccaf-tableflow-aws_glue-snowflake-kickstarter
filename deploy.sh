@@ -28,6 +28,10 @@ case $1 in
     ;;
 esac
 
+# Default optional variables
+day_count=30
+debug=false
+
 # Get the arguments passed by shift to remove the first word
 # then iterate over the rest of the arguments
 shift
@@ -111,7 +115,7 @@ then
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
 fi
 
-# Check required --day-count argument was supplied
+# Check --day-count argument was supplied
 if [ -z $day_count ] && [ create_action = true ]
 then
     echo
@@ -158,12 +162,15 @@ then
     # Create/Update the Terraform configuration
     terraform init
     terraform plan -var-file=terraform.tfvars
+
+    # Check if debug mode is enabled
     if [ "$debug" = false ]
     then
+        # Apply the Terraform configuration
         terraform apply -var-file=terraform.tfvars
     else
-        # Enable debug logging, and specifically tells Terraform to log both stdout and stderr
-        # (provider calls, API requests, retries, and errors).
+        # Enable Terraform debug logging, and tell Terraform to log both stdout and stderr
+        # (provider calls, API requests, retries, and errors) during the apply run
         export TF_LOG=DEBUG
         terraform apply -var-file=terraform.tfvars 2>&1 | tee terraform-debug.log
         unset TF_LOG
