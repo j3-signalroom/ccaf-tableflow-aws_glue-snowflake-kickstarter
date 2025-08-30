@@ -217,7 +217,7 @@ Otherwise, if you didn’t use the automated Terraform script, you’ll have to 
 * [Stream Processing with Confluent Cloud for Apache Flink](https://docs.confluent.io/cloud/current/flink/overview.html#stream-processing-with-af-long)
 
 ### 3.4 Enable Tableflow on the `stock_trades` and `stock_trades_with_totals` Kafka topics, and Create the Amazon S3 bucket for the Apache Iceberg Metadata and Data Files
-The [`setup-confluent-tableflow.tf`](setup-confluent-tableflow.tf) is responsible for configuring Tableflow integration support for AWS Glue Data Catalog, enabling AWS Glue Data Catalog and Amazon S3 permissions to each other and the Confluent Cloud Kafka Cluster via the [`setup-confluent-tableflow-aws-s3-glue`](setup-confluent-tableflow-aws-s3-glue.tf) configuration, and enabling Tableflow on the `stock_trades` and `stock_trades_with_totals` Kafka topics.  Along with the [`setup-aws-s3.tf`](setup-aws-s3.tf) that is responsible for creating the Amazon S3 bucket for Tableflow.
+The [`setup-confluent-tableflow.tf`](setup-confluent-tableflow.tf) is responsible for configuring Tableflow integration support for AWS Glue Data Catalog, enabling AWS Glue Data Catalog and Amazon S3 permissions to each other and the Confluent Cloud Kafka Cluster via the [`setup-confluent-tableflow-aws-s3-glue.tf`](setup-confluent-tableflow-aws-s3-glue.tf) configuration, and enabling Tableflow on the `stock_trades` and `stock_trades_with_totals` Kafka topics.  Along with the [`setup-aws-s3.tf`](setup-aws-s3.tf) that is responsible for creating the Amazon S3 bucket for Tableflow.
 
 Otherwise, if you didn’t use the automated Terraform script, you’ll have to do the following manually by following the instructions on these web pages:
 
