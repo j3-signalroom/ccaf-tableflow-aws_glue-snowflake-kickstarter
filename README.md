@@ -205,7 +205,7 @@ Otherwise, if you didn’t use the automated Terraform script, you’ll have to 
 * [Datagen Source Connector for Confluent Cloud](https://docs.confluent.io/cloud/current/connectors/cc-datagen-source.html)
 
 ### 3.2 Setup Confluent Cloud Environment and Schema Registry Cluster
-The [`setup-confluent-schema_registry.tf`](setup-confluent-schema_registry.tf) is responsible for deploying a Confluent Cloud Environment and its Schema Registry Cluster with a service account that has the appropriate RBAC (Role-Based Access Control) privileges.
+The [`setup-confluent-environment.tf`](setup-confluent-environment.tf) and [`setup-confluent-schema_registry.tf`](setup-confluent-schema_registry.tf) are responsible for deploying a Confluent Cloud Environment and its Schema Registry Cluster with a service account that has the appropriate RBAC (Role-Based Access Control) privileges.
 
 Otherwise, if you didn’t use the automated Terraform script, you’ll have to do the following manually by following the instructions on these web page(s):
 * [Quick Start for Schema Management on Confluent Cloud](https://docs.confluent.io/cloud/current/get-started/schema-registry.html)
