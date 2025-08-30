@@ -78,8 +78,10 @@ resource "snowflake_execute" "describe_catalog_integration" {
     DESCRIBE CATALOG INTEGRATION ${local.catalog_integration_name};
   EOT
 
-  revert = ""
-
+  revert = <<EOT
+    DESCRIBE CATALOG INTEGRATION ${local.catalog_integration_name};
+  EOT
+  
   query = <<EOT
     DESCRIBE CATALOG INTEGRATION ${local.catalog_integration_name};
   EOT
