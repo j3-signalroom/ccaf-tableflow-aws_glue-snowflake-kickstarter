@@ -105,13 +105,6 @@ resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
   revert = <<EOT
     DROP ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_kafka_topic.stock_trades.topic_name}
   EOT
-
-  # Do not allow destroy the iceberg table via terraform destroy because it will be destroyed
-  # when the Database is destroyed.  Othwerwise, it wil prematurely error out because resources
-  # it requires are already destroyed.
-  lifecycle { 
-    prevent_destroy = true 
-  }
 }
 
 resource "snowflake_execute" "snowflake_stock_trades_with_totals_iceberg_table" {
@@ -134,12 +127,4 @@ resource "snowflake_execute" "snowflake_stock_trades_with_totals_iceberg_table" 
   revert = <<EOT
     DROP ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_tableflow_topic.stock_trades_with_totals.display_name}
   EOT
-
-  # Do not allow destroy the iceberg table via terraform destroy because it will be destroyed
-  # when the Database is destroyed.  Othwerwise, it wil prematurely error out because resources
-  # it requires are already destroyed.
-
-  lifecycle { 
-    prevent_destroy = true 
-  }
 }

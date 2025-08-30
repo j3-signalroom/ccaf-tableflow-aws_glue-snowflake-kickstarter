@@ -179,6 +179,10 @@ else
     # Gets kafka_cluster_id of the Kafka Cluster created during the apply run
     kafka_cluster_id=$(terraform output -raw kafka_cluster_id)
 
+    # Remove the Snowflake Iceberg tables from the Terraform state to prevent the destroy run failing
+    terraform state rm snowflake_execute.snowflake_stock_trades_iceberg_table || true
+    terraform state rm snowflake_execute.snowflake_stock_trades_with_totals_iceberg_table || true
+
     # Destroy the Terraform configuration
     terraform destroy -var-file=terraform.tfvars
 
