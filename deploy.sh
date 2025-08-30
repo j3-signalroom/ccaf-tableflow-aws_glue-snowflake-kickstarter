@@ -179,6 +179,21 @@ else
     # Gets kafka_cluster_id of the Kafka Cluster created during the apply run
     kafka_cluster_id=$(terraform output -raw kafka_cluster_id)
 
+    # Check if the kafka_cluster_id contains the word "warning", because the output
+    # variable may not exist
+    if echo "$kafka_cluster_id" | grep -iq "warning"
+    then
+       kafka_cluster_id="" 
+    fi
+
+    # Remove all the snowflake_execute resources from the Terraform state to prevent the destroy run failing
+    for resource in snowflake_execute.describe_catalog_integration snowflake_execute.snowflake_stock_trades_iceberg_table snowflake_execute.snowflake_stock_trades_with_totals_iceberg_table; do
+        if terraform state list | grep -q "^${resource}$"
+        then
+            terraform state rm "$resource"
+        fi
+    done
+
     # Destroy the Terraform configuration
     terraform destroy -var-file=terraform.tfvars
 
@@ -199,19 +214,23 @@ else
 
     # Using the kafka_cluster_id to delete the AWS Glue Database and Tables created 
     # for the Kafka Cluster
-    echo "Getting list of tables in database '$kafka_cluster_id'..."
-    kafka_topics=$(aws glue get-tables --database-name "$kafka_cluster_id" --query 'TableList[].Name' --output text)
+    if [ ! -z "$kafka_cluster_id" ]
+    then
+        echo "Getting list of tables in database '$kafka_cluster_id'..."
+        kafka_topics=$(aws glue get-tables --database-name "$kafka_cluster_id" --query 'TableList[].Name' --output text)
 
-    if [ ! -z "$kafka_topics" ]; then
-        echo "Found tables: $kafka_topics"
-        echo "Deleting tables first..."
+        if [ ! -z "$kafka_topics" ]
+        then
+            echo "Found tables: $kafka_topics"
+            echo "Deleting tables first..."
+            
+            for kafka_topic in $kafka_topics; do
+                echo "Deleting table: $kafka_topic"
+                aws glue delete-table --database-name "$kafka_cluster_id" --name "$kafka_topic"
+            done
+        fi
         
-        for kafka_topic in $kafka_topics; do
-            echo "Deleting table: $kafka_topic"
-            aws glue delete-table --database-name "$kafka_cluster_id" --name "$kafka_topic"
-        done
+        echo "Deleting database '$kafka_cluster_id'..."
+        aws glue delete-database --name "$kafka_cluster_id"
     fi
-
-    echo "Deleting database '$kafka_cluster_id'..."
-    aws glue delete-database --name "$kafka_cluster_id"
 fi
