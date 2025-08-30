@@ -148,21 +148,25 @@ The true power of Apache Iceberg is that it allows for the separation of storage
     > **Note**: _The script and this project, in general, assume your hyperscaler is **AWS**. Additionally, it is expected that the AWS account is configured with SSO (Single Sign-On) support._
 
     ```bash
-    deploy.sh <create | delete> --profile=<SSO-PROFILE-NAME> \
-                                --confluent-api-key=<CONFLUENT-API-KEY> \
-                                --confluent-api-secret=<CONFLUENT-API-SECRET> \
-                                --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> \
+    deploy.sh <create | delete> --profile=<SSO_PROFILE_NAME> \
+                                --confluent-api-key=<CONFLUENT_API_KEY> \
+                                --confluent-api-secret=<CONFLUENT_API_SECRET> \
+                                --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> \
                                 --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> \
-                                --day-count=<DAY-COUNT>
+                                [--day-count=<DAY_COUNT>] \
+                                [--debug]
     ```
     > Argument placeholder|Replace with
     > -|-
-    > `<SSO-PROFILE-NAME>`|Your AWS SSO profile name for your AWS infrastructue that host your AWS Secrets Manager.
-    > `<CONFLUENT-API-KEY>`|Your organization's Confluent Cloud API Key (also referred as Cloud API ID).
-    > `<CONFLUENT-API-SECRET>`|Your organization's Confluent Cloud API Secret.
-    > `<SNOWFLAKE-WAREHOUSE>`|The Snowflake warehouse (or "virtual warehouse") you choose to run the resources in Snowflake.
+    > `<SSO_PROFILE_NAME>`|Your AWS SSO profile name for your AWS infrastructue that host your AWS Secrets Manager.
+    > `<CONFLUENT_API_KEY>`|Your organization's Confluent Cloud API Key (also referred as Cloud API ID).
+    > `<CONFLUENT_API_SECRET>`|Your organization's Confluent Cloud API Secret.
+    > `<SNOWFLAKE_WAREHOUSE>`|The Snowflake warehouse (or "virtual warehouse") you choose to run the resources in Snowflake.
     > `<ADMIN_USER_SECRETS_ROOT_PATH>`|The root path in AWS Secrets Manager where the admin user secrets are stored.
-    > `<DAY-COUNT>`|How many day(s) should the API Key be rotated for.
+    > `[<DAY_COUNT>]`|(_Default:_ `30`, when not included) How many day(s) should the API Key be rotated for.
+
+    > Flags:
+    > - `[--debug]`: (_Default:_ `false`, when not included) Enable debug mode for more verbose output during the `terraform apply` process.
 
     To learn more about this script, click [here](.blog/deploy-script-explanation.md).
 
