@@ -7,8 +7,8 @@
 #                             --confluent-api-secret=<CONFLUENT_API_SECRET>
 #                             --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE>
 #                             --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> 
-#                             --day-count=<DAY_COUNT>
-#                             --debug
+#                             [--day-count=<DAY_COUNT>]
+#                             [--debug]
 #
 #
 
