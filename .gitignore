@@ -40,3 +40,4 @@ terraform.rc
 scratch.pad
 scratch.pdf
 current_kafka_cluster_id.txt
+terraform-debug.log
