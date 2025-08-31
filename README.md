@@ -139,22 +139,34 @@ The true power of Apache Iceberg is that it allows for the separation of storage
     git clone https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter.git
     ```
 
-    > You will then supply the created Cloud API Key and Cloud API Secret to the `deploy.sh` script in step 5.
+    > You will then supply the created Cloud API Key and Cloud API Secret to the `deploy.sh` script in step 6c.
 
 4. Apart of the Terraform configurations, is the `snowflake_user_rsa_key_pairs_rotation`, the [`iac-snowflake-user-rsa_key_pairs_rotation-tf_module`](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module) Terraform [module](https://developer.hashicorp.com/terraform/language/modules) to automate the creation and rotation of [RSA key pairs](https://github.com/j3-signalroom/j3-techstack-lexicon/blob/main/cryptographic-glossary.md#rsa-key-pair) for a Snowflake service account user.  It leverages a specialized AWS Lambda function, known as the [`iac-snowflake-user-rsa_key_pairs_generator-lambda`](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_generator-lambda), to automate the generation and rotation of RSA key pairs. The module allows users to define rotation intervals (e.g., every 30 days since the last key generation) to enhance security by regularly renewing cryptographic credentials. Additionally, it integrates seamlessly with AWS Secrets Manager to securely store and manage the generated key pairs, ensuring that the keys remain protected and easily accessible for Snowflake authentication without manual intervention.
 
-5. Then run the project’s [`deploy.sh`](deploy.sh) bash script to deploy the project’s Terraform configuration locally. This command sets up a Confluent Cloud environment with a Kafka Cluster configured for Tableflow, AWS Secrets Manager, an AWS S3 bucket, AWS Glue Data Catalog, and a Snowflake Database:
+5. Update the cloned Terraform module's [main.tf](main.tf) by following these steps:
+
+    a. Locate the `terraform.cloud` block and replace **`signalroom`** with your [Terraform Cloud Organization Name](https://developer.hashicorp.com/terraform/cloud-docs/users-teams-organizations/organizations).
+
+    b. In the `terraform.cloud.workspaces` block, replace **`ccaf-tableflow-aws-glue-snowflake-kickstarter`** with your [Terraform Cloud Organization's Workspaces Name](https://developer.hashicorp.com/terraform/cloud-docs/workspaces).
+
+6. To run repo's [Terraform configuration](main.tf) locally, follow these steps:
+
+    a. Navigate to the root folder of the `ccaf-tableflow-aws_glue-snowflake-kickstarter/` repository that you cloned.
+
+    b. Open a terminal in that directory.
+
+    c. Execute the following [script](./deploy.sh) bash script to deploy the project’s Terraform configuration locally. This command sets up a Confluent Cloud environment with a Kafka Cluster configured for Tableflow, AWS Secrets Manager, an AWS S3 bucket, AWS Glue Data Catalog, and a Snowflake Database:
 
     > **Note**: _The script and this project, in general, assume your hyperscaler is **AWS**. Additionally, it is expected that the AWS account is configured with SSO (Single Sign-On) support._
 
     ```bash
-    deploy.sh <create | delete> --profile=<SSO_PROFILE_NAME> \
-                                --confluent-api-key=<CONFLUENT_API_KEY> \
-                                --confluent-api-secret=<CONFLUENT_API_SECRET> \
-                                --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> \
-                                --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> \
-                                [--day-count=<DAY_COUNT>] \
-                                [--debug]
+    ./deploy.sh <create | delete> --profile=<SSO_PROFILE_NAME> \
+                                  --confluent-api-key=<CONFLUENT_API_KEY> \
+                                  --confluent-api-secret=<CONFLUENT_API_SECRET> \
+                                  --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> \
+                                  --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> \
+                                  [--day-count=<DAY_COUNT>] \
+                                  [--debug]
     ```
     > Argument placeholder|Replace with
     > -|-
