@@ -57,13 +57,13 @@ The script helps you manage the lifecycle of Terraform-managed infrastructure re
 The script should be executed using the following syntax:
 
 ```bash
-deploy.sh <create | delete> --profile=<SSO-PROFILE-NAME> \
-                            --confluent-api-key=<CONFLUENT-API-KEY> \
-                            --confluent-api-secret=<CONFLUENT-API-SECRET> \
-                            --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> \
-                            --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> \
-                            [--day-count=<DAY_COUNT>] \
-                            [--debug]
+./deploy.sh <create | delete> --profile=<SSO-PROFILE-NAME> \
+                              --confluent-api-key=<CONFLUENT-API-KEY> \
+                              --confluent-api-secret=<CONFLUENT-API-SECRET> \
+                              --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> \
+                              --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> \
+                              [--day-count=<DAY_COUNT>] \
+                              [--debug]
 ```
 
 - **create**: Deploy infrastructure using Terraform.
