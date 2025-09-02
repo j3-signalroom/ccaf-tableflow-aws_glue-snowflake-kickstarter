@@ -2,13 +2,13 @@
 
 #
 # *** Script Syntax ***
-# deploy.sh=<create | delete> --profile=<SSO_PROFILE_NAME>
-#                             --confluent-api-key=<CONFLUENT_API_KEY>
-#                             --confluent-api-secret=<CONFLUENT_API_SECRET>
-#                             --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE>
-#                             --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> 
-#                             [--day-count=<DAY_COUNT>]
-#                             [--debug]
+# ./deploy.sh=<create | delete> --profile=<SSO_PROFILE_NAME>
+#                               --confluent-api-key=<CONFLUENT_API_KEY>
+#                               --confluent-api-secret=<CONFLUENT_API_SECRET>
+#                               --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE>
+#                               --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> 
+#                               [--day-count=<DAY_COUNT>]
+#                               [--debug]
 #
 #
 
