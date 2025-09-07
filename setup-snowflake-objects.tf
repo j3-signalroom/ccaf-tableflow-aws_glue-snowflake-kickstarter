@@ -87,6 +87,7 @@ resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
       CATALOG = '${local.catalog_integration_name}'
       CATALOG_TABLE_NAME = '${confluent_kafka_topic.stock_trades.topic_name}';
     EOT
+
   revert = <<EOT
     DROP ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_kafka_topic.stock_trades.topic_name}
   EOT
@@ -108,6 +109,7 @@ resource "snowflake_execute" "snowflake_stock_trades_with_totals_iceberg_table" 
       CATALOG = '${local.catalog_integration_name}'
       CATALOG_TABLE_NAME = '${confluent_tableflow_topic.stock_trades_with_totals.display_name}';
     EOT
+    
   revert = <<EOT
     DROP ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_tableflow_topic.stock_trades_with_totals.display_name}
   EOT
