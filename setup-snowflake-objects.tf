@@ -43,7 +43,7 @@ resource "snowflake_external_volume" "tableflow_kickstarter_volume" {
   ]
 }
 
-# Snowflake Terraform Provider 2.6.0 does not support the creation of catalog integrations
+# Snowflake Terraform Provider 2.6.0 does not support the creation of a catalog integration
 resource "snowflake_execute" "catalog_integration" {
   provider = snowflake.account_admin
   depends_on = [ 
@@ -71,6 +71,7 @@ resource "snowflake_execute" "catalog_integration" {
   EOT
 }
 
+# Snowflake Terraform Provider 2.6.0 does not support the creation of an iceberg table
 resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
   provider = snowflake
   depends_on = [ 
@@ -89,10 +90,15 @@ resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
     EOT
 
   revert = <<EOT
-    DROP ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_kafka_topic.stock_trades.topic_name}
+    DROP ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_kafka_topic.stock_trades.topic_name};
+  EOT
+
+  query = <<EOT
+    DESCRIBE ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_kafka_topic.stock_trades.topic_name};
   EOT
 }
 
+# Snowflake Terraform Provider 2.6.0 does not support the creation of an iceberg table
 resource "snowflake_execute" "snowflake_stock_trades_with_totals_iceberg_table" {
   provider = snowflake
   depends_on = [ 
@@ -111,6 +117,10 @@ resource "snowflake_execute" "snowflake_stock_trades_with_totals_iceberg_table" 
     EOT
     
   revert = <<EOT
-    DROP ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_tableflow_topic.stock_trades_with_totals.display_name}
+    DROP ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_tableflow_topic.stock_trades_with_totals.display_name};
+  EOT
+
+  query = <<EOT
+    DESCRIBE ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_kafka_topic.stock_trades_with_totals.topic_name};
   EOT
 }
