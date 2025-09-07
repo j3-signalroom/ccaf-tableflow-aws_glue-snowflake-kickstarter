@@ -65,23 +65,7 @@ resource "snowflake_execute" "catalog_integration" {
   revert = <<EOT
     DROP CATALOG INTEGRATION "${local.catalog_integration_name}";
   EOT
-}
 
-resource "snowflake_execute" "describe_catalog_integration" {
-  provider = snowflake.account_admin
-  
-  depends_on = [ 
-    snowflake_execute.catalog_integration 
-  ]
-
-  execute = <<EOT
-    DESCRIBE CATALOG INTEGRATION ${local.catalog_integration_name};
-  EOT
-
-  revert = <<EOT
-    DESCRIBE CATALOG INTEGRATION ${local.catalog_integration_name};
-  EOT
-  
   query = <<EOT
     DESCRIBE CATALOG INTEGRATION ${local.catalog_integration_name};
   EOT
