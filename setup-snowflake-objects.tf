@@ -77,7 +77,6 @@ resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
     confluent_kafka_topic.stock_trades,
     snowflake_external_volume.tableflow_kickstarter_volume,
     snowflake_execute.catalog_integration,
-    snowflake_execute.describe_catalog_integration,
     aws_iam_role_policy_attachment.snowflake_s3_glue_policy_attachment,
     aws_iam_role.update_snowflake_s3_glue_role
   ]
@@ -86,8 +85,7 @@ resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
     CREATE ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_kafka_topic.stock_trades.topic_name}
       EXTERNAL_VOLUME = '${local.volume_name}'
       CATALOG = '${local.catalog_integration_name}'
-      CATALOG_TABLE_NAME = '${confluent_kafka_topic.stock_trades.topic_name}'
-      AUTO_REFRESH = TRUE;
+      CATALOG_TABLE_NAME = '${confluent_kafka_topic.stock_trades.topic_name}';
     EOT
   revert = <<EOT
     DROP ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_kafka_topic.stock_trades.topic_name}
@@ -100,7 +98,6 @@ resource "snowflake_execute" "snowflake_stock_trades_with_totals_iceberg_table" 
     module.create_set_1,
     snowflake_external_volume.tableflow_kickstarter_volume,
     snowflake_execute.catalog_integration,
-    snowflake_execute.describe_catalog_integration,
     aws_iam_role_policy_attachment.snowflake_s3_glue_policy_attachment,
     aws_iam_role.update_snowflake_s3_glue_role
   ]
@@ -109,8 +106,7 @@ resource "snowflake_execute" "snowflake_stock_trades_with_totals_iceberg_table" 
     CREATE ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_tableflow_topic.stock_trades_with_totals.display_name}
       EXTERNAL_VOLUME = '${local.volume_name}'
       CATALOG = '${local.catalog_integration_name}'
-      CATALOG_TABLE_NAME = '${confluent_tableflow_topic.stock_trades_with_totals.display_name}'
-      AUTO_REFRESH = TRUE;
+      CATALOG_TABLE_NAME = '${confluent_tableflow_topic.stock_trades_with_totals.display_name}';
     EOT
   revert = <<EOT
     DROP ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_tableflow_topic.stock_trades_with_totals.display_name}
