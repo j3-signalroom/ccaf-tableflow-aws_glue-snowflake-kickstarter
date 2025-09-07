@@ -187,7 +187,7 @@ else
     fi
 
     # Remove all the snowflake_execute resources from the Terraform state to prevent the destroy run failing
-    for resource in snowflake_execute.describe_catalog_integration snowflake_execute.snowflake_stock_trades_iceberg_table snowflake_execute.snowflake_stock_trades_with_totals_iceberg_table; do
+    for resource in snowflake_execute.catalog_integration snowflake_execute.snowflake_stock_trades_iceberg_table snowflake_execute.snowflake_stock_trades_with_totals_iceberg_table; do
         if terraform state list | grep -q "^${resource}$"
         then
             terraform state rm "$resource"
