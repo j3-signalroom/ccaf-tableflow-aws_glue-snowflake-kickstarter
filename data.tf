@@ -55,7 +55,7 @@ locals {
 
   # Snowflake DESCRIBE CATALOG INTEGRATION results
   catalog_integration_query_result_map = {
-    for query_result in snowflake_execute.describe_catalog_integration.query_results : query_result.property => query_result.property_value
+    for query_result in snowflake_execute.catalog_integration.query_results : query_result.property => query_result.property_value
   }
 
   # Tableflow Topics S3 Base Path
