@@ -121,6 +121,6 @@ resource "snowflake_execute" "snowflake_stock_trades_with_totals_iceberg_table" 
   EOT
 
   query = <<EOT
-    DESCRIBE ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_kafka_topic.stock_trades_with_totals.topic_name};
+    DESCRIBE ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_tableflow_topic.stock_trades_with_totals.display_name};
   EOT
 }
