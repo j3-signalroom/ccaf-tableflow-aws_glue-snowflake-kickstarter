@@ -75,7 +75,7 @@ resource "snowflake_execute" "catalog_integration" {
 resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
   provider = snowflake
   depends_on = [ 
-    confluent_kafka_topic.stock_trades,
+    confluent_tableflow_topic.stock_trades,
     snowflake_external_volume.tableflow_kickstarter_volume,
     snowflake_execute.catalog_integration,
     aws_iam_role_policy_attachment.snowflake_s3_glue_policy_attachment,
@@ -83,18 +83,18 @@ resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
   ]
 
   execute = <<EOT
-    CREATE ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_kafka_topic.stock_trades.topic_name}
+    CREATE ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_tableflow_topic.stock_trades.display_name}
       EXTERNAL_VOLUME = '${local.volume_name}'
       CATALOG = '${local.catalog_integration_name}'
-      CATALOG_TABLE_NAME = '${confluent_kafka_topic.stock_trades.topic_name}';
+      CATALOG_TABLE_NAME = '${confluent_tableflow_topic.stock_trades.display_name}';
     EOT
 
   revert = <<EOT
-    DROP ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_kafka_topic.stock_trades.topic_name};
+    DROP ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_tableflow_topic.stock_trades.display_name};
   EOT
 
   query = <<EOT
-    DESCRIBE ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_kafka_topic.stock_trades.topic_name};
+    DESCRIBE ICEBERG TABLE ${local.database_name}.${local.schema_name}.${confluent_tableflow_topic.stock_trades.display_name};
   EOT
 }
 
