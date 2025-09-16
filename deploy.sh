@@ -213,7 +213,7 @@ else
     aws secretsmanager delete-secret --secret-id ${snowflake_base_path} --force-delete-without-recovery || true
 
     # Force the delete of the AWS CloudWatch Log Group
-    aws logs delete-log-group --log-group-name /aws/lambda/tableflow-kickstarter || true
+    aws logs delete-log-group --log-group-name /aws/lambda/tableflow_kickstarter || true
 
     # Using the kafka_cluster_id to delete the AWS Glue Database and Tables created 
     # for the Kafka Cluster
