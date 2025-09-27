@@ -14,7 +14,7 @@ terraform {
         }
         confluent = {
             source  = "confluentinc/confluent"
-            version = "2.40.0"
+            version = "2.42.0"
         }
         snowflake = {
             source = "snowflakedb/snowflake"
