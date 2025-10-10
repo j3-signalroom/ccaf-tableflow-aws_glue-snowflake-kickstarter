@@ -7,6 +7,7 @@ The format is base on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), 
 ## [0.03.05.000] - 2025-10-10
 ### Added
 - Issue [#421](https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter/issues/421)
+- Issue [#423](https://github.com/j3-signalroom/ccaf-tableflow-aws_glue-snowflake-kickstarter/issues/423)
 
 ## [0.03.04.000] - 2025-09-27
 ### Added
