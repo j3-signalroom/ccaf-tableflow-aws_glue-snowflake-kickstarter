@@ -6,7 +6,7 @@
 #                               --confluent-api-key=<CONFLUENT_API_KEY>
 #                               --confluent-api-secret=<CONFLUENT_API_SECRET>
 #                               --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE>
-#                               --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> 
+#                               --admin-service-user-secrets-root-path=<ADMIN_SERVICE_USER_SECRETS_ROOT_PATH> 
 #                               [--day-count=<DAY_COUNT>]
 #                               [--debug]
 #
@@ -22,7 +22,7 @@ case $1 in
     echo
     echo "(Error Message 001)  You did not specify one of the commands: create | delete."
     echo
-    echo "Usage:  Require all five arguments ---> `basename $0`=<create | delete> --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH>"
+    echo "Usage:  Require all five arguments ---> `basename $0`=<create | delete> --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-service-user-secrets-root-path=<ADMIN_SERVICE_USER_SECRETS_ROOT_PATH>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
     ;;
@@ -49,9 +49,9 @@ do
         *"--snowflake-warehouse="*)
             arg_length=22
             snowflake_warehouse=${arg:$arg_length:$(expr ${#arg} - $arg_length)};;
-        *"--admin-user-secrets-root-path="*)
-            arg_length=31
-            admin_user_secrets_root_path=${arg:$arg_length:$(expr ${#arg} - $arg_length)};;
+        *"--admin-service-user-secrets-root-path="*)
+            arg_length=39
+            admin_service_user_secrets_root_path=${arg:$arg_length:$(expr ${#arg} - $arg_length)};;
         *"--day-count="*)
             arg_length=12
             day_count=${arg:$arg_length:$(expr ${#arg} - $arg_length)};;
@@ -66,7 +66,7 @@ then
     echo
     echo "(Error Message 002)  You did not include the proper use of the -- profile=<SSO_PROFILE_NAME> argument in the call."
     echo
-    echo "Usage:  Require all five arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH>"
+    echo "Usage:  Require all five arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-service-user-secrets-root-path=<ADMIN_SERVICE_USER_SECRETS_ROOT_PATH>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
 fi
@@ -77,7 +77,7 @@ then
     echo
     echo "(Error Message 003)  You did not include the proper use of the --confluent-api-key=<CONFLUENT_API_KEY> argument in the call."
     echo
-    echo "Usage:  Require all five arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH>"
+    echo "Usage:  Require all five arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-service-user-secrets-root-path=<ADMIN_SERVICE_USER_SECRETS_ROOT_PATH>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
 fi
@@ -88,7 +88,7 @@ then
     echo
     echo "(Error Message 004)  You did not include the proper use of the --confluent-api-secret=<CONFLUENT_API_SECRET> argument in the call."
     echo
-    echo "Usage:  Require all five arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH>"
+    echo "Usage:  Require all five arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-service-user-secrets-root-path=<ADMIN_SERVICE_USER_SECRETS_ROOT_PATH>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
 fi
@@ -99,18 +99,18 @@ then
     echo
     echo "(Error Message 005)  You did not include the proper use of the --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> argument in the call."
     echo
-    echo "Usage:  Require all five arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH>"
+    echo "Usage:  Require all five arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-service-user-secrets-root-path=<ADMIN_SERVICE_USER_SECRETS_ROOT_PATH>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
 fi
 
-# Check required --admin-user-secrets-root-path argument was supplied
-if [ -z $admin_user_secrets_root_path ] && [ create_action = true ]
+# Check required --admin-service-user-secrets-root-path argument was supplied
+if [ -z $admin_service_user_secrets_root_path ] && [ create_action = true ]
 then
     echo
-    echo "(Error Message 006)  You did not include the proper use of the --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> argument in the call."
+    echo "(Error Message 006)  You did not include the proper use of the --admin-service-user-secrets-root-path=<ADMIN_SERVICE_USER_SECRETS_ROOT_PATH> argument in the call."
     echo
-    echo "Usage:  Require all five arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH>"
+    echo "Usage:  Require all five arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-service-user-secrets-root-path=<ADMIN_SERVICE_USER_SECRETS_ROOT_PATH>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
 fi
@@ -121,7 +121,7 @@ then
     echo
     echo "(Error Message 007)  You did not include the proper use of the --day-count=<DAY_COUNT> argument in the call."
     echo
-    echo "Usage:  Require all five arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH>"
+    echo "Usage:  Require all five arguments ---> `basename $0 $1` --profile=<SSO_PROFILE_NAME> --confluent-api-key=<CONFLUENT_API_KEY> --confluent-api-secret=<CONFLUENT_API_SECRET> --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> --admin-service-user-secrets-root-path=<ADMIN_SERVICE_USER_SECRETS_ROOT_PATH>"
     echo
     exit 85 # Common GNU/Linux Exit Code for 'Interrupted system call should be restarted'
 fi
@@ -141,7 +141,7 @@ then
     \nconfluent_api_key=\"${confluent_api_key}\"\
     \nconfluent_api_secret=\"${confluent_api_secret}\"\
     \nsnowflake_warehouse=\"${snowflake_warehouse}\"\
-    \nadmin_user_secrets_root_path=\"${admin_user_secrets_root_path}\"\
+    \nadmin_service_user_secrets_root_path=\"${admin_service_user_secrets_root_path}\"\
     \nday_count=${day_count}" > terraform.tfvars
 else
     printf "aws_region=\"${AWS_REGION}\"\
@@ -151,7 +151,7 @@ else
     \nconfluent_api_key=\"${confluent_api_key}\"\
     \nconfluent_api_secret=\"${confluent_api_secret}\"\
     \nsnowflake_warehouse=\"${snowflake_warehouse}\"\
-    \nadmin_user_secrets_root_path=\"${admin_user_secrets_root_path}\"" > terraform.tfvars
+    \nadmin_service_user_secrets_root_path=\"${admin_service_user_secrets_root_path}\"" > terraform.tfvars
 fi
 
 # Initialize the Terraform configuration

@@ -22,7 +22,7 @@ The script helps you manage the lifecycle of Terraform-managed infrastructure re
      - `--profile`: The AWS SSO profile name.
      - `--confluent-api-key` and `--confluent-api-secret`: The API key and secret for connecting to Confluent Kafka.
      - `--snowflake-warehouse`: The Snowflake warehouse name.
-     - `--admin-user-secrets-root-path`: The root path for admin user secrets.
+     - `--admin-service-user-secrets-root-path`: The root path for admin user secrets.
 
    - Parses multiple optional arguments:
      - `--day-count`: (_Default:_ `30`, when not included) How many day(s) should the API Key be rotated for.
@@ -61,7 +61,7 @@ The script should be executed using the following syntax:
                               --confluent-api-key=<CONFLUENT-API-KEY> \
                               --confluent-api-secret=<CONFLUENT-API-SECRET> \
                               --snowflake-warehouse=<SNOWFLAKE-WAREHOUSE> \
-                              --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> \
+                              --admin-service-user-secrets-root-path=<ADMIN_SERVICE_USER_SECRETS_ROOT_PATH> \
                               [--day-count=<DAY_COUNT>] \
                               [--debug]
 ```
@@ -74,7 +74,7 @@ The script should be executed using the following syntax:
    > `<CONFLUENT_API_KEY>`|Your organization's Confluent Cloud API Key (also referred as Cloud API ID).
    > `<CONFLUENT_API_SECRET>`|Your organization's Confluent Cloud API Secret.
    > `<SNOWFLAKE_WAREHOUSE>`|The Snowflake warehouse (or "virtual warehouse") you choose to run the resources in Snowflake.
-   > `<ADMIN_USER_SECRETS_ROOT_PATH>`|The root path in AWS Secrets Manager where the admin user secrets are stored.
+   > `<ADMIN_SERVICE_USER_SECRETS_ROOT_PATH>`|The root path in AWS Secrets Manager where the admin user secrets are stored.
    > `[<DAY_COUNT>]`|(_Default:_ `30`, when not included) How many day(s) should the API Key be rotated for.
 
    > Flags:

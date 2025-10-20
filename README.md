@@ -141,7 +141,7 @@ The true power of Apache Iceberg is that it allows for the separation of storage
 
     > You will then supply the created Cloud API Key and Cloud API Secret to the `./deploy.sh` script in step 6c.
 
-4. Apart of the Terraform configurations, is the `snowflake_user_rsa_key_pairs_rotation`, the [`iac-snowflake-user-rsa_key_pairs_rotation-tf_module`](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module) Terraform [module](https://developer.hashicorp.com/terraform/language/modules) to automate the creation and rotation of [RSA key pairs](https://github.com/j3-signalroom/j3-techstack-lexicon/blob/main/cryptographic-glossary.md#rsa-key-pair) for a Snowflake service account user.  It leverages a specialized AWS Lambda function, known as the [`iac-snowflake-user-rsa_key_pairs_generator-lambda`](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_generator-lambda), to automate the generation and rotation of RSA key pairs. The module allows users to define rotation intervals (e.g., every 30 days since the last key generation) to enhance security by regularly renewing cryptographic credentials. Additionally, it integrates seamlessly with AWS Secrets Manager to securely store and manage the generated key pairs, ensuring that the keys remain protected and easily accessible for Snowflake authentication without manual intervention.
+4. Apart of the Terraform configurations, is the `snowflake_user_rsa_key_pairs_rotation`, the [`iac-snowflake-service_user-rsa_key_pairs_rotation-tf_module`](https://github.com/j3-signalroom/iac-snowflake-service_user-rsa_key_pairs_rotation-tf_module) Terraform [module](https://developer.hashicorp.com/terraform/language/modules) to automate the creation and rotation of [RSA key pairs](https://github.com/j3-signalroom/j3-techstack-lexicon/blob/main/cryptographic-glossary.md#rsa-key-pair) for a Snowflake service account user.  It leverages a specialized AWS Lambda function, known as the [`iac-snowflake-service_user-rsa_key_pairs_and_jwt_generator-lambda`](https://github.com/j3-signalroom/iac-snowflake-service_user-rsa_key_pairs_and_jwt_generator-lambda), to automate the generation and rotation of RSA key pairs. The module allows users to define rotation intervals (e.g., every 30 days since the last key generation) to enhance security by regularly renewing cryptographic credentials. Additionally, it integrates seamlessly with AWS Secrets Manager to securely store and manage the generated key pairs, ensuring that the keys remain protected and easily accessible for Snowflake authentication without manual intervention.
 
 5. Update the cloned Terraform module's [main.tf](main.tf) by following these steps:
 
@@ -164,7 +164,7 @@ The true power of Apache Iceberg is that it allows for the separation of storage
                                   --confluent-api-key=<CONFLUENT_API_KEY> \
                                   --confluent-api-secret=<CONFLUENT_API_SECRET> \
                                   --snowflake-warehouse=<SNOWFLAKE_WAREHOUSE> \
-                                  --admin-user-secrets-root-path=<ADMIN_USER_SECRETS_ROOT_PATH> \
+                                  --admin-service-user-secrets-root-path=<ADMIN_SERVICE_USER_SECRETS_ROOT_PATH> \
                                   [--day-count=<DAY_COUNT>] \
                                   [--debug]
     ```
@@ -174,7 +174,7 @@ The true power of Apache Iceberg is that it allows for the separation of storage
     > `<CONFLUENT_API_KEY>`|Your organization's Confluent Cloud API Key (also referred as Cloud API ID).
     > `<CONFLUENT_API_SECRET>`|Your organization's Confluent Cloud API Secret.
     > `<SNOWFLAKE_WAREHOUSE>`|The Snowflake warehouse (or "virtual warehouse") you choose to run the resources in Snowflake.
-    > `<ADMIN_USER_SECRETS_ROOT_PATH>`|The root path in AWS Secrets Manager where the admin user secrets are stored.
+    > `<ADMIN_SERVICE_USER_SECRETS_ROOT_PATH>`|The root path in AWS Secrets Manager where the admin user secrets are stored.
     > `[<DAY_COUNT>]`|(_Default:_ `30`, when not included) How many day(s) should the API Key be rotated for.
 
     > Flags:
@@ -243,7 +243,7 @@ The [`setup-aws-secret_manager.tf`](setup-aws-secret_manager.tf) is responsible 
 > _Storing the API Key Pairs in AWS Secrets Manager offers the advantage of securely managing and accessing sensitive information, like API keys, without embedding them directly in your application code or configuration files. This improves security by lowering the chance of accidentally exposing sensitive credentials._
 
 ### 3.6 Setup the Snowflake User, Roles, Warehouse, Database, Schema, and Iceberg Tables
-The [`setup-snowflake-user.tf`](setup-snowflake-user.tf) file is responsible for configuring the Snowflake user and roles to access the Snowflake environment via the [`snowflake_user_rsa_key_pairs_rotation`](https://github.com/j3-signalroom/iac-snowflake-user-rsa_key_pairs_rotation-tf_module) module, and enabling Snowflake to access the Amazon S3 bucket. Additionally, the [`setup-snowflake-objects.tf`](setup-snowflake-objects.tf) file handles creating the Snowflake Database, Schema, External Volume, Catalog Integration, and Iceberg Tables, along with the [`setup-snowflake-aws-s3-glue.tf`](setup-snowflake-aws-s3-glue.tf) to set up the AWS IAM permissions and trusted policies required to query the Apache Iceberg tables using SnowSQL!
+The [`setup-snowflake-user.tf`](setup-snowflake-user.tf) file is responsible for configuring the Snowflake user and roles to access the Snowflake environment via the [`snowflake_user_rsa_key_pairs_rotation`](https://github.com/j3-signalroom/iac-snowflake-service_user-rsa_key_pairs_rotation-tf_module) module, and enabling Snowflake to access the Amazon S3 bucket. Additionally, the [`setup-snowflake-objects.tf`](setup-snowflake-objects.tf) file handles creating the Snowflake Database, Schema, External Volume, Catalog Integration, and Iceberg Tables, along with the [`setup-snowflake-aws-s3-glue.tf`](setup-snowflake-aws-s3-glue.tf) to set up the AWS IAM permissions and trusted policies required to query the Apache Iceberg tables using SnowSQL!
 
 ![stock-trades-query-results](.blog/images/stock-trades-query-results.png)
 
