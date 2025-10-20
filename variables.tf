@@ -112,7 +112,7 @@ variable "create_set_1_flink_statements" {
     ]
 }
 
-variable "admin_user_secrets_root_path" {
-  description = "The root path for the admin user secrets in AWS Secrets Manager."
+variable "admin_service_user_secrets_root_path" {
+  description = "The root path for the admin service user secrets in AWS Secrets Manager."
   type        = string
 }
