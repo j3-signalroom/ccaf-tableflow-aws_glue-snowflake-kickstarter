@@ -43,7 +43,7 @@ resource "snowflake_external_volume" "tableflow_kickstarter_volume" {
   ]
 }
 
-# Snowflake Terraform Provider 2.7.0 does not support the creation of a catalog integration
+# Snowflake Terraform Provider 2.9.0 does not support the creation of a catalog integration
 resource "snowflake_execute" "catalog_integration" {
   provider = snowflake.account_admin
   depends_on = [ 
@@ -71,7 +71,7 @@ resource "snowflake_execute" "catalog_integration" {
   EOT
 }
 
-# Snowflake Terraform Provider 2.7.0 does not support the creation of an iceberg table
+# Snowflake Terraform Provider 2.9.0 does not support the creation of an iceberg table
 resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
   provider = snowflake
   depends_on = [ 
@@ -98,7 +98,7 @@ resource "snowflake_execute" "snowflake_stock_trades_iceberg_table" {
   EOT
 }
 
-# Snowflake Terraform Provider 2.7.0 does not support the creation of an iceberg table
+# Snowflake Terraform Provider 2.9.0 does not support the creation of an iceberg table
 resource "snowflake_execute" "snowflake_stock_trades_with_totals_iceberg_table" {
   provider = snowflake
   depends_on = [ 
