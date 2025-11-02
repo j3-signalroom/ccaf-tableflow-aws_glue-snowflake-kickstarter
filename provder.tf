@@ -10,7 +10,6 @@ provider "confluent" {
   cloud_api_secret = var.confluent_api_secret
 }
 
-
 # `ACCOUNTADMIN` role is required to create the external volume.
 provider "snowflake" {
   alias                       = "account_admin"
@@ -27,6 +26,7 @@ provider "snowflake" {
     "snowflake_external_volume_resource"
   ]
 }
+
 # The SECURITYADMIN (Security Administrator) is responsible for users, roles and privileges.
 provider "snowflake" {
   alias                       = "security_admin"
