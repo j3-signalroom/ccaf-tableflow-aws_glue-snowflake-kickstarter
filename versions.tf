@@ -1,12 +1,12 @@
 terraform {
     required_version = ">= 1.13.0"
-
-    cloud {
-       organization = "signalroom"
     
-           workspaces {
-               name = "ccaf-tableflow-aws-glue-snowflake-kickstarter"
-           }
+    cloud {
+        organization = "signalroom"
+
+        workspaces {
+            name = "ccaf-tableflow-aws-glue-snowflake-kickstarter"
+        }
     }
 
     required_providers {
