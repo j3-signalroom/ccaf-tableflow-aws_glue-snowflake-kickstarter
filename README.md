@@ -143,13 +143,13 @@ The true power of Apache Iceberg is that it allows for the separation of storage
 
 4. Apart of the Terraform configurations, is the `snowflake_user_rsa_key_pairs_rotation`, the [`iac-snowflake-service_user-rsa_key_pairs_rotation-tf_module`](https://github.com/j3-signalroom/iac-snowflake-service_user-rsa_key_pairs_rotation-tf_module) Terraform [module](https://developer.hashicorp.com/terraform/language/modules) to automate the creation and rotation of [RSA key pairs](https://github.com/j3-signalroom/j3-techstack-lexicon/blob/main/cryptographic-glossary.md#rsa-key-pair) for a Snowflake service account user.  It leverages a specialized AWS Lambda function, known as the [`iac-snowflake-service_user-rsa_key_pairs_and_jwt_generator-lambda`](https://github.com/j3-signalroom/iac-snowflake-service_user-rsa_key_pairs_and_jwt_generator-lambda), to automate the generation and rotation of RSA key pairs. The module allows users to define rotation intervals (e.g., every 30 days since the last key generation) to enhance security by regularly renewing cryptographic credentials. Additionally, it integrates seamlessly with AWS Secrets Manager to securely store and manage the generated key pairs, ensuring that the keys remain protected and easily accessible for Snowflake authentication without manual intervention.
 
-5. Update the cloned Terraform module's [main.tf](main.tf) by following these steps:
+5. Update the cloned Terraform module's [versions.tf](versions.tf) by following these steps:
 
     a. Locate the `terraform.cloud` block and replace **`signalroom`** with your [Terraform Cloud Organization Name](https://developer.hashicorp.com/terraform/cloud-docs/users-teams-organizations/organizations).
 
     b. In the `terraform.cloud.workspaces` block, replace **`ccaf-tableflow-aws-glue-snowflake-kickstarter`** with your [Terraform Cloud Organization's Workspaces Name](https://developer.hashicorp.com/terraform/cloud-docs/workspaces).
 
-6. To run repo's [Terraform configuration](main.tf) locally, follow these steps:
+6. To run repo's [Terraform configuration](versions.tf) locally, follow these steps:
 
     a. Navigate to the root folder of the `ccaf-tableflow-aws_glue-snowflake-kickstarter/` repository that you cloned.
 
